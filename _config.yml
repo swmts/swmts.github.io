@@ -27,7 +27,9 @@ twitter_username:
 github_username:  BNLOS
 
 # Build settings
-theme: minimal-mistakes-jekyll
+#remove # to choose theme in the pre-configred themes section.
+#theme: minimal-mistakes-jekyll
+remote_theme: "mmistakes/minimal-mistakes@4.24.0"
 plugins:
   - jekyll-feed
   - jekyll-include-cache
