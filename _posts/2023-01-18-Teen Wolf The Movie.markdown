@@ -4,7 +4,6 @@ title:  "Teen Wolf: The Movie"
 date:   2023-01-18 12:00:00 +0300
 categories: Movies
 ---
-<html>
 <head>
 <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet" />
 <script src="https://unpkg.com/video.js/dist/video.js"></script>
@@ -83,4 +82,3 @@ categories: Movies
   })(window, window.videojs);
 </script>
 </body>
-</html>
