@@ -7,8 +7,8 @@ categories: Movies
 <html>
 <head>
 <base href="https://swmts.github.io/" target="_blank">
-<link href="/node_modules/video.js/dist/video-js.css" rel="stylesheet">
-<script src="/node_modules/video.js/dist/video.js"></script>
+<link href="node_modules/video.js/dist/video-js.css" rel="stylesheet">
+<script src="node_modules/video.js/dist/video.js"></script>
 </head>
 <body>
 <p style="text-align: center;"></p><div style="text-align: center;"><b><span style="color: #783f04;">الأسم</span></b></div><div style="text-align: center;"><b><span style="color: #073763;">Teen Wolf: The Movie</span></b></div><div style="text-align: center;"><b><br /></b></div><div><div style="text-align: center;"><b><span style="color: #660000;">الأسم بالعربي</span></b></div><div style="text-align: center;"><b><span style="color: #073763;">تين وولف: الفلم</span></b></div><div style="text-align: center;"><b><br /></b></div><div><div style="text-align: center;"><b><span style="color: #274e13;">النوع</span></b></div><div style="text-align: center;"><b><span style="color: #20124d;">حركة, فانتازيا</span></b></div><div style="text-align: center;"><b><br /></b></div><div><div style="text-align: center;"><b><span style="color: #741b47;">السنة</span></b></div><div style="text-align: center;"><b><span style="color: #a64d79;">2023</span></b></div><div style="text-align: center;"><b><br /></b></div><div><div style="text-align: center;"><b><span style="color: #3d85c6;">القصة</span></b></div></div></div></div></div><div style="text-align: center;"><b><span style="color: #45818e;">يرتفع القمر الكامل في بيكون هيلز ، ومعه ظهر شر مرعب. تعوي الذئاب مرة أخرى ، داعية إلى عودة الشؤم و ذئاب ضارية و الجحيم و كيتسونيس وكل مغير شكل آخر في الليل. لكن فقط بالذئب مثل سكوت ماكول ، الذي لم يعد مراهقا بعد لا يزال ألفا ، يمكنه جمع حلفاء جدد ولم شمل الأصدقاء الموثوق بهم للرد على ما يمكن أن يكون أقوى عدو واجهه على الإطلاق.</span></b></div>
