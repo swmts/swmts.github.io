@@ -6,6 +6,7 @@ categories: Movies
 ---
 <html>
 <head>
+<base href="https://swmts.github.io/" target="_blank">
 <link href="/node_modules/video.js/dist/video-js.css" rel="stylesheet">
 <script src="/node_modules/video.js/dist/video.js"></script>
 </head>
