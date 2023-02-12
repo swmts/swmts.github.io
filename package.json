@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@samueleastdev/videojs-settings-menu": "^0.0.9",
-    "video.js": "^8.0.4"
-  }
-}
