@@ -1,0 +1,32 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Change to your default branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'  # use the version needed for your project
+
+      - name: Build Project
+        run: |
+          echo "API_KEY=${{ secrets.TMDB_API_KEY }}" > .env
+          # Include build commands here if needed
+          # For a static site, this step might not be necessary
+
+      - name: Deploy to GitHub Pages
+        run: |
+          echo "Deploying to GitHub Pages..."
+          git add .
+          git commit -m "Deploying updates"
+          git push
