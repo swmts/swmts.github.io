@@ -18,15 +18,19 @@ jobs:
         with:
           node-version: '14'  # use the version needed for your project
 
+      - name: Configure Git
+        run: |
+          git config --global user.email "blacknight5644bn@gmail.com"
+          git config --global user.name "BNLOS"
+
       - name: Build Project
         run: |
           echo "API_KEY=${{ secrets.TMDB_API_KEY }}" > .env
-          # Include build commands here if needed
-          # For a static site, this step might not be necessary
+          # Include build commands here if needed for static sites
 
       - name: Deploy to GitHub Pages
         run: |
           echo "Deploying to GitHub Pages..."
           git add .
-          git commit -m "Deploying updates"
+          git commit -m "Deploying updates" || echo "No changes to commit"
           git push
