@@ -1,0 +1,27 @@
+[
+    {
+      "title": "Teen Wolf",
+      "id": "34524",
+      "desc": "Scott McCall, a high school student living in the town of Beacon Hills has his life drastically changed when he's bitten by a werewolf, becoming one himself. He must henceforth learn to balance his problematic new identity with his day-to-day teenage life. The following characters are instrumental to his struggle: Stiles, his best friend; Allison, his love interest who comes from a family of werewolf hunters; and Derek, a mysterious werewolf with a dark past. Throughout the series, he strives to keep his loved ones safe while maintaining normal relationships with them.",
+      "type": "tv",
+      "date": "2011",
+      "img": "https://media.themoviedb.org/t/p/original/fmlMmxSBgPEunHS5gjokIej048g.jpg"
+    },
+    {
+      "title": "Teen Wolf: The Movie",
+      "id": "877703",
+      "desc": "The wolves are howling once again, as a terrifying ancient evil emerges in Beacon Hills. Scott McCall, no longer a teenager yet still an Alpha, must gather new allies and reunite trusted friends to fight back against this powerful and deadly enemy.",
+      "type": "movie",
+      "date": "2023",
+      "img": "https://media.themoviedb.org/t/p/original/wAkpPm3wcHRqZl8XjUI3Y2chYq2.jpg"
+    },
+    {
+      "title": "The Vampire Diaries",
+      "id": "18165",
+      "desc": "The story of two vampire brothers obsessed with the same girl, who bears a striking resemblance to the beautiful but ruthless vampire they knew and loved in 1864.",
+      "type": "tv",
+      "date": "2009",
+      "img": "https://media.themoviedb.org/t/p/original/aBkVgChtyyJaHyZh1gfd8DbzQon.jpg"
+    }
+  ]
+  
