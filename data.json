@@ -62,6 +62,14 @@
       "type": "tv",
       "date": "1999",
       "img": "https://media.themoviedb.org/t/p/original/rTc7ZXdroqjkKivFPvCPX0Ru7uw.jpg"
+    },
+    {
+      "title": "Teen Wolf",
+      "id": "11824",
+      "desc": "When a shy teenager's new-found powers help him score at basketball - and with the popular girls - he has some pretty hairy decisions to make.",
+      "type": "movie",
+      "date": "1985",
+      "img": "https://media.themoviedb.org/t/p/original/bv9rY9eoue2Hat6tcvrKVQ0ow8v.jpg"
     }
-  ]
+]
   
