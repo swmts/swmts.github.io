@@ -22,6 +22,23 @@
       "type": "tv",
       "date": "2009",
       "img": "https://media.themoviedb.org/t/p/original/aBkVgChtyyJaHyZh1gfd8DbzQon.jpg"
+    },
+    {
+      "title": "The Godfather",
+      "id": "238",
+      "desc": "Spanning the years 1945 to 1955, a chronicle of the fictional Italian-American Corleone crime family. When organized crime family patriarch, Vito Corleone barely survives an attempt on his life, his youngest son, Michael steps in to take care of the would-be killers, launching a campaign of bloody revenge.",
+      "type": "movie",
+      "date": "1972",
+      "img": "https://media.themoviedb.org/t/p/original/3bhkrj58Vtu7enYsRolD1fZdja1.jpg"
+    },
+    {
+      "title": "The Godfather Part II",
+      "id": "240",
+      "desc": "In the continuing saga of the Corleone crime family, a young Vito Corleone grows up in Sicily and in 1910s New York. In the 1950s, Michael Corleone attempts to expand the family business into Las Vegas, Hollywood and Cuba.",
+      "type": "movie",
+      "date": "1974",
+      "img": "https://media.themoviedb.org/t/p/original/hek3koDUyRQk7FIhPXsa6mT2Zc3.jpg"
     }
+
   ]
   
