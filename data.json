@@ -46,6 +46,14 @@
       "type": "movie",
       "date": "1990",
       "img": "https://media.themoviedb.org/t/p/original/lm3pQ2QoQ16pextRsmnUbG2onES.jpg"
+    },
+    {
+      "title": "Doom Patrol",
+      "id": "79501",
+      "desc": "The Doom Patrol’s members each suffered horrible accidents that gave them superhuman abilities — but also left them scarred and disfigured. Traumatized and downtrodden, the team found purpose through The Chief, who brought them together to investigate the weirdest phenomena in existence — and to protect Earth from what they find.",
+      "type": "tv",
+      "date": "2019",
+      "img": "https://media.themoviedb.org/t/p/original/nVN7Dt0Xr78gnJepRsRLaLYklbY.jpg"
     }
   ]
   
