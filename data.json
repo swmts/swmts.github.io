@@ -38,7 +38,14 @@
       "type": "movie",
       "date": "1974",
       "img": "https://media.themoviedb.org/t/p/original/hek3koDUyRQk7FIhPXsa6mT2Zc3.jpg"
+    },
+    {
+      "title": "The Godfather Part III",
+      "id": "242",
+      "desc": "In the midst of trying to legitimize his business dealings in 1979 New York and Italy, aging mafia don, Michael Corleone seeks forgiveness for his sins while taking a young protege under his wing.",
+      "type": "movie",
+      "date": "1990",
+      "img": "https://media.themoviedb.org/t/p/original/lm3pQ2QoQ16pextRsmnUbG2onES.jpg"
     }
-
   ]
   

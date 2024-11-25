@@ -116,6 +116,13 @@
             currentItemType = type;
             modalTitle.textContent = title;
             loadProviders(type, id);
+
+            if (type === 'movie') {
+                SSEEFields.style.display = 'none';
+            } else {
+                SSEEFields.style.display = 'block';
+            }
+
             const savedSeason = getCookie(`season_${id}`);
             const savedEpisode = getCookie(`episode_${id}`);
             if (savedSeason) seasonInput.value = savedSeason;
