@@ -48,7 +48,7 @@
                     <input id="episodeInput" type="number" min="1" class="input input-bordered w-full" aria-label="Episode number">
                 </div>
                 <div class="py-4">
-                    <iframe id="iframePlayer" class="w-full h-96" style="border: none;" src="" allowfullscreen></iframe>
+                    <iframe id="iframePlayer" class="w-full h-96" src="" allowfullscreen></iframe>
                 </div>
             </div>
             <div class="modal-action">
@@ -121,7 +121,7 @@
                         <h3 class="font-semibold text-xl">${item.title}</h3>
                         <p>${item.desc}</p>
                         <span class="badge badge-outline">${item.date}</span>
-                        <span class="badge badge-${item.type === 'movie' ? 'primary' : 'secondary'}">${item.type.charAt(0).toUpperCase() + item.type.slice(1)}</span>
+                        <span class="badge badge-${item.type === 'movie' ? 'outline' : 'outline'}">${item.type.charAt(0).toUpperCase() + item.type.slice(1)}</span>
                     </div>
                     <button class="btn btn-outline mt-2" onclick="openModal(${item.id}, '${item.type}', '${item.title}', '${item.date}')">Watch</button>
                 `;
