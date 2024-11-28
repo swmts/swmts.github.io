@@ -1,24 +1,18 @@
 {
-    "VidLink": {
-        "tv.provider": "https://vidlink.pro/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://vidlink.pro/movie/{id}",
-        "recom": "y"
-    },
-    "VidSRC v3": {
-        "tv.provider": "https://vidsrc.cc/v3/embed/tv/{id}",
-        "movie.provider": "https://vidsrc.cc/v3/embed/movie/{id}",
+    "VIDSRC": {
+        "tv.provider": "https://vidsrc.xyz/embed/tv/{id}",
+        "movie.provider": "https://vidsrc.xyz/embed/movie/{id}",
         "internaltv": "yes",
         "recom": "y"
     },
-    "MOVIEE.TV": {
-        "tv.provider": "https://moviee.tv/embed/tv/{id}",
-        "movie.provider": "https://moviee.tv/embed/movie/{id}",
-        "internaltv": "yes"
+    "Vid Binge": {
+        "tv.provider": "https://vidbinge.dev/embed/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://vidbinge.dev/embed/movie/{id}",
+        "recom": "y"
     },
-    "VidSRC.ME": {
-        "tv.provider": "https://vidsrc.xyz/embed/tv/{id}",
-        "movie.provider": "https://vidsrc.xyz/embed/movie/{id}",
-        "internaltv": "yes"
+    "VIDSRC.RIP": {
+        "tv.provider": "https://vidsrc.rip/embed/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://vidsrc.rip/embed/movie/{id}"
     },
     "SuperEmbed": {
         "tv.provider": "https://multiembed.mov/directstream.php?video_id={id}&tmdb=1&s={ss}&e={ee}",
@@ -26,20 +20,31 @@
         "recom": "y"
     },
     "2Embed": {
-        "tv.provider": "https://www.2embed.skin/embedtvfull/{id}",
-        "movie.provider": "https://www.2embed.skin/embed/{id}",
-        "internaltv": "yes"
-    },
-    "Vid Binge": {
-        "tv.provider": "https://vidbinge.dev/embed/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://vidbinge.dev/embed/movie/{id}"
-    },
-    "MoviesAPI": {
-        "tv.provider": "https://moviesapi.club/tv/{id}-{ss}-{ee}",
-        "movie.provider": "https://moviesapi.club/movie/{id}",
+        "tv.provider": "https://www.2embed.cc/embedtvfull/{id}",
+        "movie.provider": "https://www.2embed.cc/embed/{id}",
+        "internaltv": "yes",
         "recom": "y"
     },
-    "SmashyStream": {
+    "VidLink": {
+        "tv.provider": "https://vidlink.pro/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://vidlink.pro/movie/{id}",
+        "recom": "y"
+    },
+    "VIDSRC.CC": {
+        "tv.provider": "https://vidsrc.cc/v3/embed/tv/{id}",
+        "movie.provider": "https://vidsrc.cc/v3/embed/movie/{id}",
+        "internaltv": "yes"
+    },
+    "VIDSRC.NL": {
+        "tv.provider": "https://player.vidsrc.nl/embed/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://player.vidsrc.nl/embed/movie/{id}"
+    },
+    "Smashy Stream": {
+        "tv.provider": "https://player.smashy.stream/tv/{id}?s={ss}&e={ee}",
+        "movie.provider": "https://player.smashy.stream/movie/{id}",
+        "recom": "y"
+    },
+    "MoviesAPI": {
         "tv.provider": "https://moviesapi.club/tv/{id}-{ss}-{ee}",
         "movie.provider": "https://moviesapi.club/movie/{id}",
         "recom": "y"

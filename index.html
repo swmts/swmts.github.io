@@ -121,7 +121,7 @@
                         <h3 class="font-semibold text-xl">${item.title}</h3>
                         <p>${item.desc}</p>
                         <span class="badge badge-outline">${item.date}</span>
-                        <span class="badge badge-${item.type === 'movie' ? 'outline' : 'outline'}">${item.type.charAt(0).toUpperCase() + item.type.slice(1)}</span>
+                        <span class="badge badge-${item.type === 'movie' ? 'outline' : 'outline'}">${item.type === 'movie' ? 'Movie' : 'TVs'}</span>
                     </div>
                     <button class="btn btn-outline mt-2" onclick="openModal(${item.id}, '${item.type}', '${item.title}', '${item.date}')">Watch</button>
                 `;
@@ -160,7 +160,9 @@
                     nonRecommendedProviders.push(option);
                 }
             });
+            recommendedProviders.sort((a, b) => a.textContent.localeCompare(b.textContent));
             nonRecommendedProviders.sort((a, b) => a.textContent.localeCompare(b.textContent));
+
             [...recommendedProviders, ...nonRecommendedProviders].forEach(option => providerSelect.appendChild(option));
             providerSelect.onchange = () => updateIframe(id, type);
         }
