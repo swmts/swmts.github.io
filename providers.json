@@ -2,7 +2,6 @@
     "VIDSRC": {
         "tv.provider": "https://vidsrc.xyz/embed/tv/{id}",
         "movie.provider": "https://vidsrc.xyz/embed/movie/{id}",
-        "internaltv": "yes",
         "recom": "y"
     },
     "Vid Binge": {
@@ -22,7 +21,6 @@
     "2Embed": {
         "tv.provider": "https://www.2embed.cc/embedtvfull/{id}",
         "movie.provider": "https://www.2embed.cc/embed/{id}",
-        "internaltv": "yes",
         "recom": "y"
     },
     "VidLink": {
@@ -32,8 +30,7 @@
     },
     "VIDSRC.CC": {
         "tv.provider": "https://vidsrc.cc/v3/embed/tv/{id}",
-        "movie.provider": "https://vidsrc.cc/v3/embed/movie/{id}",
-        "internaltv": "yes"
+        "movie.provider": "https://vidsrc.cc/v3/embed/movie/{id}"
     },
     "VIDSRC.NL": {
         "tv.provider": "https://player.vidsrc.nl/embed/tv/{id}/{ss}/{ee}",
