@@ -54,5 +54,10 @@
         "tv.provider": "https://embed.su/embed/tv/{id}/{ss}/{ee}",
         "movie.provider": "https://embed.su/embed/movie/{id}",
         "recom": "y"
+    },
+    "VIDSRC.DEV": {
+        "tv.provider": "https://vidsrc.dev/embed/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://vidsrc.dev/embed/movie/{id}",
+        "recom": "y"
     }
   }
