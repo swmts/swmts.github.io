@@ -15,7 +15,15 @@
 
     <div class="absolute top-4 right-4">
         <label for="themeSelect" class="text-xl font-semibold">Select Theme:</label>
-        <select id="themeSelect" class="select select-bordered w-32" aria-label="Theme selection">
+        <select id="themeSelect" class="select select-bordered w-32" aria-label="Theme selection"></select>
+    </div>
+    
+    <div class="absolute top-4 left-4">
+        <label for="sortSelect" class="text-xl font-semibold">Sort By:</label>
+        <select id="sortSelect" class="select select-bordered w-32" aria-label="Sort selection">
+            <option value="default">Default</option>
+            <option value="asc">A-Z</option>
+            <option value="desc">Z-A</option>
         </select>
     </div>
 
@@ -64,6 +72,7 @@
         let providers = {};
         let currentItemId = null;
         let currentItemType = null;
+        let sortMethod = 'default';
 
         const themeSelect = document.getElementById('themeSelect');
         const swmtscards = document.getElementById('swmtscards');
@@ -76,6 +85,7 @@
         const reloadIframeButton = document.getElementById('reloadIframeButton');
         const SSEEFields = document.getElementById('SSEEFields');
         const errorMessage = document.getElementById('error-message');
+        const sortSelect = document.getElementById('sortSelect');
 
         const themes = [
             "light", "dark", "cupcake", "bumblebee", "emerald", "corporate",
@@ -110,7 +120,18 @@
             }, 5000);
         }
 
+        sortSelect.addEventListener('change', (e) => {
+            sortMethod = e.target.value;
+            renderCards();
+        });
+
         function renderCards() {
+            if (sortMethod === 'asc') {
+                data.sort((a, b) => a.title.localeCompare(b.title));
+            } else if (sortMethod === 'desc') {
+                data.sort((a, b) => b.title.localeCompare(a.title));
+            }
+
             swmtscards.innerHTML = '';
             data.forEach(item => {
                 const card = document.createElement('div');
@@ -135,12 +156,25 @@
             modalTitle.textContent = `${title} (${date})`;
             loadProviders(type, id);
             SSEEFields.classList.toggle('hidden', type === 'movie');
-            const savedSeason = getCookie(`season_${id}`);
-            const savedEpisode = getCookie(`episode_${id}`);
-            if (savedSeason) seasonInput.value = savedSeason;
-            if (savedEpisode) episodeInput.value = savedEpisode;
+            
+            let savedSeason = getCookie(`season_${id}`);
+            let savedEpisode = getCookie(`episode_${id}`);
+            
+            if (!savedSeason) {
+                savedSeason = 1;
+                setCookie(`season_${id}`, savedSeason, 7);
+            }
+            if (!savedEpisode) {
+                savedEpisode = 1;
+                setCookie(`episode_${id}`, savedEpisode, 7);
+            }
+            
+            seasonInput.value = savedSeason;
+            episodeInput.value = savedEpisode;
+
             seasonInput.addEventListener('input', () => updateIframe(id, type));
             episodeInput.addEventListener('input', () => updateIframe(id, type));
+
             watchModal.showModal();
         }
 
@@ -175,8 +209,8 @@
             let url = '';
             if (providerData) {
                 if (type === 'tv') {
-                    url = providerData.internaltv === 'yes' ?
-                        providerData['tv.provider']?.replace('{id}', id) || '' :
+                    url = providerData.internaltv === 'yes' ? 
+                        providerData['tv.provider']?.replace('{id}', id) || '' : 
                         providerData['tv.provider']?.replace('{id}', id).replace('{ss}', season).replace('{ee}', episode) || '';
                 } else {
                     url = providerData['movie.provider']?.replace('{id}', id) || '';

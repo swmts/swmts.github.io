@@ -70,5 +70,13 @@
         "type": "movie",
         "date": "1985",
         "img": "https://media.themoviedb.org/t/p/original/bv9rY9eoue2Hat6tcvrKVQ0ow8v.jpg"
+    },
+    {
+        "title": "Dexter",
+        "id": "1405",
+        "desc": "Dexter Morgan, a blood spatter pattern analyst for the Miami Metro Police also leads a secret life as a serial killer, hunting down criminals who have slipped through the cracks of justice.",
+        "type": "tv",
+        "date": "2006",
+        "img": "https://media.themoviedb.org/t/p/original/q8dWfc4JwQuv3HayIZeO84jAXED.jpg"
     }
 ]
