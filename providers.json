@@ -1,0 +1,63 @@
+{
+    "VIDSRC": {
+        "tv.provider": "https://vidsrc.xyz/embed/tv/{id}/{ss}-{ee}",
+        "movie.provider": "https://vidsrc.xyz/embed/movie/{id}",
+        "recom": "y"
+    },
+    "Vid Binge": {
+        "tv.provider": "https://vidbinge.dev/embed/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://vidbinge.dev/embed/movie/{id}",
+        "recom": "y"
+    },
+    "VIDSRC.RIP": {
+        "tv.provider": "https://vidsrc.rip/embed/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://vidsrc.rip/embed/movie/{id}"
+    },
+    "SuperEmbed": {
+        "tv.provider": "https://multiembed.mov/directstream.php?video_id={id}&tmdb=1&s={ss}&e={ee}",
+        "movie.provider": "https://multiembed.mov/directstream.php?video_id={id}&tmdb=1",
+        "recom": "y"
+    },
+    "2Embed": {
+        "tv.provider": "https://www.2embed.cc/embedtv/{id}&s={ss}&e={ee}",
+        "movie.provider": "https://www.2embed.cc/embed/{id}",
+        "recom": "y"
+    },
+    "VidLink": {
+        "tv.provider": "https://vidlink.pro/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://vidlink.pro/movie/{id}",
+        "recom": "y"
+    },
+    "VIDSRC.CC": {
+        "tv.provider": "https://vidsrc.cc/v3/embed/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://vidsrc.cc/v3/embed/movie/{id}"
+    },
+    "VIDSRC.NL": {
+        "tv.provider": "https://player.vidsrc.nl/embed/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://player.vidsrc.nl/embed/movie/{id}"
+    },
+    "Smashy Stream": {
+        "tv.provider": "https://player.smashy.stream/tv/{id}?s={ss}&e={ee}",
+        "movie.provider": "https://player.smashy.stream/movie/{id}",
+        "recom": "y"
+    },
+    "MoviesAPI": {
+        "tv.provider": "https://moviesapi.club/tv/{id}-{ss}-{ee}",
+        "movie.provider": "https://moviesapi.club/movie/{id}",
+        "recom": "y"
+    },
+    "VIDSRC.VIP": {
+        "tv.provider": "https://vidsrc.vip/embed/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://vidsrc.vip/embed/movie/{id}"
+    },
+    "Embed.SU": {
+        "tv.provider": "https://embed.su/embed/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://embed.su/embed/movie/{id}",
+        "recom": "y"
+    },
+    "VIDSRC.DEV": {
+        "tv.provider": "https://vidsrc.dev/embed/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://vidsrc.dev/embed/movie/{id}",
+        "recom": "y"
+    }
+  }

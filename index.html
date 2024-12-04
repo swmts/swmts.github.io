@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="luxury">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="src/img/favicon.png">
+    <title>SWMTS | @BN_LOS</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="absolute top-4 right-4">
+        <label for="themeSelect" class="text-xl font-semibold">Select Theme:</label>
+        <select id="themeSelect" class="select select-bordered w-32" aria-label="Theme selection"></select>
+    </div>
+    
+    <div class="absolute top-4 left-4">
+        <label for="sortSelect" class="text-xl font-semibold">Sort By:</label>
+        <select id="sortSelect" class="select select-bordered w-32" aria-label="Sort selection">
+            <option value="default">Default</option>
+            <option value="asc">A-Z</option>
+            <option value="desc">Z-A</option>
+        </select>
+    </div>
+
+    <div class="hero min-h-screen">
+        <div class="hero-content text-center">
+            <div class="max-w-md">
+                <h1 class="text-5xl font-bold">SWMTS | TV Series & Movies</h1>
+                <p class="py-6"> ↓↓↓↓↓ </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-6 grid grid-cols-5 gap-6" id="swmtscards"></div>
+
+    <dialog id="swmodal" class="modal">
+        <div class="modal-box max-w-5xl">
+            <form method="dialog" aria-labelledby="modalTitle">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="closeModal()">✕</button>
+            </form>
+            <h2 class="text-2xl font-semibold" id="modalTitle"></h2>
+            <div class="py-4">
+                <label for="providerSelect" class="block">Choose Provider</label>
+                <select id="providerSelect" class="select select-bordered w-full" aria-label="Provider selection">
+                    <option disabled selected>Choose Provider</option>
+                </select>
+                <div id="SSEEFields" class="hidden">
+                    <label for="seasonInput" class="block">Season</label>
+                    <input id="seasonInput" type="number" min="1" class="input input-bordered w-full mb-4" aria-label="Season number">
+                    <label for="episodeInput" class="block">Episode</label>
+                    <input id="episodeInput" type="number" min="1" class="input input-bordered w-full" aria-label="Episode number">
+                </div>
+                <div class="py-4">
+                    <iframe id="iframePlayer" class="w-full h-96" src="" allowfullscreen></iframe>
+                </div>
+            </div>
+            <div class="modal-action">
+                <button id="reloadIframeButton" class="btn btn-outline">Reload</button>
+            </div>
+        </div>
+    </dialog>
+
+    <div id="error-message" class="hidden bg-red-500 text-white p-4 rounded-lg" role="alert"></div>
+
+    <script>
+        let data = [];
+        let providers = {};
+        let currentItemId = null;
+        let currentItemType = null;
+        let sortMethod = 'default';
+
+        const themeSelect = document.getElementById('themeSelect');
+        const swmtscards = document.getElementById('swmtscards');
+        const watchModal = document.getElementById('swmodal');
+        const modalTitle = document.getElementById('modalTitle');
+        const providerSelect = document.getElementById('providerSelect');
+        const seasonInput = document.getElementById('seasonInput');
+        const episodeInput = document.getElementById('episodeInput');
+        const iframePlayer = document.getElementById('iframePlayer');
+        const reloadIframeButton = document.getElementById('reloadIframeButton');
+        const SSEEFields = document.getElementById('SSEEFields');
+        const errorMessage = document.getElementById('error-message');
+        const sortSelect = document.getElementById('sortSelect');
+
+        const themes = [
+            "light", "dark", "cupcake", "bumblebee", "emerald", "corporate",
+            "synthwave", "retro", "cyberpunk", "valentine", "halloween", "garden",
+            "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe", "black",
+            "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade",
+            "night", "coffee", "winter", "dim", "nord", "sunset"
+        ];
+
+        async function fetchData() {
+            try {
+                const [dataResponse, providersResponse] = await Promise.all([
+                    fetch('data.json'),
+                    fetch('providers.json')
+                ]);
+                if (!dataResponse.ok || !providersResponse.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                data = await dataResponse.json();
+                providers = await providersResponse.json();
+                renderCards();
+            } catch (error) {
+                showError('Error fetching data: ' + error.message);
+            }
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+            setTimeout(() => {
+                errorMessage.classList.add('hidden');
+            }, 5000);
+        }
+
+        sortSelect.addEventListener('change', (e) => {
+            sortMethod = e.target.value;
+            renderCards();
+        });
+
+        function renderCards() {
+            if (sortMethod === 'asc') {
+                data.sort((a, b) => a.title.localeCompare(b.title));
+            } else if (sortMethod === 'desc') {
+                data.sort((a, b) => b.title.localeCompare(a.title));
+            }
+
+            swmtscards.innerHTML = '';
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.classList.add('card', 'w-full', 'shadow-lg', 'p-4', 'rounded-lg');
+                card.innerHTML = `
+                    <img src="${item.img}" alt="${item.title}" class="rounded-t-lg">
+                    <div class="py-2">
+                        <h3 class="font-semibold text-xl">${item.title}</h3>
+                        <p>${item.desc}</p>
+                        <span class="badge badge-outline">${item.date}</span>
+                        <span class="badge badge-${item.type === 'movie' ? 'outline' : 'outline'}">${item.type === 'movie' ? 'Movie' : 'TVs'}</span>
+                    </div>
+                    <button class="btn btn-outline mt-2" onclick="openModal(${item.id}, '${item.type}', '${item.title}', '${item.date}')">Watch</button>
+                `;
+                swmtscards.appendChild(card);
+            });
+        }
+
+        function openModal(id, type, title, date) {
+            currentItemId = id;
+            currentItemType = type;
+            modalTitle.textContent = `${title} (${date})`;
+            loadProviders(type, id);
+            SSEEFields.classList.toggle('hidden', type === 'movie');
+            
+            let savedSeason = getCookie(`season_${id}`);
+            let savedEpisode = getCookie(`episode_${id}`);
+            
+            if (!savedSeason) {
+                savedSeason = 1;
+                setCookie(`season_${id}`, savedSeason, 7);
+            }
+            if (!savedEpisode) {
+                savedEpisode = 1;
+                setCookie(`episode_${id}`, savedEpisode, 7);
+            }
+            
+            seasonInput.value = savedSeason;
+            episodeInput.value = savedEpisode;
+
+            seasonInput.addEventListener('input', () => updateIframe(id, type));
+            episodeInput.addEventListener('input', () => updateIframe(id, type));
+
+            watchModal.showModal();
+        }
+
+        function loadProviders(type, id) {
+            providerSelect.innerHTML = `<option disabled selected>Choose Provider</option>`;
+            const recommendedProviders = [];
+            const nonRecommendedProviders = [];
+            Object.keys(providers).forEach(provider => {
+                const option = document.createElement('option');
+                const providerData = providers[provider];
+                const providerTitle = providerData.title || provider;
+                option.value = provider;
+                option.textContent = providerData.recom === "y" ? `${providerTitle} (Recommended)` : providerTitle;
+                if (providerData.recom === "y") {
+                    recommendedProviders.push(option);
+                } else {
+                    nonRecommendedProviders.push(option);
+                }
+            });
+            recommendedProviders.sort((a, b) => a.textContent.localeCompare(b.textContent));
+            nonRecommendedProviders.sort((a, b) => a.textContent.localeCompare(b.textContent));
+
+            [...recommendedProviders, ...nonRecommendedProviders].forEach(option => providerSelect.appendChild(option));
+            providerSelect.onchange = () => updateIframe(id, type);
+        }
+
+        function updateIframe(id, type) {
+            const provider = providerSelect.value;
+            const season = seasonInput.value || '1';
+            const episode = episodeInput.value || '1';
+            const providerData = providers[provider];
+            let url = '';
+            if (providerData) {
+                if (type === 'tv') {
+                    url = providerData.internaltv === 'yes' ? 
+                        providerData['tv.provider']?.replace('{id}', id) || '' : 
+                        providerData['tv.provider']?.replace('{id}', id).replace('{ss}', season).replace('{ee}', episode) || '';
+                } else {
+                    url = providerData['movie.provider']?.replace('{id}', id) || '';
+                }
+            }
+            if (url) {
+                iframePlayer.src = url;
+                setCookie(`season_${id}`, season, 7);
+                setCookie(`episode_${id}`, episode, 7);
+            } else {
+                showError("Error: Undefined URL for provider " + provider);
+            }
+        }
+
+        function closeModal() {
+            watchModal.close();
+            purgeModalContent();
+        }
+
+        reloadIframeButton.addEventListener('click', () => {
+            updateIframe(currentItemId, currentItemType);
+        });
+
+        function purgeModalContent() {
+            providerSelect.selectedIndex = 0;
+            seasonInput.value = '';
+            episodeInput.value = '';
+            iframePlayer.src = '';
+            seasonInput.removeEventListener('input', updateIframe);
+            episodeInput.removeEventListener('input', updateIframe);
+        }
+
+        function setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + date.toUTCString();
+            document.cookie = `${name}=${value};${expires};path=/`;
+        }
+
+        function getCookie(name) {
+            const cname = name + "=";
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const ca = decodedCookie.split(';');
+            for (let c of ca) {
+                c = c.trim();
+                if (c.indexOf(cname) === 0) return c.substring(cname.length, c.length);
+            }
+            return "";
+        }
+
+        function populateThemeSelect() {
+            const sortedThemes = themes.sort();
+            sortedThemes.forEach(theme => {
+                const option = document.createElement('option');
+                option.value = theme;
+                option.textContent = theme.charAt(0).toUpperCase() + theme.slice(1);
+                themeSelect.appendChild(option);
+            });
+            const savedTheme = getCookie('theme');
+            const themeToUse = savedTheme || "luxury";
+            document.documentElement.setAttribute('data-theme', themeToUse);
+            themeSelect.value = themeToUse;
+            themeSelect.addEventListener('change', (e) => {
+                const selectedTheme = e.target.value;
+                document.documentElement.setAttribute('data-theme', selectedTheme);
+                setCookie('theme', selectedTheme, 7);
+            });
+        }
+
+        populateThemeSelect();
+        fetchData();
+    </script>
+</body>
+</html>
