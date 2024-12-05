@@ -7,20 +7,16 @@
     <title>SWMTS | @BN_LOS</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .hidden { display: none; }
-    </style>
+    <style>.hidden { display: none; }</style>
 </head>
 <body>
-
     <div class="absolute top-4 right-4">
         <label for="themeSelect" class="text-xl font-semibold">Select Theme:</label>
-        <select id="themeSelect" class="select select-bordered w-32" aria-label="Theme selection"></select>
+        <select id="themeSelect" class="select select-bordered w-32"></select>
     </div>
-    
     <div class="absolute top-4 left-4">
         <label for="sortSelect" class="text-xl font-semibold">Sort By:</label>
-        <select id="sortSelect" class="select select-bordered w-32" aria-label="Sort selection">
+        <select id="sortSelect" class="select select-bordered w-32">
             <option value="default">Default</option>
             <option value="asc">A-Z</option>
             <option value="desc">Z-A</option>
@@ -36,24 +32,33 @@
         </div>
     </div>
 
+    <div class="flex justify-center my-4">
+        <input type="text" id="searchInput" class="input input-bordered w-96" placeholder="Search..." />
+    </div>
+
+    <div class="tabs tabs-lifted">
+        <a role="tab" id="popular-tab" class="tab tab-active" onclick="fetchData()">Popular</a>
+        <a role="tab" id="watched-tab" class="tab" onclick="fetchWatchedData()">Watched</a>
+    </div>
+
     <div class="p-6 grid grid-cols-5 gap-6" id="swmtscards"></div>
 
     <dialog id="swmodal" class="modal">
         <div class="modal-box max-w-5xl">
-            <form method="dialog" aria-labelledby="modalTitle">
+            <form method="dialog">
                 <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="closeModal()">✕</button>
             </form>
             <h2 class="text-2xl font-semibold" id="modalTitle"></h2>
             <div class="py-4">
                 <label for="providerSelect" class="block">Choose Provider</label>
-                <select id="providerSelect" class="select select-bordered w-full" aria-label="Provider selection">
+                <select id="providerSelect" class="select select-bordered w-full">
                     <option disabled selected>Choose Provider</option>
                 </select>
                 <div id="SSEEFields" class="hidden">
                     <label for="seasonInput" class="block">Season</label>
-                    <input id="seasonInput" type="number" min="1" class="input input-bordered w-full mb-4" aria-label="Season number">
+                    <input id="seasonInput" type="number" min="1" class="input input-bordered w-full mb-4">
                     <label for="episodeInput" class="block">Episode</label>
-                    <input id="episodeInput" type="number" min="1" class="input input-bordered w-full" aria-label="Episode number">
+                    <input id="episodeInput" type="number" min="1" class="input input-bordered w-full">
                 </div>
                 <div class="py-4">
                     <iframe id="iframePlayer" class="w-full h-96" src="" allowfullscreen></iframe>
@@ -68,220 +73,353 @@
     <div id="error-message" class="hidden bg-red-500 text-white p-4 rounded-lg" role="alert"></div>
 
     <script>
-        let data = [];
-        let providers = {};
-        let currentItemId = null;
-        let currentItemType = null;
-        let sortMethod = 'default';
+const TMDB_API_KEY = '89bd733a5bbf336ed49d9dc39a37d04b';
+const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+let data = [];
+let providers = {};
+let currentItemId = null;
+let currentItemType = null;
+let sortMethod = 'default';
+let searchResults = [];
 
-        const themeSelect = document.getElementById('themeSelect');
-        const swmtscards = document.getElementById('swmtscards');
-        const watchModal = document.getElementById('swmodal');
-        const modalTitle = document.getElementById('modalTitle');
-        const providerSelect = document.getElementById('providerSelect');
-        const seasonInput = document.getElementById('seasonInput');
-        const episodeInput = document.getElementById('episodeInput');
-        const iframePlayer = document.getElementById('iframePlayer');
-        const reloadIframeButton = document.getElementById('reloadIframeButton');
-        const SSEEFields = document.getElementById('SSEEFields');
-        const errorMessage = document.getElementById('error-message');
-        const sortSelect = document.getElementById('sortSelect');
+const themeSelect = document.getElementById('themeSelect');
+const swmtscards = document.getElementById('swmtscards');
+const popularTab = document.getElementById('popular-tab');
+const watchedTab = document.getElementById('watched-tab');
+const searchInput = document.getElementById('searchInput');
+const tabsContainer = document.querySelector('.tabs');
+let activeTab = popularTab;
 
-        const themes = [
-            "light", "dark", "cupcake", "bumblebee", "emerald", "corporate",
-            "synthwave", "retro", "cyberpunk", "valentine", "halloween", "garden",
-            "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe", "black",
-            "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade",
-            "night", "coffee", "winter", "dim", "nord", "sunset"
-        ];
+const watchModal = document.getElementById('swmodal');
+const modalTitle = document.getElementById('modalTitle');
+const providerSelect = document.getElementById('providerSelect');
+const seasonInput = document.getElementById('seasonInput');
+const episodeInput = document.getElementById('episodeInput');
+const iframePlayer = document.getElementById('iframePlayer');
+const reloadIframeButton = document.getElementById('reloadIframeButton');
+const SSEEFields = document.getElementById('SSEEFields');
+const errorMessage = document.getElementById('error-message');
+const sortSelect = document.getElementById('sortSelect');
 
-        async function fetchData() {
-            try {
-                const [dataResponse, providersResponse] = await Promise.all([
-                    fetch('data.json'),
-                    fetch('providers.json')
-                ]);
-                if (!dataResponse.ok || !providersResponse.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                data = await dataResponse.json();
-                providers = await providersResponse.json();
-                renderCards();
-            } catch (error) {
-                showError('Error fetching data: ' + error.message);
-            }
+const themes = [
+    "light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk",
+    "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe",
+    "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee",
+    "winter", "dim", "nord", "sunset"
+];
+
+async function fetchData() {
+    try {
+        const providersResponse = await fetch('providers.json');
+        if (!providersResponse.ok) throw new Error('Network response was not ok for providers.json');
+        providers = await providersResponse.json();
+
+        const popularMovies = await fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}`);
+        const popularTVs = await fetch(`${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}`);
+        if (!popularMovies.ok || !popularTVs.ok) throw new Error('Network response was not ok for TMDB API');
+
+        const moviesData = await popularMovies.json();
+        const tvsData = await popularTVs.json();
+        data = [...moviesData.results, ...tvsData.results].map(item => ({
+            id: item.id,
+            title: item.title || item.name,
+            desc: item.overview,
+            img: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+            date: item.release_date || item.first_air_date,
+            type: item.title ? 'movie' : 'tv'
+        }));
+        renderCards();
+    } catch (error) {
+        showError(`Error fetching data: ${error.message}`);
+    }
+}
+
+async function fetchWatchedData() {
+    const watchedList = getWatchedList();
+    data = [];
+    const fetchedIds = new Set();
+
+    await Promise.all(watchedList.map(async item => {
+        if (fetchedIds.has(item.id)) return;
+        fetchedIds.add(item.id);
+
+        try {
+            const apiEndpoint = item.type === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`;
+            const response = await fetch(`${TMDB_BASE_URL}${apiEndpoint}?api_key=${TMDB_API_KEY}`);
+            if (!response.ok) throw new Error(`Network response was not ok for ${item.type} ${item.id}`);
+            const itemData = await response.json();
+            data.push({
+                id: itemData.id,
+                title: itemData.title || itemData.name,
+                desc: itemData.overview,
+                img: `https://image.tmdb.org/t/p/w500${itemData.poster_path}`,
+                date: itemData.release_date || itemData.first_air_date,
+                type: item.type,
+            });
+        } catch (error) {
+            showError(`Error fetching watched item: ${error.message}`);
         }
+    }));
+    renderCards();
+}
 
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorMessage.classList.remove('hidden');
-            setTimeout(() => {
-                errorMessage.classList.add('hidden');
-            }, 5000);
-        }
+async function fetchSearchData(query) {
+    try {
+        const response = await fetch(`${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${query}`);
+        if (!response.ok) throw new Error('Network response was not ok for TMDB Search API');
 
-        sortSelect.addEventListener('change', (e) => {
-            sortMethod = e.target.value;
+        const searchData = await response.json();
+        searchResults = searchData.results
+            .filter(item => item.media_type === 'movie' || item.media_type === 'tv')
+            .map(item => ({
+                id: item.id,
+                title: item.title || item.name,
+                desc: item.overview,
+                img: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+                date: item.release_date || item.first_air_date,
+                type: item.media_type === 'movie' ? 'movie' : 'tv'
+            }));
+    } catch (error) {
+        showError(`Error fetching search results: ${error.message}`);
+    }
+}
+
+function displaySearchResults() {
+    data = searchResults;
+    renderCards();
+}
+
+function getWatchedList() {
+    return JSON.parse(localStorage.getItem('watchedList')) || [];
+}
+
+function addToWatchedList(id, type) {
+    const watchedList = getWatchedList();
+    if (!watchedList.some(item => item.id === id && item.type === type)) {
+        watchedList.push({ id, type });
+        localStorage.setItem('watchedList', JSON.stringify(watchedList));
+        deduplicateWatchedList();
+        if (watchedTab.classList.contains('tab-active')) {
+            fetchWatchedData();
+        } else {
             renderCards();
-        });
-
-        function renderCards() {
-            if (sortMethod === 'asc') {
-                data.sort((a, b) => a.title.localeCompare(b.title));
-            } else if (sortMethod === 'desc') {
-                data.sort((a, b) => b.title.localeCompare(a.title));
-            }
-
-            swmtscards.innerHTML = '';
-            data.forEach(item => {
-                const card = document.createElement('div');
-                card.classList.add('card', 'w-full', 'shadow-lg', 'p-4', 'rounded-lg');
-                card.innerHTML = `
-                    <img src="${item.img}" alt="${item.title}" class="rounded-t-lg">
-                    <div class="py-2">
-                        <h3 class="font-semibold text-xl">${item.title}</h3>
-                        <p>${item.desc}</p>
-                        <span class="badge badge-outline">${item.date}</span>
-                        <span class="badge badge-${item.type === 'movie' ? 'outline' : 'outline'}">${item.type === 'movie' ? 'Movie' : 'TVs'}</span>
-                    </div>
-                    <button class="btn btn-outline mt-2" onclick="openModal(${item.id}, '${item.type}', '${item.title}', '${item.date}')">Watch</button>
-                `;
-                swmtscards.appendChild(card);
-            });
         }
+    }
+}
 
-        function openModal(id, type, title, date) {
-            currentItemId = id;
-            currentItemType = type;
-            modalTitle.textContent = `${title} (${date})`;
-            loadProviders(type, id);
-            SSEEFields.classList.toggle('hidden', type === 'movie');
-            
-            let savedSeason = getCookie(`season_${id}`);
-            let savedEpisode = getCookie(`episode_${id}`);
-            
-            if (!savedSeason) {
-                savedSeason = 1;
-                setCookie(`season_${id}`, savedSeason, 7);
-            }
-            if (!savedEpisode) {
-                savedEpisode = 1;
-                setCookie(`episode_${id}`, savedEpisode, 7);
-            }
-            
-            seasonInput.value = savedSeason;
-            episodeInput.value = savedEpisode;
+function removeFromWatchedList(id, type) {
+    let watchedList = getWatchedList();
+    watchedList = watchedList.filter(item => !(item.id === id && item.type === type));
+    localStorage.setItem('watchedList', JSON.stringify(watchedList));
+    deduplicateWatchedList();
+    if (watchedTab.classList.contains('tab-active')) {
+        fetchWatchedData();
+    } else {
+        renderCards();
+    }
+}
 
-            seasonInput.addEventListener('input', () => updateIframe(id, type));
-            episodeInput.addEventListener('input', () => updateIframe(id, type));
+function showError(message) {
+    errorMessage.textContent = message;
+    errorMessage.classList.remove('hidden');
+    setTimeout(() => errorMessage.classList.add('hidden'), 5000);
+}
 
-            watchModal.showModal();
+sortSelect.addEventListener('change', (e) => {
+    sortMethod = e.target.value;
+    renderCards();
+});
+
+function renderCards() {
+    if (sortMethod === 'asc') {
+        data.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sortMethod === 'desc') {
+        data.sort((a, b) => b.title.localeCompare(a.title));
+    }
+
+    swmtscards.innerHTML = '';
+    const renderedIds = new Set();
+    data.forEach(item => {
+        const key = `${item.id}-${item.type}`;
+        if (!renderedIds.has(key)) {
+            renderedIds.add(key);
+            const card = document.createElement('div');
+            card.classList.add('card', 'w-full', 'shadow-lg', 'p-4', 'rounded-lg');
+
+            const isWatched = getWatchedList().some(watchedItem => watchedItem.id === item.id && watchedItem.type === item.type);
+            const watchButtonLabel = isWatched ? 'Remove from Watched' : 'Add to Watched';
+            const watchButtonAction = isWatched ? `removeFromWatchedList(${item.id}, '${item.type}')` : `addToWatchedList(${item.id}, '${item.type}')`;
+
+            card.innerHTML = `
+                <img src="${item.img}" alt="${item.title}" class="rounded-t-lg">
+                <div class="py-2">
+                    <h3 class="font-semibold text-xl">${item.title}</h3>
+                    <p>${item.desc}</p>
+                    <span class="badge badge-outline">${new Date(item.date).getFullYear()}</span>
+                    <span class="badge badge-outline">${item.type === 'movie' ? 'Movie' : 'TVs'}</span>
+                </div>
+                <button class="btn btn-outline mt-2" onclick="${watchButtonAction}">${watchButtonLabel}</button>
+                <button class="btn btn-outline mt-2" onclick="openModal(${item.id}, '${item.type}', '${item.title}', '${item.date}')">Watch</button>
+            `;
+            swmtscards.appendChild(card);
         }
+    });
+}
 
-        function loadProviders(type, id) {
-            providerSelect.innerHTML = `<option disabled selected>Choose Provider</option>`;
-            const recommendedProviders = [];
-            const nonRecommendedProviders = [];
-            Object.keys(providers).forEach(provider => {
-                const option = document.createElement('option');
-                const providerData = providers[provider];
-                const providerTitle = providerData.title || provider;
-                option.value = provider;
-                option.textContent = providerData.recom === "y" ? `${providerTitle} (Recommended)` : providerTitle;
-                if (providerData.recom === "y") {
-                    recommendedProviders.push(option);
-                } else {
-                    nonRecommendedProviders.push(option);
-                }
-            });
-            recommendedProviders.sort((a, b) => a.textContent.localeCompare(b.textContent));
-            nonRecommendedProviders.sort((a, b) => a.textContent.localeCompare(b.textContent));
+function openModal(id, type, title, date) {
+    currentItemId = id;
+    currentItemType = type;
+    modalTitle.textContent = `${title} (${new Date(date).getFullYear()})`;
+    loadProviders(type, id);
+    SSEEFields.classList.toggle('hidden', type === 'movie');
 
-            [...recommendedProviders, ...nonRecommendedProviders].forEach(option => providerSelect.appendChild(option));
-            providerSelect.onchange = () => updateIframe(id, type);
+    seasonInput.value = getCookie(`season_${id}`) || 1;
+    episodeInput.value = getCookie(`episode_${id}`) || 1;
+    setCookie(`season_${id}`, seasonInput.value, 7);
+    setCookie(`episode_${id}`, episodeInput.value, 7);
+
+    seasonInput.addEventListener('input', () => updateIframe(id, type));
+    episodeInput.addEventListener('input', () => updateIframe(id, type));
+
+    watchModal.showModal();
+}
+
+function loadProviders(type, id) {
+    providerSelect.innerHTML = `<option disabled selected>Choose Provider</option>`;
+    const recommendedProviders = [];
+    const nonRecommendedProviders = [];
+    Object.keys(providers).forEach(provider => {
+        const option = document.createElement('option');
+        const providerData = providers[provider];
+        const providerTitle = providerData.title || provider;
+        option.value = provider;
+        option.textContent = providerData.recom === "y" ? `${providerTitle} (Recommended)` : providerTitle;
+        providerData.recom === "y" ? recommendedProviders.push(option) : nonRecommendedProviders.push(option);
+    });
+    [...recommendedProviders.sort((a, b) => a.textContent.localeCompare(b.textContent)),
+     ...nonRecommendedProviders.sort((a, b) => a.textContent.localeCompare(b.textContent))]
+        .forEach(option => providerSelect.appendChild(option));
+    providerSelect.onchange = () => updateIframe(id, type);
+}
+
+function updateIframe(id, type) {
+    const provider = providerSelect.value;
+    const season = seasonInput.value || '1';
+    const episode = episodeInput.value || '1';
+    const providerData = providers[provider];
+    let url = '';
+
+    if (providerData) {
+        url = type === 'tv'
+            ? (providerData.internaltv === 'yes'
+                ? providerData['tv.provider']?.replace('{id}', id) || ''
+                : providerData['tv.provider']?.replace('{id}', id).replace('{ss}', season).replace('{ee}', episode) || '')
+            : providerData['movie.provider']?.replace('{id}', id) || '';
+    }
+
+    if (url) {
+        iframePlayer.src = url;
+        setCookie(`season_${id}`, season, 7);
+        setCookie(`episode_${id}`, episode, 7);
+    } else {
+        showError("Error: Undefined URL for provider " + provider);
+    }
+}
+
+function closeModal() {
+    watchModal.close();
+    purgeModalContent();
+}
+
+reloadIframeButton.addEventListener('click', () => updateIframe(currentItemId, currentItemType));
+
+function purgeModalContent() {
+    providerSelect.selectedIndex = 0;
+    seasonInput.value = '';
+    episodeInput.value = '';
+    iframePlayer.src = '';
+    seasonInput.removeEventListener('input', updateIframe);
+    episodeInput.removeEventListener('input', updateIframe);
+}
+
+function setCookie(name, value, days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
+}
+
+function getCookie(name) {
+    const cname = name + "=";
+    const decodedCookie = decodeURIComponent(document.cookie);
+    return decodedCookie.split(';').map(c => c.trim()).find(c => c.startsWith(cname))?.substring(cname.length) || "";
+}
+
+function populateThemeSelect() {
+    themes.sort().forEach(theme => {
+        const option = document.createElement('option');
+        option.value = theme;
+        option.textContent = theme.charAt(0).toUpperCase() + theme.slice(1);
+        themeSelect.appendChild(option);
+    });
+
+    const savedTheme = getCookie('theme') || "luxury";
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    themeSelect.value = savedTheme;
+
+    themeSelect.addEventListener('change', (e) => {
+        const selectedTheme = e.target.value;
+        document.documentElement.setAttribute('data-theme', selectedTheme);
+        setCookie('theme', selectedTheme, 7);
+    });
+}
+
+function deduplicateWatchedList() {
+    const watchedList = getWatchedList();
+    const uniqueWatchedList = [];
+    const seenIds = new Set();
+    watchedList.forEach(item => {
+        const key = `${item.id}-${item.type}`;
+        if (!seenIds.has(key)) {
+            seenIds.add(key);
+            uniqueWatchedList.push(item);
         }
+    });
+    localStorage.setItem('watchedList', JSON.stringify(uniqueWatchedList));
+}
 
-        function updateIframe(id, type) {
-            const provider = providerSelect.value;
-            const season = seasonInput.value || '1';
-            const episode = episodeInput.value || '1';
-            const providerData = providers[provider];
-            let url = '';
-            if (providerData) {
-                if (type === 'tv') {
-                    url = providerData.internaltv === 'yes' ? 
-                        providerData['tv.provider']?.replace('{id}', id) || '' : 
-                        providerData['tv.provider']?.replace('{id}', id).replace('{ss}', season).replace('{ee}', episode) || '';
-                } else {
-                    url = providerData['movie.provider']?.replace('{id}', id) || '';
-                }
-            }
-            if (url) {
-                iframePlayer.src = url;
-                setCookie(`season_${id}`, season, 7);
-                setCookie(`episode_${id}`, episode, 7);
-            } else {
-                showError("Error: Undefined URL for provider " + provider);
-            }
+searchInput.addEventListener('input', async (e) => {
+    const query = e.target.value;
+    if (query) {
+        await fetchSearchData(query);
+        if (searchResults.length > 0) {
+            tabsContainer.classList.add("hidden");
+            displaySearchResults();
+        } else {
+            showError("No search results found.");
         }
+    } else {
+        tabsContainer.classList.remove("hidden");
+        activeTab.click();
+    }
+});
 
-        function closeModal() {
-            watchModal.close();
-            purgeModalContent();
-        }
+popularTab.addEventListener('click', () => {
+    activeTab = popularTab;
+    popularTab.classList.add('tab-active');
+    watchedTab.classList.remove('tab-active');
+    fetchData();
+});
 
-        reloadIframeButton.addEventListener('click', () => {
-            updateIframe(currentItemId, currentItemType);
-        });
+watchedTab.addEventListener('click', () => {
+    activeTab = watchedTab;
+    watchedTab.classList.add('tab-active');
+    popularTab.classList.remove('tab-active');
+    fetchWatchedData();
+});
 
-        function purgeModalContent() {
-            providerSelect.selectedIndex = 0;
-            seasonInput.value = '';
-            episodeInput.value = '';
-            iframePlayer.src = '';
-            seasonInput.removeEventListener('input', updateIframe);
-            episodeInput.removeEventListener('input', updateIframe);
-        }
-
-        function setCookie(name, value, days) {
-            const date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            const expires = "expires=" + date.toUTCString();
-            document.cookie = `${name}=${value};${expires};path=/`;
-        }
-
-        function getCookie(name) {
-            const cname = name + "=";
-            const decodedCookie = decodeURIComponent(document.cookie);
-            const ca = decodedCookie.split(';');
-            for (let c of ca) {
-                c = c.trim();
-                if (c.indexOf(cname) === 0) return c.substring(cname.length, c.length);
-            }
-            return "";
-        }
-
-        function populateThemeSelect() {
-            const sortedThemes = themes.sort();
-            sortedThemes.forEach(theme => {
-                const option = document.createElement('option');
-                option.value = theme;
-                option.textContent = theme.charAt(0).toUpperCase() + theme.slice(1);
-                themeSelect.appendChild(option);
-            });
-            const savedTheme = getCookie('theme');
-            const themeToUse = savedTheme || "luxury";
-            document.documentElement.setAttribute('data-theme', themeToUse);
-            themeSelect.value = themeToUse;
-            themeSelect.addEventListener('change', (e) => {
-                const selectedTheme = e.target.value;
-                document.documentElement.setAttribute('data-theme', selectedTheme);
-                setCookie('theme', selectedTheme, 7);
-            });
-        }
-
-        populateThemeSelect();
-        fetchData();
+deduplicateWatchedList();
+populateThemeSelect();
+fetchData();
     </script>
 </body>
 </html>
