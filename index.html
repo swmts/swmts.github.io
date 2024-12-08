@@ -258,8 +258,8 @@ function renderCards() {
                     <span class="badge badge-outline">${new Date(item.date).getFullYear()}</span>
                     <span class="badge badge-outline">${item.type === 'movie' ? 'Movie' : 'TVs'}</span>
                 </div>
-                <button class="btn btn-outline mt-2" onclick="${watchButtonAction}">${watchButtonLabel}</button>
                 <button class="btn btn-outline mt-2" onclick="openModal(${item.id}, '${item.type}', '${item.title}', '${item.date}')">Watch</button>
+                <button class="btn btn-outline mt-2" onclick="${watchButtonAction}">${watchButtonLabel}</button>
             `;
             swmtscards.appendChild(card);
         }
