@@ -251,7 +251,7 @@ function renderCards() {
             const watchButtonAction = isWatched ? `removeFromWatchedList(${item.id}, '${item.type}')` : `addToWatchedList(${item.id}, '${item.type}')`;
 
             card.innerHTML = `
-                <img src="${item.img}" alt="${item.title}" class="rounded-t-lg w-full h-full object-cover">
+                <img src="${item.img}" alt="${item.title}" class="rounded-t-lg object-cover">
                 <div class="py-2">
                     <h3 class="font-semibold text-xl">${item.title}</h3>
                     <p class="text-sm">${item.desc}</p>
