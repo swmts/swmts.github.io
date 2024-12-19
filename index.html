@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="luxury">
+<html lang="en" data-theme="sunset">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,13 +9,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>.hidden { display: none; }</style>
 </head>
-<body>
-    <div class="absolute top-4 right-4">
-        <label for="themeSelect" class="text-xl font-semibold">Select Theme:</label>
+<body class="bg-base-100 text-base-content">
+    <div class="absolute top-4 right-4 flex items-center">
+        <label for="themeSelect" class="text-xl font-semibold mr-2">Select Theme:</label>
         <select id="themeSelect" class="select select-bordered w-32"></select>
     </div>
-    <div class="absolute top-4 left-4">
-        <label for="sortSelect" class="text-xl font-semibold">Sort By:</label>
+    <div class="absolute top-4 left-4 flex items-center">
+        <label for="sortSelect" class="text-xl font-semibold mr-2">Sort By:</label>
         <select id="sortSelect" class="select select-bordered w-32">
             <option value="default">Default</option>
             <option value="asc">A-Z</option>
@@ -41,7 +41,7 @@
         <a role="tab" id="watched-tab" class="tab" onclick="fetchWatchedData()">Watched</a>
     </div>
 
-    <div class="p-6 grid grid-cols-5 gap-6" id="swmtscards"></div>
+    <div class="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" id="swmtscards"></div>
 
     <dialog id="swmodal" class="modal">
         <div class="modal-box max-w-5xl">
@@ -244,22 +244,26 @@ function renderCards() {
         if (!renderedIds.has(key)) {
             renderedIds.add(key);
             const card = document.createElement('div');
-            card.classList.add('card', 'w-full', 'shadow-lg', 'p-4', 'rounded-lg');
+            card.classList.add('card', 'w-full', 'shadow-lg', 'p-4', 'rounded-lg', 'bg-base-200');
 
             const isWatched = getWatchedList().some(watchedItem => watchedItem.id === item.id && watchedItem.type === item.type);
             const watchButtonLabel = isWatched ? 'Remove from Watched' : 'Add to Watched';
             const watchButtonAction = isWatched ? `removeFromWatchedList(${item.id}, '${item.type}')` : `addToWatchedList(${item.id}, '${item.type}')`;
 
             card.innerHTML = `
-                <img src="${item.img}" alt="${item.title}" class="rounded-t-lg">
+                <img src="${item.img}" alt="${item.title}" class="rounded-t-lg w-full h-full object-cover">
                 <div class="py-2">
                     <h3 class="font-semibold text-xl">${item.title}</h3>
-                    <p>${item.desc}</p>
-                    <span class="badge badge-outline">${new Date(item.date).getFullYear()}</span>
-                    <span class="badge badge-outline">${item.type === 'movie' ? 'Movie' : 'TVs'}</span>
+                    <p class="text-sm">${item.desc}</p>
+                    <div class="flex justify-between mt-2">
+                        <span class="badge badge-outline">${new Date(item.date).getFullYear()}</span>
+                        <span class="badge badge-outline">${item.type === 'movie' ? 'Movie' : 'TVs'}</span>
+                    </div>
                 </div>
-                <button class="btn btn-outline mt-2" onclick="openModal(${item.id}, '${item.type}', '${item.title}', '${item.date}')">Watch</button>
-                <button class="btn btn-outline mt-2" onclick="${watchButtonAction}">${watchButtonLabel}</button>
+                <div class="flex flex-col mt-2">
+                    <button class="btn btn-outline mb-2" onclick="openModal(${item.id}, '${item.type}', '${item.title}', '${item.date}')">Watch</button>
+                    <button class="btn btn-outline" onclick="${watchButtonAction}">${watchButtonLabel}</button>
+                </div>
             `;
             swmtscards.appendChild(card);
         }
@@ -362,7 +366,7 @@ function populateThemeSelect() {
         themeSelect.appendChild(option);
     });
 
-    const savedTheme = getCookie('theme') || "luxury";
+    const savedTheme = getCookie('theme') || "sunset";
     document.documentElement.setAttribute('data-theme', savedTheme);
     themeSelect.value = savedTheme;
 
