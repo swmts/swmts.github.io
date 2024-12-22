@@ -142,7 +142,7 @@
            }
 
            posterElement.src = `https://image.tmdb.org/t/p/w500${itemData.poster_path}`;
-           currentTitle = `${itemData.title || itemData.name} (${year})`;
+            currentTitle = `${itemData.title || itemData.name} (${year})`;
            titleElement.textContent = itemData.title || itemData.name;
             document.title = `SWMTS | ${currentTitle}`
            descElement.textContent = itemData.overview;
@@ -237,7 +237,7 @@
                 return `
                 <div class="text-center">
                     <img src="https://image.tmdb.org/t/p/w200${actor.profile_path}" alt="${actor.name}" class="rounded-full w-24 h-24 object-cover mx-auto">
-                    <p class="text-sm mt-2">${actor.name}</p>
+                  <a href="../cast/#${actor.id}"><p class="text-sm mt-2">${actor.name}</p></a>
                     ${rolesHTML}
                 </div>
                 `;
