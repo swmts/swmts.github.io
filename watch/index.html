@@ -116,10 +116,31 @@
             if (!creditsResponse.ok) throw new Error(`Network response was not ok for ${type} ${tmdbId} credits`);
             const creditsData = await creditsResponse.json();
 
+            const ratingEndpoint = type === 'movie' ? `/movie/${tmdbId}/release_dates` : `/tv/${tmdbId}/content_ratings`;
+            const ratingResponse = await fetch(`${TMDB_BASE_URL}${ratingEndpoint}?api_key=${TMDB_API_KEY}`);
+            if (!ratingResponse.ok) throw new Error(`Network response was not ok for ${type} ${tmdbId} ratings`);
+            const ratingData = await ratingResponse.json();
+
            const releaseDate = itemData.release_date || itemData.first_air_date;
            const year = new Date(releaseDate).getFullYear();
            const voteAverage = itemData.vote_average;
-           const certification = itemData.certification || 'N/A';
+            let certification = 'N/A';
+           if(type === 'movie'){
+                if(ratingData && ratingData.results) {
+                   const usRating = ratingData.results.find(r => r.iso_3166_1 === 'US');
+                    if (usRating && usRating.release_dates && usRating.release_dates.length > 0) {
+                         certification = usRating.release_dates[0].certification || 'N/A';
+                    }
+                 }
+           } else if (type === 'tv'){
+              if(ratingData && ratingData.results) {
+                 const usRating = ratingData.results.find(r => r.iso_3166_1 === 'US');
+                    if (usRating) {
+                         certification = usRating.rating || 'N/A';
+                    }
+              }
+           }
+
            posterElement.src = `https://image.tmdb.org/t/p/w500${itemData.poster_path}`;
            currentTitle = `${itemData.title || itemData.name} (${year})`;
            titleElement.textContent = itemData.title || itemData.name;
