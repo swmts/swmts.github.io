@@ -43,33 +43,6 @@
 
     <div class="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" id="swmtscards"></div>
 
-    <dialog id="swmodal" class="modal">
-        <div class="modal-box max-w-5xl">
-            <form method="dialog">
-                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="closeModal()">✕</button>
-            </form>
-            <h2 class="text-2xl font-semibold" id="modalTitle"></h2>
-            <div class="py-4">
-                <label for="providerSelect" class="block">Choose Provider</label>
-                <select id="providerSelect" class="select select-bordered w-full">
-                    <option disabled selected>Choose Provider</option>
-                </select>
-                <div id="SSEEFields" class="hidden">
-                    <label for="seasonInput" class="block">Season</label>
-                    <input id="seasonInput" type="number" min="1" class="input input-bordered w-full mb-4">
-                    <label for="episodeInput" class="block">Episode</label>
-                    <input id="episodeInput" type="number" min="1" class="input input-bordered w-full">
-                </div>
-                <div class="py-4">
-                    <iframe id="iframePlayer" class="w-full h-96" src="" allowfullscreen></iframe>
-                </div>
-            </div>
-            <div class="modal-action">
-                <button id="reloadIframeButton" class="btn btn-outline">Reload</button>
-            </div>
-        </div>
-    </dialog>
-
     <div id="error-message" class="hidden bg-red-500 text-white p-4 rounded-lg" role="alert"></div>
 
     <script>
@@ -77,8 +50,6 @@ const TMDB_API_KEY = 'db841157430b89c9ab8833d281d1c060';
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 let data = [];
 let providers = {};
-let currentItemId = null;
-let currentItemType = null;
 let sortMethod = 'default';
 let searchResults = [];
 
@@ -90,14 +61,6 @@ const searchInput = document.getElementById('searchInput');
 const tabsContainer = document.querySelector('.tabs');
 let activeTab = popularTab;
 
-const watchModal = document.getElementById('swmodal');
-const modalTitle = document.getElementById('modalTitle');
-const providerSelect = document.getElementById('providerSelect');
-const seasonInput = document.getElementById('seasonInput');
-const episodeInput = document.getElementById('episodeInput');
-const iframePlayer = document.getElementById('iframePlayer');
-const reloadIframeButton = document.getElementById('reloadIframeButton');
-const SSEEFields = document.getElementById('SSEEFields');
 const errorMessage = document.getElementById('error-message');
 const sortSelect = document.getElementById('sortSelect');
 
@@ -261,7 +224,7 @@ function renderCards() {
                     </div>
                 </div>
                 <div class="flex flex-col mt-2">
-                    <button class="btn btn-outline mb-2" onclick="openModal(${item.id}, '${item.type}', '${item.title}', '${item.date}')">Watch</button>
+                    <button class="btn btn-outline mb-2" onclick="navigateToWatchPage('${item.type}', ${item.id})">Watch</button>
                     <button class="btn btn-outline" onclick="${watchButtonAction}">${watchButtonLabel}</button>
                 </div>
             `;
@@ -270,81 +233,16 @@ function renderCards() {
     });
 }
 
-function openModal(id, type, title, date) {
-    currentItemId = id;
-    currentItemType = type;
-    modalTitle.textContent = `${title} (${new Date(date).getFullYear()})`;
-    loadProviders(type, id);
-    SSEEFields.classList.toggle('hidden', type === 'movie');
-
-    seasonInput.value = getCookie(`season_${id}`) || 1;
-    episodeInput.value = getCookie(`episode_${id}`) || 1;
-    setCookie(`season_${id}`, seasonInput.value, 7);
-    setCookie(`episode_${id}`, episodeInput.value, 7);
-
-    seasonInput.addEventListener('input', () => updateIframe(id, type));
-    episodeInput.addEventListener('input', () => updateIframe(id, type));
-
-    watchModal.showModal();
-}
-
-function loadProviders(type, id) {
-    providerSelect.innerHTML = `<option disabled selected>Choose Provider</option>`;
-    const recommendedProviders = [];
-    const nonRecommendedProviders = [];
-    Object.keys(providers).forEach(provider => {
-        const option = document.createElement('option');
-        const providerData = providers[provider];
-        const providerTitle = providerData.title || provider;
-        option.value = provider;
-        option.textContent = providerData.recom === "y" ? `${providerTitle} (Recommended)` : providerTitle;
-        providerData.recom === "y" ? recommendedProviders.push(option) : nonRecommendedProviders.push(option);
-    });
-    [...recommendedProviders.sort((a, b) => a.textContent.localeCompare(b.textContent)),
-     ...nonRecommendedProviders.sort((a, b) => a.textContent.localeCompare(b.textContent))]
-        .forEach(option => providerSelect.appendChild(option));
-    providerSelect.onchange = () => updateIframe(id, type);
-}
-
-function updateIframe(id, type) {
-    const provider = providerSelect.value;
-    const season = seasonInput.value || '1';
-    const episode = episodeInput.value || '1';
-    const providerData = providers[provider];
-    let url = '';
-
-    if (providerData) {
-        url = type === 'tv'
-            ? (providerData.internaltv === 'yes'
-                ? providerData['tv.provider']?.replace('{id}', id) || ''
-                : providerData['tv.provider']?.replace('{id}', id).replace('{ss}', season).replace('{ee}', episode) || '')
-            : providerData['movie.provider']?.replace('{id}', id) || '';
+function navigateToWatchPage(type, id) {
+    let hash = `#${type}-${id}`;
+    if(type === 'tv') {
+        const season = getCookie(`season_${id}`) || 1;
+        const episode = getCookie(`episode_${id}`) || 1;
+        hash += `-${season}-${episode}`;
     }
-
-    if (url) {
-        iframePlayer.src = url;
-        setCookie(`season_${id}`, season, 7);
-        setCookie(`episode_${id}`, episode, 7);
-    } else {
-        showError("Error: Undefined URL for provider " + provider);
-    }
+    window.location.href = `/watch/${hash}`;
 }
 
-function closeModal() {
-    watchModal.close();
-    purgeModalContent();
-}
-
-reloadIframeButton.addEventListener('click', () => updateIframe(currentItemId, currentItemType));
-
-function purgeModalContent() {
-    providerSelect.selectedIndex = 0;
-    seasonInput.value = '';
-    episodeInput.value = '';
-    iframePlayer.src = '';
-    seasonInput.removeEventListener('input', updateIframe);
-    episodeInput.removeEventListener('input', updateIframe);
-}
 
 function setCookie(name, value, days) {
     const date = new Date();

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="sunset">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="../src/img/favicon.png">
+    <title>SWMTS | Watch</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>.hidden { display: none; }</style>
+</head>
+<body class="bg-base-100 text-base-content">
+    <div class="absolute top-4 left-4">
+        <a href="../" class="btn btn-outline">Go Back</a>
+    </div>
+    <div class="p-6 flex flex-col items-center">
+        <section id="metadata" class="flex w-full max-w-5xl">
+             <div class="mr-6 w-64 h-96 flex-shrink-0">
+                <img id="poster" src="" alt="Movie/TV Poster" class="rounded-lg object-cover w-full h-full">
+            </div>
+            <div class="flex flex-col">
+              <h1 id="title" class="text-3xl font-bold mb-2"></h1>
+              <p id="desc" class="text-lg mb-4"></p>
+              <div class="flex gap-2 mb-4">
+                 <span id="yearBadge" class="badge badge-outline"></span>
+                 <span id="ageRateBadge" class="badge badge-outline"></span>
+                 <span id="rateBadge" class="badge badge-outline"></span>
+              </div>
+            </div>
+        </section>
+
+        <section id="cast" class="mt-8 w-full max-w-5xl">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-2xl font-semibold text-center">Cast</h2>
+              <button id="toggleCastButton" class="btn btn-sm btn-outline">See All</button>
+            </div>
+            <div id="cast-container" class="flex flex-wrap justify-center gap-4">
+            </div>
+        </section>
+
+         <section id="iframe-section" class="mt-8 w-full max-w-5xl flex flex-col items-center">
+          <label for="providerSelect" class="block">Choose Provider</label>
+          <select id="providerSelect" class="select select-bordered w-full mb-4">
+              <option disabled selected>Choose Provider</option>
+          </select>
+             <div id="SSEEFields" class="hidden mb-4 flex gap-4 justify-center">
+                <div class="flex flex-col">
+                 <label for="seasonSelect" class="block">Season</label>
+                 <select id="seasonSelect" class="select select-bordered w-full">
+                    <option disabled selected>Select Season</option>
+                 </select>
+                </div>
+                 <div class="flex flex-col">
+                  <label for="episodeSelect" class="block">Episode</label>
+                   <select id="episodeSelect" class="select select-bordered w-full">
+                    <option disabled selected>Select Episode</option>
+                  </select>
+                </div>
+             </div>
+            <div class="py-4 w-full h-full">
+                <iframe id="iframePlayer" class="w-full h-full" src="" allowfullscreen></iframe>
+            </div>
+            <div class="mt-2 text-center">
+                <button id="reloadIframeButton" class="btn btn-outline">Reload</button>
+            </div>
+        </section>
+    </div>
+    <div id="error-message" class="hidden bg-red-500 text-white p-4 rounded-lg" role="alert"></div>
+    <script>
+      const TMDB_API_KEY = 'db841157430b89c9ab8833d281d1c060';
+      const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+      let providers = {};
+      const posterElement = document.getElementById('poster');
+      const metadataSection = document.getElementById('metadata');
+      const titleElement = document.getElementById('title');
+      const descElement = document.getElementById('desc');
+      const yearBadge = document.getElementById('yearBadge');
+      const rateBadge = document.getElementById('rateBadge');
+      const ageRateBadge = document.getElementById('ageRateBadge');
+      const castContainer = document.getElementById('cast-container');
+        const iframeSection = document.getElementById('iframe-section');
+      const providerSelect = document.getElementById('providerSelect');
+      const seasonSelect = document.getElementById('seasonSelect');
+      const episodeSelect = document.getElementById('episodeSelect');
+      const iframePlayer = document.getElementById('iframePlayer');
+      const reloadIframeButton = document.getElementById('reloadIframeButton');
+      const SSEEFields = document.getElementById('SSEEFields');
+       const errorMessage = document.getElementById('error-message');
+      const toggleCastButton = document.getElementById('toggleCastButton');
+      let allCast = [];
+      let isFullCastVisible = false;
+       let allSeasons = [];
+       let currentType = null;
+       let currentTmdbId = null;
+        let currentSeason = null;
+        let currentEpisode = null;
+      async function fetchData() {
+           try{
+              const providersResponse = await fetch('../providers.json');
+              if (!providersResponse.ok) throw new Error('Network response was not ok for providers.json');
+              providers = await providersResponse.json();
+
+           const hash = window.location.hash.substring(1);
+           const [type, tmdbId, season, episode] = hash.split('-');
+           currentType = type;
+           currentTmdbId = tmdbId;
+
+           const apiEndpoint = type === 'movie' ? `/movie/${tmdbId}` : `/tv/${tmdbId}`;
+           const response = await fetch(`${TMDB_BASE_URL}${apiEndpoint}?api_key=${TMDB_API_KEY}`);
+           if (!response.ok) throw new Error(`Network response was not ok for ${type} ${tmdbId}`);
+           const itemData = await response.json();
+
+            const creditsEndpoint = type === 'movie' ? `/movie/${tmdbId}/credits` : `/tv/${tmdbId}/aggregate_credits`;
+            const creditsResponse = await fetch(`${TMDB_BASE_URL}${creditsEndpoint}?api_key=${TMDB_API_KEY}`);
+            if (!creditsResponse.ok) throw new Error(`Network response was not ok for ${type} ${tmdbId} credits`);
+            const creditsData = await creditsResponse.json();
+
+           const releaseDate = itemData.release_date || itemData.first_air_date;
+           const year = new Date(releaseDate).getFullYear();
+           const voteAverage = itemData.vote_average;
+           const certification = itemData.certification || 'N/A';
+           posterElement.src = `https://image.tmdb.org/t/p/w500${itemData.poster_path}`;
+           titleElement.textContent = itemData.title || itemData.name;
+           descElement.textContent = itemData.overview;
+           yearBadge.textContent = year;
+           rateBadge.textContent = `${voteAverage}/10`;
+           ageRateBadge.textContent = certification;
+
+
+            allCast = [];
+            if(type === 'movie'){
+                if (creditsData && creditsData.cast) {
+                    allCast = creditsData.cast;
+                }
+            } else if (type === 'tv') {
+                if (creditsData && creditsData.cast) {
+                    allCast = creditsData.cast;
+                }
+                   await fetchSeasons(tmdbId);
+                   if (season) {
+                         seasonSelect.value = season;
+                         currentSeason = season;
+                         await updateEpisodes();
+                            if(episode){
+                                episodeSelect.value = episode;
+                                currentEpisode = episode;
+                            }
+                        }
+            }
+
+           renderCast(allCast.slice(0,10));
+           loadProviders(type, tmdbId);
+           SSEEFields.classList.toggle('hidden', type === 'movie');
+            if(type==='tv') {
+                 seasonSelect.addEventListener('change', () => {updateEpisodes(); updateHash()});
+                 episodeSelect.addEventListener('change', () => updateHash());
+           }
+
+          updateIframe(type, tmdbId);
+
+
+       } catch (error) {
+           showError(`Error fetching data: ${error.message}`);
+       }
+      }
+     async function fetchSeasons(tmdbId) {
+           try {
+             const response = await fetch(`${TMDB_BASE_URL}/tv/${tmdbId}?api_key=${TMDB_API_KEY}`);
+             if (!response.ok) throw new Error('Network response was not ok for fetching tv seasons');
+             const tvData = await response.json();
+
+             allSeasons = tvData.seasons.sort((a,b) => a.season_number - b.season_number)
+             seasonSelect.innerHTML = `<option disabled selected>Select Season</option>`
+              allSeasons.forEach(season => {
+              const option = document.createElement('option');
+              option.value = season.season_number;
+              option.textContent = `S${season.season_number}: ${season.name}`;
+              seasonSelect.appendChild(option);
+            });
+           } catch (error) {
+               showError(`Error fetching seasons: ${error.message}`);
+           }
+     }
+        async function updateEpisodes() {
+            const selectedSeason = seasonSelect.value;
+          try {
+            const response = await fetch(`${TMDB_BASE_URL}/tv/${currentTmdbId}/season/${selectedSeason}?api_key=${TMDB_API_KEY}`);
+             if (!response.ok) throw new Error('Network response was not ok for fetching tv episodes');
+            const seasonData = await response.json();
+             episodeSelect.innerHTML = `<option disabled selected>Select Episode</option>`;
+             seasonData.episodes.forEach(episode => {
+                const option = document.createElement('option');
+                option.value = episode.episode_number;
+                option.textContent = `Ep${episode.episode_number}: ${episode.name}`;
+                episodeSelect.appendChild(option);
+            });
+         } catch (error) {
+              showError(`Error fetching episodes: ${error.message}`);
+        }
+
+    }
+
+    function renderCast(cast) {
+            castContainer.innerHTML = cast.map(actor => {
+                let rolesHTML = '';
+                if (actor.roles) {
+                    rolesHTML = actor.roles.map(role =>
+                        `<p class="text-xs"><span>Role: </span><span class="text-gray-500">${role.character}</span></p>`
+                    ).join('');
+                    } else if (actor.character){
+                      rolesHTML = `<p class="text-xs"><span>Role: </span><span class="text-gray-500">${actor.character}</span></p>`
+                    }
+                return `
+                <div class="text-center">
+                    <img src="https://image.tmdb.org/t/p/w200${actor.profile_path}" alt="${actor.name}" class="rounded-full w-24 h-24 object-cover mx-auto">
+                    <p class="text-sm mt-2">${actor.name}</p>
+                    ${rolesHTML}
+                </div>
+                `;
+            }).join('');
+            if (allCast.length <= 10) {
+                 toggleCastButton.classList.add('hidden');
+                } else {
+                 toggleCastButton.classList.remove('hidden');
+                }
+         }
+      function loadProviders(type, id) {
+          providerSelect.innerHTML = `<option disabled selected>Choose Provider</option>`;
+          const recommendedProviders = [];
+          const nonRecommendedProviders = [];
+          Object.keys(providers).forEach(provider => {
+              const option = document.createElement('option');
+              const providerData = providers[provider];
+              const providerTitle = providerData.title || provider;
+              option.value = provider;
+              option.textContent = providerData.recom === "y" ? `${providerTitle} (Recommended)` : providerTitle;
+              providerData.recom === "y" ? recommendedProviders.push(option) : nonRecommendedProviders.push(option);
+          });
+          [...recommendedProviders.sort((a, b) => a.textContent.localeCompare(b.textContent)),
+          ...nonRecommendedProviders.sort((a, b) => a.textContent.localeCompare(b.textContent))]
+              .forEach(option => providerSelect.appendChild(option));
+          providerSelect.onchange = () => updateIframe(type, id);
+      }
+      function updateIframe(type, id) {
+          const provider = providerSelect.value;
+           let season = '1';
+           let episode = '1';
+           if(type==='tv'){
+               season = seasonSelect.value || '1';
+               episode = episodeSelect.value || '1';
+           }
+          const providerData = providers[provider];
+          let url = '';
+          if (providerData) {
+              url = type === 'tv'
+                  ? (providerData.internaltv === 'yes'
+                      ? providerData['tv.provider']?.replace('{id}', id) || ''
+                      : providerData['tv.provider']?.replace('{id}', id).replace('{ss}', season).replace('{ee}', episode) || '')
+                  : providerData['movie.provider']?.replace('{id}', id) || '';
+          }
+          if (url) {
+              iframePlayer.src = url;
+           } else {
+              showError("Error: Undefined URL for provider " + provider);
+          }
+      }
+        function updateHash() {
+          if (currentType === 'tv') {
+            const season = seasonSelect.value || '1';
+            const episode = episodeSelect.value || '1';
+            window.location.hash = `#${currentType}-${currentTmdbId}-${season}-${episode}`;
+              currentSeason = season;
+              currentEpisode = episode;
+          }
+        }
+     function showError(message) {
+       errorMessage.textContent = message;
+       errorMessage.classList.remove('hidden');
+       setTimeout(() => errorMessage.classList.add('hidden'), 5000);
+      }
+
+      toggleCastButton.addEventListener('click', () => {
+        isFullCastVisible = !isFullCastVisible;
+        toggleCastButton.textContent = isFullCastVisible ? 'See Less' : 'See All';
+        renderCast(isFullCastVisible ? allCast : allCast.slice(0,10));
+    });
+
+     reloadIframeButton.addEventListener('click', () => {
+          const hash = window.location.hash.substring(1);
+          const [type, tmdbId] = hash.split('-');
+          updateIframe(type, tmdbId);
+     });
+     fetchData()
+    </script>
+</body>
+</html>
