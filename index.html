@@ -240,7 +240,7 @@ function navigateToWatchPage(type, id) {
         const episode = getCookie(`episode_${id}`) || 1;
         hash += `-${season}-${episode}`;
     }
-    window.location.href = `Watch/${hash}`;
+    window.location.href = `watch/${hash}`;
 }
 
 
