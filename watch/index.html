@@ -57,7 +57,7 @@
                   </select>
                 </div>
              </div>
-            <div class="py-4 w-full h-full">
+            <div class="py-4 w-full aspect-video">
                 <iframe id="iframePlayer" class="w-full h-full" src="" allowfullscreen></iframe>
             </div>
             <div class="mt-2 text-center">
@@ -94,6 +94,7 @@
        let currentTmdbId = null;
         let currentSeason = null;
         let currentEpisode = null;
+          let currentTitle = null;
       async function fetchData() {
            try{
               const providersResponse = await fetch('../providers.json');
@@ -120,7 +121,9 @@
            const voteAverage = itemData.vote_average;
            const certification = itemData.certification || 'N/A';
            posterElement.src = `https://image.tmdb.org/t/p/w500${itemData.poster_path}`;
+           currentTitle = `${itemData.title || itemData.name} (${year})`;
            titleElement.textContent = itemData.title || itemData.name;
+            document.title = `SWMTS | ${currentTitle}`
            descElement.textContent = itemData.overview;
            yearBadge.textContent = year;
            rateBadge.textContent = `${voteAverage}/10`;
