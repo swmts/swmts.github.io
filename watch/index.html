@@ -141,7 +141,7 @@
               }
            }
 
-           posterElement.src = `https://image.tmdb.org/t/p/w500${itemData.poster_path}`;
+           posterElement.src = `https://image.tmdb.org/t/p/original${itemData.poster_path}`;
             currentTitle = `${itemData.title || itemData.name} (${year})`;
            titleElement.textContent = itemData.title || itemData.name;
             document.title = `SWMTS | ${currentTitle}`

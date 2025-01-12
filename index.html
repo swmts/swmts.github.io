@@ -7,7 +7,25 @@
     <title>SWMTS | @BN_LOS</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>.hidden { display: none; }</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .hidden { display: none; }
+        .card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.2); }
+        .card img { transition: opacity 0.3s ease; }
+        .card:hover img { opacity: 0.9;}
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+         .watched-button {
+            display: flex;
+            align-items: center;
+        }
+
+         .watched-button span {
+            margin-left: 5px;
+         }
+
+    </style>
 </head>
 <body class="bg-base-100 text-base-content">
     <div class="absolute top-4 right-4 flex items-center">
@@ -42,7 +60,7 @@
     </div>
 
     <div class="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" id="swmtscards"></div>
-
+    <div id="loading-indicator" class="text-center py-4 hidden">Loading more content...</div>
     <div id="error-message" class="hidden bg-red-500 text-white p-4 rounded-lg" role="alert"></div>
 
     <script>
@@ -52,6 +70,8 @@ let data = [];
 let providers = {};
 let sortMethod = 'default';
 let searchResults = [];
+let page = 1;
+let loading = false;
 
 const themeSelect = document.getElementById('themeSelect');
 const swmtscards = document.getElementById('swmtscards');
@@ -59,6 +79,7 @@ const popularTab = document.getElementById('popular-tab');
 const watchedTab = document.getElementById('watched-tab');
 const searchInput = document.getElementById('searchInput');
 const tabsContainer = document.querySelector('.tabs');
+const loadingIndicator = document.getElementById('loading-indicator');
 let activeTab = popularTab;
 
 const errorMessage = document.getElementById('error-message');
@@ -72,34 +93,45 @@ const themes = [
 ];
 
 async function fetchData() {
+    if(loading) return;
+    loading = true;
+    loadingIndicator.classList.remove('hidden');
     try {
         const providersResponse = await fetch('providers.json');
         if (!providersResponse.ok) throw new Error('Network response was not ok for providers.json');
         providers = await providersResponse.json();
 
-        const popularMovies = await fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}`);
-        const popularTVs = await fetch(`${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}`);
+        const popularMovies = await fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&page=${page}`);
+        const popularTVs = await fetch(`${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&page=${page}`);
+
         if (!popularMovies.ok || !popularTVs.ok) throw new Error('Network response was not ok for TMDB API');
 
         const moviesData = await popularMovies.json();
         const tvsData = await popularTVs.json();
-        data = [...moviesData.results, ...tvsData.results].map(item => ({
+        const newData = [...moviesData.results, ...tvsData.results].map(item => ({
             id: item.id,
             title: item.title || item.name,
             desc: item.overview,
-            img: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+            img: `https://image.tmdb.org/t/p/original${item.poster_path}`,
             date: item.release_date || item.first_air_date,
             type: item.title ? 'movie' : 'tv'
         }));
+        data = page === 1 ? newData : [...data, ...newData]
         renderCards();
     } catch (error) {
         showError(`Error fetching data: ${error.message}`);
+    } finally {
+        loading = false;
+        loadingIndicator.classList.add('hidden');
     }
 }
 
 async function fetchWatchedData() {
+    if(loading) return;
+    loading = true;
+    loadingIndicator.classList.remove('hidden');
     const watchedList = getWatchedList();
-    data = [];
+        data = [];
     const fetchedIds = new Set();
 
     await Promise.all(watchedList.map(async item => {
@@ -111,11 +143,11 @@ async function fetchWatchedData() {
             const response = await fetch(`${TMDB_BASE_URL}${apiEndpoint}?api_key=${TMDB_API_KEY}`);
             if (!response.ok) throw new Error(`Network response was not ok for ${item.type} ${item.id}`);
             const itemData = await response.json();
-            data.push({
+           data.push({
                 id: itemData.id,
                 title: itemData.title || itemData.name,
                 desc: itemData.overview,
-                img: `https://image.tmdb.org/t/p/w500${itemData.poster_path}`,
+                img: `https://image.tmdb.org/t/p/original${itemData.poster_path}`,
                 date: itemData.release_date || itemData.first_air_date,
                 type: item.type,
             });
@@ -124,9 +156,14 @@ async function fetchWatchedData() {
         }
     }));
     renderCards();
+     loading = false;
+        loadingIndicator.classList.add('hidden');
 }
 
 async function fetchSearchData(query) {
+     if(loading) return;
+    loading = true;
+    loadingIndicator.classList.remove('hidden');
     try {
         const response = await fetch(`${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${query}`);
         if (!response.ok) throw new Error('Network response was not ok for TMDB Search API');
@@ -138,12 +175,15 @@ async function fetchSearchData(query) {
                 id: item.id,
                 title: item.title || item.name,
                 desc: item.overview,
-                img: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+                img: `https://image.tmdb.org/t/p/original${item.poster_path}`,
                 date: item.release_date || item.first_air_date,
                 type: item.media_type === 'movie' ? 'movie' : 'tv'
             }));
     } catch (error) {
         showError(`Error fetching search results: ${error.message}`);
+    }finally {
+         loading = false;
+        loadingIndicator.classList.add('hidden');
     }
 }
 
@@ -204,16 +244,18 @@ function renderCards() {
     const renderedIds = new Set();
     data.forEach(item => {
         const key = `${item.id}-${item.type}`;
-        if (!renderedIds.has(key)) {
+         if (!renderedIds.has(key)) {
             renderedIds.add(key);
             const card = document.createElement('div');
-            card.classList.add('card', 'w-full', 'shadow-lg', 'p-4', 'rounded-lg', 'bg-base-200');
+            card.classList.add('card', 'w-full', 'shadow-lg', 'p-4', 'rounded-lg', 'bg-base-200', 'fade-in');
+
 
             const isWatched = getWatchedList().some(watchedItem => watchedItem.id === item.id && watchedItem.type === item.type);
-            const watchButtonLabel = isWatched ? 'Remove from Watched' : 'Add to Watched';
+            const watchButtonIcon = `<i class="fas fa-play"></i>`;
+            const watchedButtonIcon = isWatched ? `<i class="fas fa-times"></i>` : `<i class="fas fa-plus"></i>`;
+            const watchedButtonLabel = isWatched ? "Remove from Watched" : "Add to Watched";
             const watchButtonAction = isWatched ? `removeFromWatchedList(${item.id}, '${item.type}')` : `addToWatchedList(${item.id}, '${item.type}')`;
-
-            card.innerHTML = `
+        card.innerHTML = `
                 <img src="${item.img}" alt="${item.title}" class="rounded-t-lg object-cover">
                 <div class="py-2">
                     <h3 class="font-semibold text-xl">${item.title}</h3>
@@ -224,14 +266,17 @@ function renderCards() {
                     </div>
                 </div>
                 <div class="flex flex-col mt-2">
-                    <button class="btn btn-outline mb-2" onclick="navigateToWatchPage('${item.type}', ${item.id})">Watch</button>
-                    <button class="btn btn-outline" onclick="${watchButtonAction}">${watchButtonLabel}</button>
+                    <button class="btn btn-outline mb-2" onclick="navigateToWatchPage('${item.type}', ${item.id})">${watchButtonIcon} Watch </button>
+                      <button class="btn btn-outline watched-button" onclick="${watchButtonAction}">
+                            ${watchedButtonIcon}<span>${watchedButtonLabel}</span>
+                      </button>
                 </div>
             `;
             swmtscards.appendChild(card);
         }
     });
 }
+
 
 function navigateToWatchPage(type, id) {
     let hash = `#${type}-${id}`;
@@ -309,6 +354,8 @@ popularTab.addEventListener('click', () => {
     activeTab = popularTab;
     popularTab.classList.add('tab-active');
     watchedTab.classList.remove('tab-active');
+    page = 1;
+    data = [];
     fetchData();
 });
 
@@ -318,6 +365,17 @@ watchedTab.addEventListener('click', () => {
     popularTab.classList.remove('tab-active');
     fetchWatchedData();
 });
+
+window.addEventListener('scroll', () => {
+    if (loading) return;
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+      if(activeTab === popularTab){
+         page++;
+         fetchData();
+      }
+    }
+});
+
 
 deduplicateWatchedList();
 populateThemeSelect();
