@@ -45,5 +45,9 @@
         "tv.provider": "https://moviesapi.club/tv/{id}-{ss}-{ee}",
         "movie.provider": "https://moviesapi.club/movie/{id}",
         "recom": "y"
+    },
+    "Cineby": {
+        "tv.provider": "https://www.cineby.app/tv/{id}/{ss}/{ee}?play=true",
+        "movie.provider": "https://www.cineby.app/movie/{id}?play=true"
     }
 }
