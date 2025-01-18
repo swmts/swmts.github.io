@@ -89,6 +89,14 @@
           .card-actions button{
               font-size: 0.8em;
           }
+          .grid-container{
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px,1fr));
+            gap: 1rem;
+             border: 1px solid rgba(0,0,0, 0.2);
+            padding: 1rem;
+            border-radius: 0.5rem;
+          }
     </style>
 </head>
 <body class="bg-base-100 text-base-content">
@@ -115,10 +123,17 @@
               </div>
             </div>
         </section>
+        <div class="w-full max-w-5xl flex justify-between items-center mb-4 mt-8">
+            <h2 class="text-2xl font-semibold text-center">Known For</h2>
+              <select id="sortSelect" class="select select-bordered w-32">
+                 <option value="desc">Newest</option>
+                <option value="asc">Oldest</option>
+            </select>
+        </div>
 
-        <section id="cast" class="mt-8 w-full max-w-5xl">
-            <h2 class="text-2xl font-semibold mb-4 text-center">Known For</h2>
-            <div id="swmtscards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+
+        <section id="cast" class="w-full max-w-5xl">
+            <div id="swmtscards" class="grid-container">
             </div>
         </section>
     </div>
@@ -133,8 +148,9 @@
         const birthPlaceBadge = document.getElementById('birthPlaceBadge');
         const countryBadge = document.getElementById('countryBadge');
          const swmtscards = document.getElementById('swmtscards');
+         const sortSelect = document.getElementById('sortSelect');
         const errorMessage = document.getElementById('error-message');
-
+        let sortMethod = 'desc';
          function getWatchedList() {
             return JSON.parse(localStorage.getItem('watchedList')) || [];
         }
@@ -157,9 +173,10 @@
          function navigateToWatchPage(type, id) {
             let hash = `#${type}-${id}`;
             if(type === 'tv') {
-                 const season = 1;
-                 const episode = 1;
-                 hash += `-${season}-${episode}`;
+                 const savedSeason = getCookie(`tv_${id}_season`);
+                 const savedEpisode = getCookie(`tv_${id}_episode`);
+                if(savedSeason) hash += `-${savedSeason}`;
+                if(savedEpisode) hash += `-${savedEpisode}`;
             }
              window.location.href = `../watch/${hash}`;
         }
@@ -189,6 +206,10 @@
             localStorage.setItem('watchedList', JSON.stringify(uniqueWatchedList));
         }
 
+         sortSelect.addEventListener('change', (e) => {
+            sortMethod = e.target.value;
+            fetchData();
+         });
 
         async function fetchData() {
             try {
@@ -207,7 +228,12 @@
                  countryBadge.textContent = personData.known_for_department || 'N/A';
 
                if(personData.combined_credits && personData.combined_credits.cast) {
-                 const knownFor = personData.combined_credits.cast
+                 let knownFor = personData.combined_credits.cast;
+                    knownFor.sort((a, b) => {
+                     const dateA = new Date(a.release_date || a.first_air_date || 0);
+                        const dateB = new Date(b.release_date || b.first_air_date || 0);
+                            return sortMethod === 'asc' ? dateA - dateB : dateB - dateA;
+                        });
                    swmtscards.innerHTML = knownFor.map(item => {
                         const isWatched = getWatchedList().some(watchedItem => watchedItem.id === item.id && watchedItem.type === (item.title ? 'movie' : 'tv'));
                          const watchedButtonIcon = isWatched ? `<i class="fas fa-times"></i>` : `<i class="fas fa-plus"></i>`;

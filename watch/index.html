@@ -7,6 +7,7 @@
     <title>SWMTS | Watch</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>.hidden { display: none; }</style>
 </head>
 <body class="bg-base-100 text-base-content">
@@ -26,6 +27,8 @@
                  <span id="ageRateBadge" class="badge badge-outline"></span>
                  <span id="rateBadge" class="badge badge-outline"></span>
               </div>
+              <button id="watchedButton" class="btn btn-outline watched-button">
+              </button>
             </div>
         </section>
 
@@ -77,8 +80,9 @@
       const yearBadge = document.getElementById('yearBadge');
       const rateBadge = document.getElementById('rateBadge');
       const ageRateBadge = document.getElementById('ageRateBadge');
+       const watchedButton = document.getElementById('watchedButton');
       const castContainer = document.getElementById('cast-container');
-        const iframeSection = document.getElementById('iframe-section');
+      const iframeSection = document.getElementById('iframe-section');
       const providerSelect = document.getElementById('providerSelect');
       const seasonSelect = document.getElementById('seasonSelect');
       const episodeSelect = document.getElementById('episodeSelect');
@@ -95,6 +99,76 @@
         let currentSeason = null;
         let currentEpisode = null;
           let currentTitle = null;
+
+
+        function getWatchedList() {
+            return JSON.parse(localStorage.getItem('watchedList')) || [];
+        }
+
+        function addToWatchedList(id, type) {
+            const watchedList = getWatchedList();
+            if (!watchedList.some(item => item.id === id && item.type === type)) {
+                watchedList.push({ id, type });
+                localStorage.setItem('watchedList', JSON.stringify(watchedList));
+                   updateWatchedButton(id, type);
+                  deduplicateWatchedList();
+            }
+        }
+         function deduplicateWatchedList() {
+            const watchedList = getWatchedList();
+            const uniqueWatchedList = [];
+            const seenIds = new Set();
+            watchedList.forEach(item => {
+                const key = `${item.id}-${item.type}`;
+                if (!seenIds.has(key)) {
+                    seenIds.add(key);
+                    uniqueWatchedList.push(item);
+                }
+            });
+            localStorage.setItem('watchedList', JSON.stringify(uniqueWatchedList));
+        }
+
+        function removeFromWatchedList(id, type) {
+           let watchedList = getWatchedList();
+           watchedList = watchedList.filter(item => !(item.id === id && item.type === type));
+           localStorage.setItem('watchedList', JSON.stringify(watchedList));
+           updateWatchedButton(id, type);
+            deduplicateWatchedList();
+        }
+         function updateWatchedButton(id, type) {
+               const isWatched = getWatchedList().some(watchedItem => watchedItem.id === id && watchedItem.type === type);
+               const watchedButtonIcon = isWatched ? `<i class="fas fa-times"></i>` : `<i class="fas fa-plus"></i>`;
+                const watchedButtonLabel = isWatched ? "Remove from Watched" : "Add to Watched";
+               const watchButtonAction = isWatched ? `removeFromWatchedList(${id}, '${type}')` : `addToWatchedList(${id}, '${type}')`;
+
+             watchedButton.innerHTML = `${watchedButtonIcon}<span>${watchedButtonLabel}</span>`
+             watchedButton.onclick = () => {
+                eval(watchButtonAction)
+              }
+
+        }
+
+         function setCookie(name, value, days) {
+           let expires = "";
+           if (days) {
+              const date = new Date();
+              date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+              expires = "; expires=" + date.toUTCString();
+            }
+           document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+       function getCookie(name) {
+           const nameEQ = name + "=";
+           const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+              let c = ca[i];
+              while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+         return null;
+       }
+
       async function fetchData() {
            try{
               const providersResponse = await fetch('../providers.json');
@@ -149,7 +223,7 @@
            yearBadge.textContent = year;
            rateBadge.textContent = `${voteAverage}/10`;
            ageRateBadge.textContent = certification;
-
+            updateWatchedButton(itemData.id, type)
 
             allCast = [];
             if(type === 'movie'){
@@ -176,8 +250,8 @@
            loadProviders(type, tmdbId);
            SSEEFields.classList.toggle('hidden', type === 'movie');
             if(type==='tv') {
-                 seasonSelect.addEventListener('change', () => {updateEpisodes(); updateHash()});
-                 episodeSelect.addEventListener('change', () => updateHash());
+                 seasonSelect.addEventListener('change', () => {updateEpisodes(); updateHash();  updateIframe(currentType, currentTmdbId)});
+                 episodeSelect.addEventListener('change', () => { updateHash(); updateIframe(currentType, currentTmdbId)});
            }
 
           updateIframe(type, tmdbId);
@@ -196,9 +270,10 @@
              allSeasons = tvData.seasons.sort((a,b) => a.season_number - b.season_number)
              seasonSelect.innerHTML = `<option disabled selected>Select Season</option>`
               allSeasons.forEach(season => {
+                  const seasonYear = new Date(season.air_date).getFullYear();
               const option = document.createElement('option');
               option.value = season.season_number;
-              option.textContent = `S${season.season_number}: ${season.name}`;
+              option.textContent = `S${season.season_number}: ${season.name} (${seasonYear})`;
               seasonSelect.appendChild(option);
             });
            } catch (error) {
@@ -213,9 +288,11 @@
             const seasonData = await response.json();
              episodeSelect.innerHTML = `<option disabled selected>Select Episode</option>`;
              seasonData.episodes.forEach(episode => {
+                const episodeDate = new Date(episode.air_date);
+                const formattedDate = `${episodeDate.getFullYear()}/${String(episodeDate.getMonth() + 1).padStart(2, '0')}/${String(episodeDate.getDate()).padStart(2, '0')}`;
                 const option = document.createElement('option');
                 option.value = episode.episode_number;
-                option.textContent = `Ep${episode.episode_number}: ${episode.name}`;
+                option.textContent = `Ep${episode.episode_number}: ${episode.name} (${formattedDate})`;
                 episodeSelect.appendChild(option);
             });
          } catch (error) {
@@ -236,7 +313,7 @@
                     }
                 return `
                 <div class="text-center">
-                    <img src="https://image.tmdb.org/t/p/w200${actor.profile_path}" alt="${actor.name}" class="rounded-full w-24 h-24 object-cover mx-auto">
+                    <a href="../cast/#${actor.id}"> <img src="https://image.tmdb.org/t/p/w200${actor.profile_path}" alt="${actor.name}" class="rounded-full w-24 h-24 object-cover mx-auto"></a>
                   <a href="../cast/#${actor.id}"><p class="text-sm mt-2">${actor.name}</p></a>
                     ${rolesHTML}
                 </div>

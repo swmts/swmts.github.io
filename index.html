@@ -281,9 +281,10 @@ function renderCards() {
 function navigateToWatchPage(type, id) {
     let hash = `#${type}-${id}`;
     if(type === 'tv') {
-        const season = getCookie(`season_${id}`) || 1;
-        const episode = getCookie(`episode_${id}`) || 1;
-        hash += `-${season}-${episode}`;
+        const savedSeason = getCookie(`tv_${id}_season`);
+        const savedEpisode = getCookie(`tv_${id}_episode`);
+        if(savedSeason) hash += `-${savedSeason}`;
+        if(savedEpisode) hash += `-${savedEpisode}`;
     }
     window.location.href = `watch/${hash}`;
 }
