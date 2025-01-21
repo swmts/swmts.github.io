@@ -1,16 +1,29 @@
 {
-    "VidSrc": {
+    "VidSrc (XYZ)": {
         "tv.provider": "https://vidsrc.xyz/embed/tv/{id}/{ss}-{ee}",
         "movie.provider": "https://vidsrc.xyz/embed/movie/{id}",
         "recom": "y"
     },
-    "Vid Binge": {
-        "tv.provider": "https://vidbinge.dev/embed/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://vidbinge.dev/embed/movie/{id}"
+    "Rive": {
+        "tv.provider": "https://rivestream.live/embed?type=tv&id={id}&season={ss}&episode={ee}",
+        "movie.provider": "https://rivestream.live/embed?type=movie&id={id}",
+        "recom": "y"
     },
-    "VidSrc (RIP)": {
-        "tv.provider": "https://vidsrc.rip/embed/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://vidsrc.rip/embed/movie/{id}"
+    "RGShows v1": {
+        "tv.provider": "https://embed.rgshows.me/api/1/tv/?id={id}&s={ss}&e={ee}",
+        "movie.provider": "https://embed.rgshows.me/api/1/movie/?id={id}"
+    },
+    "RGShows v2": {
+        "tv.provider": "https://embed.rgshows.me/api/2/tv/?id={id}&s={ss}&e={ee}",
+        "movie.provider": "https://embed.rgshows.me/api/2/movie/?id={id}"
+    },
+    "RGShows v3": {
+        "tv.provider": "https://embed.rgshows.me/api/3/tv/?id={id}&s={ss}&e={ee}",
+        "movie.provider": "https://embed.rgshows.me/api/3/movie/?id={id}"
+    },
+    "111Movies": {
+        "tv.provider": "https://111movies.com/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://111movies.com/movie/{id}"
     },
     "Embed SU": {
         "tv.provider": "https://embed.su/embed/tv/{id}/{ss}/{ee}",
@@ -21,24 +34,29 @@
         "movie.provider": "https://multiembed.mov/directstream.php?video_id={id}&tmdb=1",
         "recom": "y"
     },
+    "SuperEmbed": {
+        "tv.provider": "https://multiembed.mov/?video_id={id}&tmdb=1&s={ss}&e={ee}",
+        "movie.provider": "https://multiembed.mov/?video_id={id}&tmdb=1",
+        "recom": "y"
+    },
     "2Embed": {
         "tv.provider": "https://www.2embed.cc/embedtv/{id}&s={ss}&e={ee}",
         "movie.provider": "https://www.2embed.cc/embed/{id}",
         "recom": "y"
     },
-    "VidLink": {
+    "Vidlink": {
         "tv.provider": "https://vidlink.pro/tv/{id}/{ss}/{ee}",
         "movie.provider": "https://vidlink.pro/movie/{id}",
         "recom": "y"
     },
-    "VidSrc (CC)": {
-        "tv.provider": "https://vidsrc.cc/v2/embed/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://vidsrc.cc/v2/embed/movie/{id}",
+    "SpenEmbed": {
+        "tv.provider": "https://embed.spencerdevs.xyz/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://embed.spencerdevs.xyz/movie/{id}",
         "recom": "y"
     },
-    "VidSrc (VIP)": {
-        "tv.provider": "https://vidsrc.vip/embed/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://vidsrc.vip/embed/movie/{id}",
+    "SmashyStream": {
+        "tv.provider": "https://player.smashy.stream/tv/{id}?s={ss}&e={ee}",
+        "movie.provider": "https://player.smashy.stream/movie/{id}",
         "recom": "y"
     },
     "MoviesAPI": {
@@ -46,8 +64,9 @@
         "movie.provider": "https://moviesapi.club/movie/{id}",
         "recom": "y"
     },
-    "Cineby": {
-        "tv.provider": "https://www.cineby.app/tv/{id}/{ss}/{ee}?play=true",
-        "movie.provider": "https://www.cineby.app/movie/{id}?play=true"
+    "GoDrivePlayer": {
+        "tv.provider": "https://godriveplayer.com/player.php?type=series&tmdb={id}&season={ss}&episode={ee}",
+        "movie.provider": "https://godriveplayer.com/player.php?tmdb={id}",
+        "recom": "y"
     }
 }

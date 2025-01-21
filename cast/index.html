@@ -285,8 +285,50 @@
            errorMessage.classList.remove('hidden');
            setTimeout(() => errorMessage.classList.add('hidden'), 5000);
         }
+        const themes = [
+            "light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk",
+            "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe",
+            "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee",
+            "winter", "dim", "nord", "sunset"
+        ];
+        const themeSelect = document.createElement('select');
+        themeSelect.id = 'themeSelect';
+        themeSelect.classList.add('select', 'select-bordered', 'w-32');
+        const themeLabel = document.createElement('label');
+        themeLabel.textContent = 'Select Theme:';
+        themeLabel.classList.add('text-xl', 'font-semibold', 'mr-2');
+        const themeDiv = document.createElement('div');
+        themeDiv.classList.add('absolute', 'top-4', 'right-4', 'flex', 'items-center');
+        themeDiv.appendChild(themeLabel);
+        themeDiv.appendChild(themeSelect);
+        document.body.appendChild(themeDiv);
 
+        function populateThemeSelect() {
+            themes.sort().forEach(theme => {
+                const option = document.createElement('option');
+                option.value = theme;
+                option.textContent = theme.charAt(0).toUpperCase() + theme.slice(1);
+                themeSelect.appendChild(option);
+            });
 
+            let savedTheme = getCookie('theme');
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+
+            if (!savedTheme) {
+                savedTheme = currentTheme || "sunset";
+                setCookie('theme', savedTheme, 7);
+            }
+
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            themeSelect.value = savedTheme;
+
+            themeSelect.addEventListener('change', (e) => {
+                const selectedTheme = e.target.value;
+                document.documentElement.setAttribute('data-theme', selectedTheme);
+                setCookie('theme', selectedTheme, 7);
+            });
+        }
+        populateThemeSelect();
         fetchData();
     </script>
 </body>

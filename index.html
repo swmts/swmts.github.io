@@ -310,7 +310,14 @@ function populateThemeSelect() {
         themeSelect.appendChild(option);
     });
 
-    const savedTheme = getCookie('theme') || "sunset";
+    let savedTheme = getCookie('theme');
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+
+    if (!savedTheme) {
+        savedTheme = currentTheme || "sunset";
+        setCookie('theme', savedTheme, 7);
+    }
+
     document.documentElement.setAttribute('data-theme', savedTheme);
     themeSelect.value = savedTheme;
 
