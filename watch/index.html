@@ -1,441 +1,699 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="sunset">
+<html lang="en" data-theme="bw_dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="../src/img/favicon.png">
     <title>SWMTS | Watch</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>.hidden { display: none; }</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1f1f1f;
+            --bg-accent: #2a2a2a;
+            --text-primary: #f0f0f0;
+            --text-secondary: #a0a0a0;
+            --text-accent: #ffffff;
+            --accent-primary: #ffffff;
+            --accent-secondary: #e0e0e0;
+            --border-color: rgba(255, 255, 255, 0.15);
+            --border-color-strong: rgba(255, 255, 255, 0.5);
+            --shadow-color-soft: rgba(255, 255, 255, 0.1);
+            --shadow-color-glow: rgba(255, 255, 255, 0.4);
+            --error-bg: #400000;
+            --error-text: #ffaaaa;
+            --scrollbar-thumb: #555555;
+            --scrollbar-track: #1a1a1a;
+            --body-bg-image: linear-gradient(to bottom right, #111, #000);
+            --border-radius-base: 1rem;
+            --border-radius-small: 0.5rem;
+            --border-radius-pill: 9999px;
+            --global-overlay-opacity: 0.65;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: color 0.3s ease;
+            position: relative;
+            z-index: 1;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -5%; left: -5%;
+            width: 110%; height: 110%;
+            z-index: -1;
+            background-image: var(--body-bg-image);
+            background-size: cover;
+            background-position: center center;
+            filter: blur(18px) brightness(0.4);
+            transition: background-image 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #global-overlay {
+             position: fixed;
+             top: 0; left: 0; right: 0; bottom: 0;
+             background-color: rgba(0, 0, 0, var(--global-overlay-opacity));
+             z-index: 0;
+             pointer-events: none;
+        }
+
+        #app-content {
+             position: relative;
+             z-index: 1;
+             padding: 1.5rem;
+        }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb { background-color: var(--scrollbar-thumb); border-radius: var(--border-radius-pill); border: 3px solid var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb:hover { background-color: color-mix(in srgb, var(--scrollbar-thumb) 80%, white); }
+
+        .hidden { display: none; }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.7rem 1.2rem; border-radius: var(--border-radius-pill); font-weight: 600; text-align: center; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease; border: 1px solid var(--border-color); font-size: 0.875rem; background-color: transparent; color: var(--text-secondary); }
+        .btn i { margin-right: 0.6rem; }
+        .btn:active { transform: scale(0.97); }
+        .btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); background-color: rgba(255, 255, 255, 0.1); box-shadow: 0 0 10px var(--shadow-color-glow); }
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.75rem;}
+
+        .btn-watched-toggle.is-watched { background-color: rgba(255, 255, 255, 0.15); border-color: var(--border-color-strong); color: var(--text-accent); box-shadow: 0 0 8px var(--shadow-color-glow); }
+        .btn-watched-toggle.is-watched:hover { background-color: transparent; border-color: var(--border-color); color: var(--text-secondary); box-shadow: 0 0 10px var(--shadow-color-glow); }
+
+        label { display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem;}
+        select {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-pill);
+            padding: 0.7rem 2rem 0.7rem 1rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23a0a0a0' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.7rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
+        }
+         select:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 8px 2px var(--shadow-color-glow); }
+
+         .badge { display: inline-block; padding: 0.3rem 0.8rem; font-size: 0.75rem; font-weight: 600; border-radius: var(--border-radius-pill); border: 1px solid var(--border-color); color: var(--text-secondary); background-color: rgba(255, 255, 255, 0.05); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .back-button-container { position: absolute; top: 1.5rem; left: 1.5rem; z-index: 20; }
+        .content-wrapper { display: flex; flex-direction: column; align-items: center; }
+        .metadata-section {
+             display: flex; flex-direction: column;
+             align-items: center;
+             background-color: var(--bg-accent);
+             padding: 1.5rem;
+             border-radius: var(--border-radius-base);
+             border: 1px solid var(--border-color);
+             width: 100%; max-width: 64rem;
+             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+             margin-bottom: 2rem;
+         }
+         @media (min-width: 768px) {
+            .metadata-section { flex-direction: row; align-items: flex-start; }
+         }
+         .metadata-poster { width: 12rem; height: 18rem; flex-shrink: 0; margin-bottom: 1.5rem; }
+          @media (min-width: 768px) { .metadata-poster { margin-right: 2rem; margin-bottom: 0; width: 14rem; height: 21rem; }}
+         .metadata-poster img { border-radius: var(--border-radius-base); object-fit: cover; width: 100%; height: 100%; box-shadow: 0 2px 8px rgba(0,0,0,0.5);}
+         .metadata-details { flex-grow: 1; text-align: center; }
+         @media (min-width: 768px) { .metadata-details { text-align: left; }}
+         .metadata-details h1 { color: var(--text-accent); font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 700; }
+         @media (min-width: 768px) { .metadata-details h1 { font-size: 2.5rem; }}
+         .metadata-details p { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.6; max-width: 60ch; margin-left: auto; margin-right: auto; }
+         @media (min-width: 768px) { .metadata-details p { margin-left: 0; margin-right: 0; font-size: 1rem;}}
+         .metadata-badges { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-bottom: 1.5rem; }
+         @media (min-width: 768px) { .metadata-badges { justify-content: flex-start; }}
+
+         #watchedButton { width: 100%; max-width: 200px; margin-top: 1rem; margin-left: auto; margin-right: auto; }
+         @media (min-width: 768px) { #watchedButton { margin-left: 0; } }
+
+
+         .cast-section { width: 100%; max-width: 64rem; margin-bottom: 2rem; }
+         .cast-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;}
+         .cast-header h2 { color: var(--text-primary); font-size: 1.5rem; font-weight: 600;}
+         .cast-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 1.5rem; justify-content: center; }
+          .cast-item { text-align: center; }
+          .cast-item img { border-radius: var(--border-radius-pill); width: 80px; height: 80px; object-fit: cover; margin: 0 auto 0.5rem auto; border: 2px solid var(--border-color); transition: border-color 0.3s; }
+         .cast-item:hover img { border-color: var(--accent-primary); }
+          .cast-item a { color: var(--text-primary); font-size: 0.8rem; text-decoration: none; transition: color 0.3s;}
+          .cast-item a:hover { color: var(--accent-primary); }
+          .cast-item .role-text { font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.1rem;}
+
+         .iframe-section { width: 100%; max-width: 64rem; display: flex; flex-direction: column; align-items: center; }
+          .select-controls-container { display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 1.5rem; width: 100%; max-width: 40rem;}
+         @media (min-width: 640px) {
+             .select-controls-container { flex-direction: row; justify-content: center; }
+             #SSEEFields { display: flex !important; flex-direction: row; justify-content: center; gap: 1.5rem; width: 100%;}
+             #SSEEFields > div { flex: 1;}
+         }
+
+         .iframe-wrapper { background-color: black; border-radius: var(--border-radius-base); overflow: hidden; width: 100%; aspect-ratio: 16 / 9; box-shadow: 0 5px 20px rgba(0,0,0,0.6); border: 1px solid var(--border-color);}
+         .iframe-wrapper iframe { display: block; width: 100%; height: 100%; border: none;}
+         .iframe-reload-container { margin-top: 1rem; text-align: center; }
+
+        .error-message { background-color: var(--error-bg); color: var(--error-text); padding: 1rem 1.5rem; border-radius: var(--border-radius-base); margin: 1rem auto 0 auto; text-align: center; font-weight: 600; border: 1px solid color-mix(in srgb, var(--error-text) 50%, transparent); box-shadow: 0 0 10px color-mix(in srgb, var(--error-text) 30%, transparent); animation: fadeIn 0.5s ease-out; }
+        #error-message-container { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); z-index: 100; width: 90%; max-width: 500px; pointer-events: none; }
+        #error-message-container .error-message { pointer-events: auto; }
+
+        .fade-in { animation: fadeIn 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
-<body class="bg-base-100 text-base-content">
-    <div class="absolute top-4 left-4">
-        <a href="../" class="btn btn-outline">Go Back</a>
-    </div>
-    <div class="p-6 flex flex-col items-center">
-        <section id="metadata" class="flex w-full max-w-5xl">
-             <div class="mr-6 w-64 h-96 flex-shrink-0">
-                <img id="poster" src="" alt="Movie/TV Poster" class="rounded-lg object-cover w-full h-full">
-            </div>
-            <div class="flex flex-col">
-              <h1 id="title" class="text-3xl font-bold mb-2"></h1>
-              <p id="desc" class="text-lg mb-4"></p>
-              <div class="flex gap-2 mb-4">
-                 <span id="yearBadge" class="badge badge-outline"></span>
-                 <span id="ageRateBadge" class="badge badge-outline"></span>
-                 <span id="rateBadge" class="badge badge-outline"></span>
-              </div>
-              <button id="watchedButton" class="btn btn-outline watched-button">
-              </button>
-            </div>
-        </section>
+<body class="min-h-screen">
 
-        <section id="cast" class="mt-8 w-full max-w-5xl">
-            <div class="flex justify-between items-center mb-4">
-              <h2 class="text-2xl font-semibold text-center">Cast</h2>
-              <button id="toggleCastButton" class="btn btn-sm btn-outline">See All</button>
-            </div>
-            <div id="cast-container" class="flex flex-wrap justify-center gap-4">
-            </div>
-        </section>
+    <div id="global-overlay"></div>
 
-         <section id="iframe-section" class="mt-8 w-full max-w-5xl flex flex-col items-center">
-          <label for="providerSelect" class="block">Choose Provider</label>
-          <select id="providerSelect" class="select select-bordered w-full mb-4">
-              <option disabled selected>Choose Provider</option>
-          </select>
-             <div id="SSEEFields" class="hidden mb-4 flex gap-4 justify-center">
-                <div class="flex flex-col">
-                 <label for="seasonSelect" class="block">Season</label>
-                 <select id="seasonSelect" class="select select-bordered w-full">
-                    <option disabled selected>Select Season</option>
-                 </select>
+    <div id="app-content">
+
+        <div class="back-button-container">
+            <a href="../" class="btn"><i class="fas fa-arrow-left"></i> Back</a>
+        </div>
+
+        <div class="content-wrapper">
+
+            <section id="metadata" class="metadata-section">
+                 <div class="metadata-poster">
+                    <img id="poster" src="" alt="Poster">
                 </div>
-                 <div class="flex flex-col">
-                  <label for="episodeSelect" class="block">Episode</label>
-                   <select id="episodeSelect" class="select select-bordered w-full">
-                    <option disabled selected>Select Episode</option>
-                  </select>
+                <div class="metadata-details">
+                  <h1 id="title">Loading...</h1>
+                  <p id="desc">Loading description...</p>
+                  <div class="metadata-badges">
+                     <span id="yearBadge" class="badge">Year</span>
+                     <span id="ageRateBadge" class="badge">Rating</span>
+                     <span id="rateBadge" class="badge">Score</span>
+                  </div>
+                  <button id="watchedButton" class="btn btn-watched-toggle">
+                       <i class="fas fa-spinner fa-spin"></i>
+                       <span>Loading...</span>
+                  </button>
                 </div>
-             </div>
-            <div class="py-4 w-full aspect-video">
-                <iframe id="iframePlayer" class="w-full h-full" src="" allowfullscreen></iframe>
-            </div>
-            <div class="mt-2 text-center">
-                <button id="reloadIframeButton" class="btn btn-outline">Reload</button>
-            </div>
-        </section>
+            </section>
+
+            <section id="cast" class="cast-section">
+                <div class="cast-header">
+                  <h2>Cast</h2>
+                  <button id="toggleCastButton" class="btn btn-sm">See All</button>
+                </div>
+                <div id="cast-container" class="cast-container">
+
+                </div>
+            </section>
+
+             <section id="iframe-section" class="iframe-section">
+                 <div class="select-controls-container w-full">
+                    <div>
+                      <label for="providerSelect">Choose Provider</label>
+                      <select id="providerSelect">
+                          <option disabled selected>Loading Providers...</option>
+                      </select>
+                     </div>
+                     <div id="SSEEFields" class="hidden flex-1">
+                        <div class="flex-1">
+                             <label for="seasonSelect">Season</label>
+                             <select id="seasonSelect">
+                                <option disabled selected>Select Season</option>
+                             </select>
+                         </div>
+                         <div class="flex-1">
+                             <label for="episodeSelect">Episode</label>
+                             <select id="episodeSelect">
+                                <option disabled selected>Select Episode</option>
+                            </select>
+                         </div>
+                    </div>
+                </div>
+
+                <div class="iframe-wrapper">
+                    <iframe id="iframePlayer" src="about:blank"></iframe>
+                </div>
+                <div class="iframe-reload-container">
+                    <button id="reloadIframeButton" class="btn">
+                        <i class="fas fa-redo"></i> Reload Player
+                    </button>
+                </div>
+            </section>
+
+        </div>
     </div>
-    <div id="error-message" class="hidden bg-red-500 text-white p-4 rounded-lg" role="alert"></div>
+
+    <div id="error-message-container">
+        <div id="error-message" class="hidden error-message" role="alert">
+
+        </div>
+    </div>
+
     <script>
-      const TMDB_API_KEY = 'db841157430b89c9ab8833d281d1c060';
-      const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-      let providers = {};
-      const posterElement = document.getElementById('poster');
-      const metadataSection = document.getElementById('metadata');
-      const titleElement = document.getElementById('title');
-      const descElement = document.getElementById('desc');
-      const yearBadge = document.getElementById('yearBadge');
-      const rateBadge = document.getElementById('rateBadge');
-      const ageRateBadge = document.getElementById('ageRateBadge');
-       const watchedButton = document.getElementById('watchedButton');
-      const castContainer = document.getElementById('cast-container');
-      const iframeSection = document.getElementById('iframe-section');
-      const providerSelect = document.getElementById('providerSelect');
-      const seasonSelect = document.getElementById('seasonSelect');
-      const episodeSelect = document.getElementById('episodeSelect');
-      const iframePlayer = document.getElementById('iframePlayer');
-      const reloadIframeButton = document.getElementById('reloadIframeButton');
-      const SSEEFields = document.getElementById('SSEEFields');
-       const errorMessage = document.getElementById('error-message');
-      const toggleCastButton = document.getElementById('toggleCastButton');
-      let allCast = [];
-      let isFullCastVisible = false;
-       let allSeasons = [];
-       let currentType = null;
-       let currentTmdbId = null;
+        const TMDB_API_KEY = 'db841157430b89c9ab8833d281d1c060';
+        const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+        let providers = {};
+        const posterElement = document.getElementById('poster');
+        const titleElement = document.getElementById('title');
+        const descElement = document.getElementById('desc');
+        const yearBadge = document.getElementById('yearBadge');
+        const rateBadge = document.getElementById('rateBadge');
+        const ageRateBadge = document.getElementById('ageRateBadge');
+        const watchedButton = document.getElementById('watchedButton');
+        const castContainer = document.getElementById('cast-container');
+        const providerSelect = document.getElementById('providerSelect');
+        const seasonSelect = document.getElementById('seasonSelect');
+        const episodeSelect = document.getElementById('episodeSelect');
+        const iframePlayer = document.getElementById('iframePlayer');
+        const reloadIframeButton = document.getElementById('reloadIframeButton');
+        const SSEEFields = document.getElementById('SSEEFields');
+        const errorMessageContainer = document.getElementById('error-message-container');
+        const errorMessage = document.getElementById('error-message');
+        const toggleCastButton = document.getElementById('toggleCastButton');
+        let allCast = [];
+        let isFullCastVisible = false;
+        let allSeasons = [];
+        let currentType = null;
+        let currentTmdbId = null;
         let currentSeason = null;
         let currentEpisode = null;
-          let currentTitle = null;
-
+        let currentTitle = null;
+        let backgroundIntervalId = null;
 
         function getWatchedList() {
-            return JSON.parse(localStorage.getItem('watchedList')) || [];
+            return JSON.parse(localStorage.getItem('watchedList') || '[]');
         }
 
         function addToWatchedList(id, type) {
+            if (!id || !type) return;
             const watchedList = getWatchedList();
             if (!watchedList.some(item => item.id === id && item.type === type)) {
-                watchedList.push({ id, type });
+                watchedList.push({ id, type, added: Date.now() });
                 localStorage.setItem('watchedList', JSON.stringify(watchedList));
                    updateWatchedButton(id, type);
                   deduplicateWatchedList();
             }
         }
-         function deduplicateWatchedList() {
+
+        function deduplicateWatchedList() {
             const watchedList = getWatchedList();
             const uniqueWatchedList = [];
             const seenIds = new Set();
             watchedList.forEach(item => {
+                if(!item || item.id==null || item.type==null) return;
                 const key = `${item.id}-${item.type}`;
                 if (!seenIds.has(key)) {
                     seenIds.add(key);
                     uniqueWatchedList.push(item);
                 }
             });
-            localStorage.setItem('watchedList', JSON.stringify(uniqueWatchedList));
+            if (uniqueWatchedList.length !== watchedList.length) {
+                localStorage.setItem('watchedList', JSON.stringify(uniqueWatchedList));
+            }
         }
 
         function removeFromWatchedList(id, type) {
+           if (!id || !type) return;
            let watchedList = getWatchedList();
            watchedList = watchedList.filter(item => !(item.id === id && item.type === type));
            localStorage.setItem('watchedList', JSON.stringify(watchedList));
            updateWatchedButton(id, type);
-            deduplicateWatchedList();
         }
+
          function updateWatchedButton(id, type) {
-               const isWatched = getWatchedList().some(watchedItem => watchedItem.id === id && watchedItem.type === type);
-               const watchedButtonIcon = isWatched ? `<i class="fas fa-times"></i>` : `<i class="fas fa-plus"></i>`;
-                const watchedButtonLabel = isWatched ? "Remove from Watched" : "Add to Watched";
-               const watchButtonAction = isWatched ? `removeFromWatchedList(${id}, '${type}')` : `addToWatchedList(${id}, '${type}')`;
+            if (!id || !type || !watchedButton) return;
+            const isWatched = getWatchedList().some(item => item.id === parseInt(id) && item.type === type);
+            const watchedIcon = isWatched ? 'fa-solid fa-check' : 'fa-solid fa-plus';
+            const watchedLabel = isWatched ? "Remove Watchlist" : "Add Watchlist";
 
-             watchedButton.innerHTML = `${watchedButtonIcon}<span>${watchedButtonLabel}</span>`
-             watchedButton.onclick = () => {
-                eval(watchButtonAction)
-              }
+             watchedButton.innerHTML = `<i class="${watchedIcon}"></i><span>${watchedLabel}</span>`;
+             watchedButton.classList.toggle('is-watched', isWatched);
 
+             watchedButton.onclick = isWatched
+                ? () => removeFromWatchedList(parseInt(id), type)
+                : () => addToWatchedList(parseInt(id), type);
         }
 
          function setCookie(name, value, days) {
            let expires = "";
-           if (days) {
-              const date = new Date();
-              date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-              expires = "; expires=" + date.toUTCString();
-            }
-           document.cookie = name + "=" + (value || "") + expires + "; path=/";
+           if (days) { const date = new Date(); date.setTime(date.getTime() + (days*24*60*60*1000)); expires = "; expires=" + date.toUTCString(); }
+           document.cookie = name + "=" + (value || "")  + expires + "; path=/; SameSite=Lax";
         }
 
        function getCookie(name) {
            const nameEQ = name + "=";
            const ca = document.cookie.split(';');
-            for (let i = 0; i < ca.length; i++) {
-              let c = ca[i];
-              while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-            }
-         return null;
+           for(let i=0; i < ca.length; i++) { let c = ca[i]; while (c.charAt(0)==' ') c = c.substring(1,c.length); if (c.indexOf(nameEQ) == 0) return decodeURIComponent(c.substring(nameEQ.length,c.length)); }
+           return null;
        }
 
       async function fetchData() {
            try{
               const providersResponse = await fetch('../providers.json');
-              if (!providersResponse.ok) throw new Error('Network response was not ok for providers.json');
+              if (!providersResponse.ok) throw new Error('Fail fetch providers.json');
               providers = await providersResponse.json();
 
-           const hash = window.location.hash.substring(1);
-           const [type, tmdbId, season, episode] = hash.split('-');
-           currentType = type;
-           currentTmdbId = tmdbId;
+              const hash = window.location.hash.substring(1);
+              if (!hash) throw new Error("No item specified in URL hash");
 
-           const apiEndpoint = type === 'movie' ? `/movie/${tmdbId}` : `/tv/${tmdbId}`;
-           const response = await fetch(`${TMDB_BASE_URL}${apiEndpoint}?api_key=${TMDB_API_KEY}`);
-           if (!response.ok) throw new Error(`Network response was not ok for ${type} ${tmdbId}`);
-           const itemData = await response.json();
+              const hashParts = hash.split('-');
+              currentType = hashParts[0];
+              currentTmdbId = parseInt(hashParts[1]);
+              const initialSeason = hashParts[2] ? parseInt(hashParts[2]) : null;
+              const initialEpisode = hashParts[3] ? parseInt(hashParts[3]) : null;
 
-            const creditsEndpoint = type === 'movie' ? `/movie/${tmdbId}/credits` : `/tv/${tmdbId}/aggregate_credits`;
-            const creditsResponse = await fetch(`${TMDB_BASE_URL}${creditsEndpoint}?api_key=${TMDB_API_KEY}`);
-            if (!creditsResponse.ok) throw new Error(`Network response was not ok for ${type} ${tmdbId} credits`);
-            const creditsData = await creditsResponse.json();
+              if (!currentType || !currentTmdbId) throw new Error("Invalid item type or ID in URL hash");
 
-            const ratingEndpoint = type === 'movie' ? `/movie/${tmdbId}/release_dates` : `/tv/${tmdbId}/content_ratings`;
-            const ratingResponse = await fetch(`${TMDB_BASE_URL}${ratingEndpoint}?api_key=${TMDB_API_KEY}`);
-            if (!ratingResponse.ok) throw new Error(`Network response was not ok for ${type} ${tmdbId} ratings`);
-            const ratingData = await ratingResponse.json();
 
-           const releaseDate = itemData.release_date || itemData.first_air_date;
-           const year = new Date(releaseDate).getFullYear();
-           const voteAverage = itemData.vote_average;
-            let certification = 'N/A';
-           if(type === 'movie'){
-                if(ratingData && ratingData.results) {
-                   const usRating = ratingData.results.find(r => r.iso_3166_1 === 'US');
-                    if (usRating && usRating.release_dates && usRating.release_dates.length > 0) {
-                         certification = usRating.release_dates[0].certification || 'N/A';
-                    }
-                 }
-           } else if (type === 'tv'){
-              if(ratingData && ratingData.results) {
-                 const usRating = ratingData.results.find(r => r.iso_3166_1 === 'US');
-                    if (usRating) {
-                         certification = usRating.rating || 'N/A';
-                    }
-              }
-           }
+              const apiEndpoint = currentType === 'movie' ? `/movie/${currentTmdbId}` : `/tv/${currentTmdbId}`;
+              const [itemResponse, creditsResponse, ratingResponse] = await Promise.all([
+                fetch(`${TMDB_BASE_URL}${apiEndpoint}?api_key=${TMDB_API_KEY}`),
+                 fetch(`${TMDB_BASE_URL}/${currentType}/${currentTmdbId}/${currentType === 'tv' ? 'aggregate_credits' : 'credits'}?api_key=${TMDB_API_KEY}`),
+                fetch(`${TMDB_BASE_URL}/${currentType}/${currentTmdbId}/${currentType === 'tv' ? 'content_ratings' : 'release_dates'}?api_key=${TMDB_API_KEY}`)
+               ]);
 
-           posterElement.src = `https://image.tmdb.org/t/p/original${itemData.poster_path}`;
-            currentTitle = `${itemData.title || itemData.name} (${year})`;
-           titleElement.textContent = itemData.title || itemData.name;
-            document.title = `SWMTS | ${currentTitle}`
-           descElement.textContent = itemData.overview;
-           yearBadge.textContent = year;
-           rateBadge.textContent = `${voteAverage}/10`;
-           ageRateBadge.textContent = certification;
-            updateWatchedButton(itemData.id, type)
+              if (!itemResponse.ok) throw new Error(`Fail fetch ${currentType} ${currentTmdbId}`);
+              const itemData = await itemResponse.json();
 
-            allCast = [];
-            if(type === 'movie'){
-                if (creditsData && creditsData.cast) {
-                    allCast = creditsData.cast;
+              const creditsData = creditsResponse.ok ? await creditsResponse.json() : { cast: [] };
+              const ratingData = ratingResponse.ok ? await ratingResponse.json() : { results: [] };
+
+               const releaseDate = itemData.release_date || itemData.first_air_date || 'N/A';
+               const year = releaseDate !== 'N/A' ? new Date(releaseDate).getFullYear() : 'N/A';
+               const voteAverage = itemData.vote_average ? itemData.vote_average.toFixed(1) : 'N/A';
+                let certification = 'N/A';
+                if (ratingData && ratingData.results) {
+                     const usResult = ratingData.results.find(r => r.iso_3166_1 === 'US');
+                    if(usResult){
+                         if (currentType === 'movie' && usResult.release_dates && usResult.release_dates.length > 0) {
+                            certification = usResult.release_dates[0].certification || certification;
+                         } else if (currentType === 'tv') {
+                             certification = usResult.rating || certification;
+                         }
+                     }
                 }
-            } else if (type === 'tv') {
-                if (creditsData && creditsData.cast) {
-                    allCast = creditsData.cast;
+
+                posterElement.src = itemData.poster_path ? `https://image.tmdb.org/t/p/w500${itemData.poster_path}` : '../src/img/placeholder.png';
+                currentTitle = `${itemData.title || itemData.name || 'Unknown Title'}${year !== 'N/A' ? ' (' + year + ')' : ''}`;
+                titleElement.textContent = itemData.title || itemData.name || 'Unknown Title';
+                document.title = `SWMTS | ${itemData.title || itemData.name || 'Watch'}`;
+                descElement.textContent = itemData.overview || 'No description available.';
+                yearBadge.textContent = year;
+                rateBadge.textContent = `⭐ ${voteAverage}`;
+                ageRateBadge.textContent = certification;
+                updateWatchedButton(currentTmdbId, currentType);
+
+
+                allCast = creditsData.cast || [];
+                allCast.sort((a, b) => a.order - b.order);
+
+                 renderCast(allCast.slice(0, 10));
+                 toggleCastButton.classList.toggle('hidden', allCast.length <= 10);
+
+                if(currentType === 'tv') {
+                     await fetchSeasons(currentTmdbId);
+                     SSEEFields.classList.remove('hidden');
+
+                     const savedSeason = getCookie(`tv_${currentTmdbId}_season`) || initialSeason;
+                     const savedEpisode = getCookie(`tv_${currentTmdbId}_episode`) || initialEpisode;
+
+
+                      if (savedSeason && seasonSelect.querySelector(`option[value="${savedSeason}"]`)) {
+                           seasonSelect.value = savedSeason;
+                           currentSeason = savedSeason;
+                           await updateEpisodes();
+                           if (savedEpisode && episodeSelect.querySelector(`option[value="${savedEpisode}"]`)) {
+                               episodeSelect.value = savedEpisode;
+                               currentEpisode = savedEpisode;
+                            } else if (episodeSelect.options.length > 1) {
+                               episodeSelect.selectedIndex = 1;
+                               currentEpisode = episodeSelect.value;
+                                setCookie(`tv_${currentTmdbId}_episode`, currentEpisode, 30);
+                           }
+                     } else if (seasonSelect.options.length > 1) {
+                         seasonSelect.selectedIndex = 1;
+                         currentSeason = seasonSelect.value;
+                          setCookie(`tv_${currentTmdbId}_season`, currentSeason, 30);
+                          await updateEpisodes();
+                          if(episodeSelect.options.length > 1) {
+                             episodeSelect.selectedIndex = 1;
+                             currentEpisode = episodeSelect.value;
+                              setCookie(`tv_${currentTmdbId}_episode`, currentEpisode, 30);
+                          }
+                      }
+
+                     seasonSelect.addEventListener('change', handleSeasonChange);
+                     episodeSelect.addEventListener('change', handleEpisodeChange);
+
+                } else {
+                     SSEEFields.classList.add('hidden');
                 }
-                   await fetchSeasons(tmdbId);
-                   if (season) {
-                         seasonSelect.value = season;
-                         currentSeason = season;
-                         await updateEpisodes();
-                            if(episode){
-                                episodeSelect.value = episode;
-                                currentEpisode = episode;
-                            }
-                        }
-            }
 
-           renderCast(allCast.slice(0,10));
-           loadProviders(type, tmdbId);
-           SSEEFields.classList.toggle('hidden', type === 'movie');
-            if(type==='tv') {
-                 seasonSelect.addEventListener('change', () => {updateEpisodes(); updateHash();  updateIframe(currentType, currentTmdbId)});
-                 episodeSelect.addEventListener('change', () => { updateHash(); updateIframe(currentType, currentTmdbId)});
-           }
-
-          updateIframe(type, tmdbId);
+               loadProviders(currentType, currentTmdbId);
+               updateIframe(currentType, currentTmdbId);
 
 
        } catch (error) {
-           showError(`Error fetching data: ${error.message}`);
+            console.error("Fetch data error:", error);
+           showError(`Error loading details: ${error.message}`);
+            titleElement.textContent = "Error Loading";
+             descElement.textContent = "Could not load item details. Please check the URL or try again later.";
        }
       }
-     async function fetchSeasons(tmdbId) {
+
+
+      async function fetchSeasons(tmdbId) {
            try {
              const response = await fetch(`${TMDB_BASE_URL}/tv/${tmdbId}?api_key=${TMDB_API_KEY}`);
-             if (!response.ok) throw new Error('Network response was not ok for fetching tv seasons');
+             if (!response.ok) throw new Error('Fail fetch tv seasons');
              const tvData = await response.json();
 
-             allSeasons = tvData.seasons.sort((a,b) => a.season_number - b.season_number)
-             seasonSelect.innerHTML = `<option disabled selected>Select Season</option>`
+             allSeasons = tvData.seasons
+                 .filter(s => s.season_number > 0)
+                 .sort((a,b) => a.season_number - b.season_number);
+
+             seasonSelect.innerHTML = `<option value="" disabled selected>Select Season</option>`;
               allSeasons.forEach(season => {
-                  const seasonYear = new Date(season.air_date).getFullYear();
-              const option = document.createElement('option');
-              option.value = season.season_number;
-              option.textContent = `S${season.season_number}: ${season.name} (${seasonYear})`;
-              seasonSelect.appendChild(option);
-            });
+                  const seasonYear = season.air_date ? new Date(season.air_date).getFullYear() : '';
+                  const option = document.createElement('option');
+                  option.value = season.season_number;
+                  option.textContent = `S${season.season_number}${seasonYear ? ` (${seasonYear})` : ''} - ${season.name}`;
+                  seasonSelect.appendChild(option);
+              });
+              seasonSelect.disabled = false;
            } catch (error) {
+                console.error("Error fetching seasons:", error);
                showError(`Error fetching seasons: ${error.message}`);
+                seasonSelect.innerHTML = `<option value="" disabled selected>Error Loading</option>`;
+                seasonSelect.disabled = true;
            }
      }
-        async function updateEpisodes() {
+
+     async function updateEpisodes() {
             const selectedSeason = seasonSelect.value;
-          try {
-            const response = await fetch(`${TMDB_BASE_URL}/tv/${currentTmdbId}/season/${selectedSeason}?api_key=${TMDB_API_KEY}`);
-             if (!response.ok) throw new Error('Network response was not ok for fetching tv episodes');
-            const seasonData = await response.json();
-             episodeSelect.innerHTML = `<option disabled selected>Select Episode</option>`;
-             seasonData.episodes.forEach(episode => {
-                const episodeDate = new Date(episode.air_date);
-                const formattedDate = `${episodeDate.getFullYear()}/${String(episodeDate.getMonth() + 1).padStart(2, '0')}/${String(episodeDate.getDate()).padStart(2, '0')}`;
-                const option = document.createElement('option');
-                option.value = episode.episode_number;
-                option.textContent = `Ep${episode.episode_number}: ${episode.name} (${formattedDate})`;
-                episodeSelect.appendChild(option);
-            });
-         } catch (error) {
-              showError(`Error fetching episodes: ${error.message}`);
-        }
+            if (!selectedSeason || !currentTmdbId) return;
+             currentSeason = selectedSeason;
+            episodeSelect.innerHTML = `<option value="" disabled selected>Loading Episodes...</option>`;
+             episodeSelect.disabled = true;
 
-    }
+            try {
+                const response = await fetch(`${TMDB_BASE_URL}/tv/${currentTmdbId}/season/${selectedSeason}?api_key=${TMDB_API_KEY}`);
+                if (!response.ok) throw new Error('Fail fetch tv episodes');
+                const seasonData = await response.json();
 
-    function renderCast(cast) {
-            castContainer.innerHTML = cast.map(actor => {
-                let rolesHTML = '';
-                if (actor.roles) {
-                    rolesHTML = actor.roles.map(role =>
-                        `<p class="text-xs"><span>Role: </span><span class="text-gray-500">${role.character}</span></p>`
-                    ).join('');
-                    } else if (actor.character){
-                      rolesHTML = `<p class="text-xs"><span>Role: </span><span class="text-gray-500">${actor.character}</span></p>`
-                    }
-                return `
-                <div class="text-center">
-                    <a href="../cast/#${actor.id}"> <img src="https://image.tmdb.org/t/p/w200${actor.profile_path}" alt="${actor.name}" class="rounded-full w-24 h-24 object-cover mx-auto"></a>
-                  <a href="../cast/#${actor.id}"><p class="text-sm mt-2">${actor.name}</p></a>
-                    ${rolesHTML}
-                </div>
-                `;
-            }).join('');
-            if (allCast.length <= 10) {
-                 toggleCastButton.classList.add('hidden');
+                episodeSelect.innerHTML = `<option value="" disabled selected>Select Episode</option>`;
+                 if (seasonData.episodes && seasonData.episodes.length > 0) {
+                    seasonData.episodes
+                        .sort((a,b) => a.episode_number - b.episode_number)
+                         .forEach(episode => {
+                             const episodeDate = episode.air_date ? new Date(episode.air_date) : null;
+                            const formattedDate = episodeDate ? `${episodeDate.getFullYear()}/${String(episodeDate.getMonth() + 1).padStart(2, '0')}/${String(episodeDate.getDate()).padStart(2, '0')}` : '';
+                             const option = document.createElement('option');
+                            option.value = episode.episode_number;
+                            option.textContent = `Ep${episode.episode_number}: ${episode.name || 'Untitled'}${formattedDate ? ` (${formattedDate})` : ''}`;
+                             episodeSelect.appendChild(option);
+                         });
+                     episodeSelect.disabled = false;
                 } else {
-                 toggleCastButton.classList.remove('hidden');
+                    episodeSelect.innerHTML = `<option value="" disabled selected>No Episodes Found</option>`;
                 }
-         }
-      function loadProviders(type, id) {
-          providerSelect.innerHTML = `<option disabled selected>Choose Provider</option>`;
-          const recommendedProviders = [];
-          const nonRecommendedProviders = [];
-          Object.keys(providers).forEach(provider => {
-              const option = document.createElement('option');
-              const providerData = providers[provider];
-              const providerTitle = providerData.title || provider;
-              option.value = provider;
-              option.textContent = providerData.recom === "y" ? `${providerTitle} (Recommended)` : providerTitle;
-              providerData.recom === "y" ? recommendedProviders.push(option) : nonRecommendedProviders.push(option);
-          });
-          [...recommendedProviders.sort((a, b) => a.textContent.localeCompare(b.textContent)),
-          ...nonRecommendedProviders.sort((a, b) => a.textContent.localeCompare(b.textContent))]
-              .forEach(option => providerSelect.appendChild(option));
-          providerSelect.onchange = () => updateIframe(type, id);
-      }
-      function updateIframe(type, id) {
-          const provider = providerSelect.value;
-           let season = '1';
-           let episode = '1';
-           if(type==='tv'){
-               season = seasonSelect.value || '1';
-               episode = episodeSelect.value || '1';
+            } catch (error) {
+                 console.error("Error fetching episodes:", error);
+                 showError(`Error fetching episodes: ${error.message}`);
+                episodeSelect.innerHTML = `<option value="" disabled selected>Error Loading</option>`;
+            }
+       }
+
+       async function handleSeasonChange() {
+          currentSeason = seasonSelect.value;
+          setCookie(`tv_${currentTmdbId}_season`, currentSeason, 30);
+          episodeSelect.innerHTML = `<option value="" disabled selected>Select Episode</option>`;
+          currentEpisode = null;
+          await updateEpisodes();
+           updateHash();
+           updateIframe(currentType, currentTmdbId);
+       }
+
+       function handleEpisodeChange() {
+           currentEpisode = episodeSelect.value;
+           if (currentEpisode) {
+                setCookie(`tv_${currentTmdbId}_episode`, currentEpisode, 30);
+               updateHash();
+                updateIframe(currentType, currentTmdbId);
            }
-          const providerData = providers[provider];
-          let url = '';
-          if (providerData) {
-              url = type === 'tv'
-                  ? (providerData.internaltv === 'yes'
-                      ? providerData['tv.provider']?.replace('{id}', id) || ''
-                      : providerData['tv.provider']?.replace('{id}', id).replace('{ss}', season).replace('{ee}', episode) || '')
-                  : providerData['movie.provider']?.replace('{id}', id) || '';
-          }
-          if (url) {
-              iframePlayer.src = url;
-           } else {
-              showError("Error: Undefined URL for provider " + provider);
-          }
-      }
+       }
+
+        function renderCast(castToShow) {
+                castContainer.innerHTML = castToShow.map(actor => {
+                    let characterName = 'N/A';
+                     if (currentType === 'movie' && actor.character) characterName = actor.character;
+                    else if (currentType === 'tv' && actor.roles && actor.roles.length > 0) characterName = actor.roles.map(r => r.character).join(', ');
+
+                     return `
+                     <div class="cast-item">
+                        <a href="../cast/#${actor.id}">
+                            <img src="${actor.profile_path ? `https://image.tmdb.org/t/p/w185${actor.profile_path}` : '../src/img/placeholder_person.png'}" alt="${actor.name || 'Unknown Actor'}">
+                        </a>
+                         <a href="../cast/#${actor.id}">${actor.name || 'Unknown Actor'}</a>
+                         <p class="role-text">${characterName}</p>
+                     </div>
+                    `;
+                 }).join('');
+        }
+
+        toggleCastButton.addEventListener('click', () => {
+             isFullCastVisible = !isFullCastVisible;
+             toggleCastButton.textContent = isFullCastVisible ? 'See Less' : 'See All';
+            renderCast(isFullCastVisible ? allCast : allCast.slice(0, 10));
+        });
+
+        function loadProviders(type, id) {
+            providerSelect.innerHTML = `<option value="" disabled selected>Choose Provider</option>`;
+             if (Object.keys(providers).length === 0) {
+                providerSelect.innerHTML = `<option value="" disabled selected>No Providers Loaded</option>`;
+                 return;
+             }
+            const recommendedProviders = [];
+            const nonRecommendedProviders = [];
+            Object.entries(providers).forEach(([providerKey, providerData]) => {
+                 const supported = (type === 'movie' && providerData['movie.provider']) || (type === 'tv' && providerData['tv.provider']);
+                 if (!supported) return;
+
+                 const option = document.createElement('option');
+                 const providerTitle = providerData.title || providerKey;
+                 option.value = providerKey;
+                 option.textContent = providerData.recom === "y" ? `▶ ${providerTitle} (Recommended)` : providerTitle;
+                 if(providerData.recom === "y") {
+                     recommendedProviders.push(option);
+                 } else {
+                    nonRecommendedProviders.push(option);
+                 }
+             });
+             recommendedProviders.sort((a, b) => a.textContent.localeCompare(b.textContent))
+                 .forEach(option => providerSelect.appendChild(option));
+            nonRecommendedProviders.sort((a, b) => a.textContent.localeCompare(b.textContent))
+                 .forEach(option => providerSelect.appendChild(option));
+
+             providerSelect.disabled = false;
+            providerSelect.onchange = () => updateIframe(type, id);
+        }
+
+
+        function updateIframe(type, id) {
+            const providerKey = providerSelect.value;
+            const providerData = providers[providerKey];
+             let url = 'about:blank';
+
+             if (providerKey && providerData) {
+                 const seasonNum = currentSeason || '1';
+                 const episodeNum = currentEpisode || '1';
+
+                if (type === 'tv') {
+                    const baseTvUrl = providerData['tv.provider'] || '';
+                     if (providerData.internaltv === 'yes') {
+                         url = baseTvUrl.replace('{id}', id);
+                    } else {
+                         url = baseTvUrl.replace('{id}', id).replace('{ss}', seasonNum).replace('{ee}', episodeNum);
+                     }
+                 } else if (type === 'movie') {
+                     url = providerData['movie.provider']?.replace('{id}', id) || 'about:blank';
+                 }
+             }
+
+            iframePlayer.src = url;
+
+             if (!url || url === 'about:blank' && providerKey) {
+                showError("Provider URL couldn't be generated.");
+             }
+         }
+
+
         function updateHash() {
-          if (currentType === 'tv') {
-            const season = seasonSelect.value || '1';
-            const episode = episodeSelect.value || '1';
-            window.location.hash = `#${currentType}-${currentTmdbId}-${season}-${episode}`;
-              currentSeason = season;
-              currentEpisode = episode;
-          }
-        }
-     function showError(message) {
-       errorMessage.textContent = message;
-       errorMessage.classList.remove('hidden');
-       setTimeout(() => errorMessage.classList.add('hidden'), 5000);
-      }
+           if (currentType === 'tv') {
+               let newHash = `#${currentType}-${currentTmdbId}`;
+               if (currentSeason) newHash += `-${currentSeason}`;
+                if (currentEpisode) newHash += `-${currentEpisode}`;
+                 history.replaceState(null, '', newHash);
+             }
+         }
 
-      toggleCastButton.addEventListener('click', () => {
-        isFullCastVisible = !isFullCastVisible;
-        toggleCastButton.textContent = isFullCastVisible ? 'See Less' : 'See All';
-        renderCast(isFullCastVisible ? allCast : allCast.slice(0,10));
-    });
-
-     reloadIframeButton.addEventListener('click', () => {
-          const hash = window.location.hash.substring(1);
-          const [type, tmdbId] = hash.split('-');
-          updateIframe(type, tmdbId);
-     });
-    const themes = [
-        "light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk",
-        "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe",
-        "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee",
-        "winter", "dim", "nord", "sunset"
-    ];
-    const themeSelect = document.createElement('select');
-    themeSelect.id = 'themeSelect';
-    themeSelect.classList.add('select', 'select-bordered', 'w-32');
-    const themeLabel = document.createElement('label');
-    themeLabel.textContent = 'Select Theme:';
-    themeLabel.classList.add('text-xl', 'font-semibold', 'mr-2');
-    const themeDiv = document.createElement('div');
-    themeDiv.classList.add('absolute', 'top-4', 'right-4', 'flex', 'items-center');
-    themeDiv.appendChild(themeLabel);
-    themeDiv.appendChild(themeSelect);
-    document.body.appendChild(themeDiv);
-
-    function populateThemeSelect() {
-        themes.sort().forEach(theme => {
-            const option = document.createElement('option');
-            option.value = theme;
-            option.textContent = theme.charAt(0).toUpperCase() + theme.slice(1);
-            themeSelect.appendChild(option);
-        });
-
-        let savedTheme = getCookie('theme');
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-
-        if (!savedTheme) {
-            savedTheme = currentTheme || "sunset";
-            setCookie('theme', savedTheme, 7);
+        function showError(msg) {
+            errorMessage.textContent = msg;
+            errorMessage.classList.remove('hidden');
+            errorMessageContainer.style.pointerEvents = 'auto';
+             clearTimeout(errorMessage.timeoutId);
+             errorMessage.timeoutId = setTimeout(() => {
+                errorMessage.classList.add('hidden');
+                errorMessageContainer.style.pointerEvents = 'none';
+            }, 5000);
         }
 
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        themeSelect.value = savedTheme;
-
-        themeSelect.addEventListener('change', (e) => {
-            const selectedTheme = e.target.value;
-            document.documentElement.setAttribute('data-theme', selectedTheme);
-            setCookie('theme', selectedTheme, 7);
+        reloadIframeButton.addEventListener('click', () => {
+             if(currentType && currentTmdbId){
+                 updateIframe(currentType, currentTmdbId);
+             } else {
+                showError("Cannot reload: Item details not loaded.");
+             }
         });
-    }
-    populateThemeSelect();
-     fetchData()
+
+        async function fetchAndSetRandomBackground() {
+             try {
+                 const mediaType = Math.random() > 0.5 ? 'movie' : 'tv';
+                 const randomPage = Math.floor(Math.random() * 20) + 1;
+                 const response = await fetch(`${TMDB_BASE_URL}/${mediaType}/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${randomPage}`);
+                 if (!response.ok) return;
+                 const data = await response.json();
+                 const itemsWithBackdrops = data.results.filter(item => item.backdrop_path);
+                 if (itemsWithBackdrops.length > 0) {
+                     const randomItem = itemsWithBackdrops[Math.floor(Math.random() * itemsWithBackdrops.length)];
+                     const backdropUrl = `https://image.tmdb.org/t/p/original${randomItem.backdrop_path}`;
+                     document.body.style.setProperty('--body-bg-image', `url(${backdropUrl})`);
+                 }
+             } catch (error) { console.error("Error setting BG:", error); }
+        }
+
+        function startBackgroundUpdates() {
+            if (backgroundIntervalId) clearInterval(backgroundIntervalId);
+            fetchAndSetRandomBackground();
+            backgroundIntervalId = setInterval(fetchAndSetRandomBackground, 15000);
+        }
+
+        function stopBackgroundUpdates() {
+             if (backgroundIntervalId) { clearInterval(backgroundIntervalId); backgroundIntervalId = null; }
+        }
+
+         document.addEventListener('visibilitychange', () => {
+              if (document.hidden) { stopBackgroundUpdates(); }
+              else { startBackgroundUpdates(); }
+          });
+
+
+         startBackgroundUpdates();
+         deduplicateWatchedList();
+         fetchData();
+
     </script>
 </body>
 </html>

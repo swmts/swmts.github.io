@@ -1,393 +1,519 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="sunset">
+<html lang="en" data-theme="bw_dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="src/img/favicon.png">
     <title>SWMTS | @BN_LOS</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <style>
-        .hidden { display: none; }
-        .card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.2); }
-        .card img { transition: opacity 0.3s ease; }
-        .card:hover img { opacity: 0.9;}
-        .fade-in { animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-         .watched-button {
-            display: flex;
-            align-items: center;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1f1f1f;
+            --bg-accent: #2a2a2a;
+            --text-primary: #f0f0f0;
+            --text-secondary: #a0a0a0;
+            --text-accent: #ffffff;
+            --accent-primary: #ffffff;
+            --accent-secondary: #e0e0e0;
+            --border-color: rgba(255, 255, 255, 0.15);
+            --border-color-strong: rgba(255, 255, 255, 0.5);
+            --shadow-color-soft: rgba(255, 255, 255, 0.1);
+            --shadow-color-glow: rgba(255, 255, 255, 0.4);
+            --error-bg: #400000;
+            --error-text: #ffaaaa;
+            --scrollbar-thumb: #555555;
+            --scrollbar-track: #1a1a1a;
+            --body-bg-image: linear-gradient(to bottom right, #111, #000);
+            --border-radius-base: 1rem;
+            --border-radius-small: 0.5rem;
+            --border-radius-pill: 9999px;
+            --global-overlay-opacity: 0.6;
         }
 
-         .watched-button span {
-            margin-left: 5px;
-         }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: color 0.3s ease;
+            position: relative;
+            z-index: 1;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -5%; left: -5%;
+            width: 110%; height: 110%;
+            z-index: -1;
+            background-image: var(--body-bg-image);
+            background-size: cover;
+            background-position: center center;
+            filter: blur(15px) brightness(0.5);
+            transition: background-image 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #global-overlay {
+             position: fixed;
+             top: 0; left: 0; right: 0; bottom: 0;
+             background-color: rgba(0, 0, 0, var(--global-overlay-opacity));
+             z-index: 0;
+             pointer-events: none;
+        }
+
+        #app-content {
+             position: relative;
+             z-index: 1;
+        }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb { background-color: var(--scrollbar-thumb); border-radius: var(--border-radius-pill); border: 3px solid var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb:hover { background-color: color-mix(in srgb, var(--scrollbar-thumb) 80%, white); }
+
+        .hidden { display: none; }
+
+        .header-controls { position: absolute; top: 1.5rem; right: 1.5rem; z-index: 20; }
+        .header-controls label { color: var(--text-secondary); font-weight: 600; margin-right: 0.5rem; font-size: 0.875rem; }
+        .header-controls select {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-small);
+            padding: 0.5rem 2rem 0.5rem 0.75rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23a0a0a0' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .header-controls select:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 8px 2px var(--shadow-color-glow); }
+
+        .hero { min-height: 60vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 6rem 1rem 5rem 1rem; }
+        .hero h1 { color: var(--text-accent); text-shadow: 0 0 10px var(--shadow-color-glow), 0 0 20px var(--shadow-color-glow); font-weight: 700; }
+        .hero p { color: var(--text-secondary); font-size: 1.5rem; animation: pulse-arrow 2s infinite; }
+        @keyframes pulse-arrow { 0%, 100% { opacity: 0.5; transform: translateY(0); } 50% { opacity: 1; transform: translateY(5px); } }
+
+        .search-input-container { display: flex; justify-content: center; margin: 2.5rem 1rem; }
+        .search-input {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-pill);
+            padding: 0.75rem 1.5rem;
+            width: 100%; max-width: 36rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 5px var(--shadow-color-soft);
+        }
+        .search-input::placeholder { color: var(--text-secondary); opacity: 0.7; }
+        .search-input:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 12px 3px var(--shadow-color-glow), 0 4px 8px var(--shadow-color-soft); }
+
+        .tabs-outer-container { position: sticky; top: 0; z-index: 15; }
+        .tabs-container {
+            display: flex; justify-content: center; margin-bottom: 2rem; padding: 0.5rem 1rem; gap: 0.5rem;
+            background-color: color-mix(in srgb, var(--bg-secondary) 90%, transparent);
+            border-bottom: 1px solid var(--border-color);
+             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+        .tab-item {
+            padding: 0.75rem 1.5rem;
+            border: 1px solid transparent;
+            border-radius: var(--border-radius-base);
+            cursor: pointer; color: var(--text-secondary); font-weight: 600;
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+            background-color: transparent;
+        }
+        .tab-item:hover { color: var(--text-primary); background-color: rgba(255, 255, 255, 0.05); }
+        .tab-item.active {
+            color: var(--text-accent); background-color: var(--bg-accent);
+             border-color: var(--border-color);
+             text-shadow: 0 0 5px var(--shadow-color-glow);
+        }
+
+        .cards-grid { padding: 0rem 1rem 1rem 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
+
+        .custom-card {
+            background-color: var(--bg-accent);
+            border-radius: var(--border-radius-base); overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .custom-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7), 0 0 15px var(--shadow-color-glow), 0 0 0 1px var(--border-color-strong); }
+        .custom-card .card-image-container { position: relative; overflow: hidden; border-top-left-radius: var(--border-radius-base); border-top-right-radius: var(--border-radius-base); }
+        .custom-card img { display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; transition: transform 0.5s ease, filter 0.5s ease; }
+        .custom-card:hover img { transform: scale(1.08); filter: brightness(0.7); }
+        .custom-card .card-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, rgba(0,0,0,0.7) 10%, transparent 50%); opacity: 0; transition: opacity 0.4s ease; pointer-events: none; }
+        .custom-card:hover .card-overlay { opacity: 1; }
+
+        .custom-card .card-content { padding: 1rem; display: flex; flex-direction: column; flex-grow: 1; }
+        .custom-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; line-height: 1.3; color: var(--text-primary); }
+        .custom-card .card-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; flex-grow: 1; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
+        .custom-card .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .custom-card .badge { padding: 0.3rem 0.8rem; font-size: 0.7rem; font-weight: 600; border-radius: var(--border-radius-pill); border: 1px solid var(--border-color); color: var(--text-secondary); background-color: rgba(255, 255, 255, 0.05); text-transform: uppercase; letter-spacing: 0.5px; transition: background-color 0.3s, color 0.3s; }
+        .custom-card:hover .badge { background-color: rgba(255, 255, 255, 0.1); color: var(--text-primary); }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.7rem 1.2rem; border-radius: var(--border-radius-pill); font-weight: 600; text-align: center; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease; border: 1px solid var(--border-color); font-size: 0.875rem; background-color: transparent; color: var(--text-secondary); }
+        .btn i { margin-right: 0.6rem; }
+        .btn:active { transform: scale(0.97); }
+        .btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); background-color: rgba(255, 255, 255, 0.1); box-shadow: 0 0 10px var(--shadow-color-glow); }
+
+        .btn-watch {}
+
+        .btn-watched-toggle.is-watched { background-color: rgba(255, 255, 255, 0.15); border-color: var(--border-color-strong); color: var(--text-accent); box-shadow: 0 0 8px var(--shadow-color-glow); }
+        .btn-watched-toggle.is-watched:hover { background-color: transparent; border-color: var(--border-color); color: var(--text-secondary); box-shadow: 0 0 10px var(--shadow-color-glow); }
+
+        .loading-indicator { color: var(--text-secondary); padding: 2.5rem 0; font-weight: 600; font-size: 1rem; text-align: center;}
+        .loading-indicator i { margin-right: 0.5rem; }
+
+        .error-message { background-color: var(--error-bg); color: var(--error-text); padding: 1rem 1.5rem; border-radius: var(--border-radius-base); margin: 1.5rem auto; text-align: center; font-weight: 600; border: 1px solid color-mix(in srgb, var(--error-text) 50%, transparent); box-shadow: 0 0 10px color-mix(in srgb, var(--error-text) 30%, transparent); animation: fadeIn 0.5s ease-out; }
+        #error-message-container { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); z-index: 100; width: 90%; max-width: 500px; pointer-events: none; }
+        #error-message-container .error-message { pointer-events: auto; }
+
+
+        .fade-in { animation: fadeIn 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { to { opacity: 0; transform: scale(0.95); } }
+        .fade-out { animation: fadeOut 0.5s ease-out forwards; }
 
     </style>
 </head>
-<body class="bg-base-100 text-base-content">
-    <div class="absolute top-4 right-4 flex items-center">
-        <label for="themeSelect" class="text-xl font-semibold mr-2">Select Theme:</label>
-        <select id="themeSelect" class="select select-bordered w-32"></select>
-    </div>
-    <div class="absolute top-4 left-4 flex items-center">
-        <label for="sortSelect" class="text-xl font-semibold mr-2">Sort By:</label>
-        <select id="sortSelect" class="select select-bordered w-32">
-            <option value="default">Default</option>
-            <option value="asc">A-Z</option>
-            <option value="desc">Z-A</option>
-        </select>
-    </div>
+<body class="min-h-screen">
 
-    <div class="hero min-h-screen">
-        <div class="hero-content text-center">
-            <div class="max-w-md">
-                <h1 class="text-5xl font-bold">SWMTS | TV Series & Movies</h1>
-                <p class="py-6"> ↓↓↓↓↓ </p>
+    <div id="global-overlay"></div>
+
+    <div id="app-content">
+
+        <div class="header-controls">
+            <div>
+                <label for="sortSelect">Sort:</label>
+                <select id="sortSelect">
+                    <option value="default">Popularity</option>
+                    <option value="asc">A-Z</option>
+                    <option value="desc">Z-A</option>
+                </select>
             </div>
         </div>
+
+        <div class="hero">
+            <div class="max-w-3xl">
+                <h1 class="text-5xl sm:text-6xl md:text-7xl font-bold mb-8">SWMTS</h1>
+                <p class="py-6 text-3xl font-thin">↓</p>
+            </div>
+        </div>
+
+        <div class="search-input-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search movies or TV shows..." />
+        </div>
+
+        <div class="tabs-outer-container">
+            <div class="tabs-container" id="tabsContainer">
+                <button role="tab" id="popular-tab" class="tab-item active" onclick="setActiveTab(this); fetchData(true);">Popular</button>
+                <button role="tab" id="watched-tab" class="tab-item" onclick="setActiveTab(this); fetchWatchedData();">Watched</button>
+            </div>
+        </div>
+
+        <div class="cards-grid" id="swmtscards">
+
+        </div>
+
+        <div id="loading-indicator" class="text-center py-8 hidden loading-indicator">
+            <i class="fas fa-spinner fa-spin text-xl"></i> Loading Content...
+        </div>
+
     </div>
 
-    <div class="flex justify-center my-4">
-        <input type="text" id="searchInput" class="input input-bordered w-96" placeholder="Search..." />
+    <div id="error-message-container">
+         <div id="error-message" class="hidden error-message" role="alert">
+
+         </div>
     </div>
 
-    <div class="tabs tabs-lifted">
-        <a role="tab" id="popular-tab" class="tab tab-active" onclick="fetchData()">Popular</a>
-        <a role="tab" id="watched-tab" class="tab" onclick="fetchWatchedData()">Watched</a>
-    </div>
-
-    <div class="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" id="swmtscards"></div>
-    <div id="loading-indicator" class="text-center py-4 hidden">Loading more content...</div>
-    <div id="error-message" class="hidden bg-red-500 text-white p-4 rounded-lg" role="alert"></div>
 
     <script>
-const TMDB_API_KEY = 'db841157430b89c9ab8833d281d1c060';
-const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-let data = [];
-let providers = {};
-let sortMethod = 'default';
-let searchResults = [];
-let page = 1;
-let loading = false;
+        const TMDB_API_KEY = 'db841157430b89c9ab8833d281d1c060';
+        const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+        let data = [];
+        let sortMethod = 'default';
+        let currentPage = 1;
+        let loading = false;
+        let currentQuery = '';
+        let activeTabId = 'popular-tab';
+        let backgroundIntervalId = null;
 
-const themeSelect = document.getElementById('themeSelect');
-const swmtscards = document.getElementById('swmtscards');
-const popularTab = document.getElementById('popular-tab');
-const watchedTab = document.getElementById('watched-tab');
-const searchInput = document.getElementById('searchInput');
-const tabsContainer = document.querySelector('.tabs');
-const loadingIndicator = document.getElementById('loading-indicator');
-let activeTab = popularTab;
+        const swmtscards = document.getElementById('swmtscards');
+        const searchInput = document.getElementById('searchInput');
+        const tabsContainer = document.getElementById('tabsContainer');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const errorMessageContainer = document.getElementById('error-message-container');
+        const errorMessage = document.getElementById('error-message');
+        const sortSelect = document.getElementById('sortSelect');
+        const popularTabBtn = document.getElementById('popular-tab');
+        const watchedTabBtn = document.getElementById('watched-tab');
 
-const errorMessage = document.getElementById('error-message');
-const sortSelect = document.getElementById('sortSelect');
+        async function fetchAndSetRandomBackground() {
+             try {
+                 const mediaType = Math.random() > 0.5 ? 'movie' : 'tv';
+                 const randomPage = Math.floor(Math.random() * 20) + 1;
+                 const response = await fetch(`${TMDB_BASE_URL}/${mediaType}/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${randomPage}`);
 
-const themes = [
-    "light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk",
-    "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe",
-    "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee",
-    "winter", "dim", "nord", "sunset"
-];
+                 if (!response.ok) throw new Error(`Failed popular ${mediaType} BG page ${randomPage}`);
+                 const data = await response.json();
+                 const itemsWithBackdrops = data.results.filter(item => item.backdrop_path);
 
-async function fetchData() {
-    if(loading) return;
-    loading = true;
-    loadingIndicator.classList.remove('hidden');
-    try {
-        const providersResponse = await fetch('providers.json');
-        if (!providersResponse.ok) throw new Error('Network response was not ok for providers.json');
-        providers = await providersResponse.json();
-
-        const popularMovies = await fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&page=${page}`);
-        const popularTVs = await fetch(`${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&page=${page}`);
-
-        if (!popularMovies.ok || !popularTVs.ok) throw new Error('Network response was not ok for TMDB API');
-
-        const moviesData = await popularMovies.json();
-        const tvsData = await popularTVs.json();
-        const newData = [...moviesData.results, ...tvsData.results].map(item => ({
-            id: item.id,
-            title: item.title || item.name,
-            desc: item.overview,
-            img: `https://image.tmdb.org/t/p/original${item.poster_path}`,
-            date: item.release_date || item.first_air_date,
-            type: item.title ? 'movie' : 'tv'
-        }));
-        data = page === 1 ? newData : [...data, ...newData]
-        renderCards();
-    } catch (error) {
-        showError(`Error fetching data: ${error.message}`);
-    } finally {
-        loading = false;
-        loadingIndicator.classList.add('hidden');
-    }
-}
-
-async function fetchWatchedData() {
-    if(loading) return;
-    loading = true;
-    loadingIndicator.classList.remove('hidden');
-    const watchedList = getWatchedList();
-        data = [];
-    const fetchedIds = new Set();
-
-    await Promise.all(watchedList.map(async item => {
-        if (fetchedIds.has(item.id)) return;
-        fetchedIds.add(item.id);
-
-        try {
-            const apiEndpoint = item.type === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`;
-            const response = await fetch(`${TMDB_BASE_URL}${apiEndpoint}?api_key=${TMDB_API_KEY}`);
-            if (!response.ok) throw new Error(`Network response was not ok for ${item.type} ${item.id}`);
-            const itemData = await response.json();
-           data.push({
-                id: itemData.id,
-                title: itemData.title || itemData.name,
-                desc: itemData.overview,
-                img: `https://image.tmdb.org/t/p/original${itemData.poster_path}`,
-                date: itemData.release_date || itemData.first_air_date,
-                type: item.type,
-            });
-        } catch (error) {
-            showError(`Error fetching watched item: ${error.message}`);
+                 if (itemsWithBackdrops.length > 0) {
+                     const randomItem = itemsWithBackdrops[Math.floor(Math.random() * itemsWithBackdrops.length)];
+                     const backdropUrl = `https://image.tmdb.org/t/p/original${randomItem.backdrop_path}`;
+                     document.body.style.setProperty('--body-bg-image', `url(${backdropUrl})`);
+                 } else {
+                 }
+             } catch (error) {
+                 console.error("Error setting BG:", error);
+             }
         }
-    }));
-    renderCards();
-     loading = false;
-        loadingIndicator.classList.add('hidden');
-}
 
-async function fetchSearchData(query) {
-     if(loading) return;
-    loading = true;
-    loadingIndicator.classList.remove('hidden');
-    try {
-        const response = await fetch(`${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${query}`);
-        if (!response.ok) throw new Error('Network response was not ok for TMDB Search API');
-
-        const searchData = await response.json();
-        searchResults = searchData.results
-            .filter(item => item.media_type === 'movie' || item.media_type === 'tv')
-            .map(item => ({
-                id: item.id,
-                title: item.title || item.name,
-                desc: item.overview,
-                img: `https://image.tmdb.org/t/p/original${item.poster_path}`,
-                date: item.release_date || item.first_air_date,
-                type: item.media_type === 'movie' ? 'movie' : 'tv'
-            }));
-    } catch (error) {
-        showError(`Error fetching search results: ${error.message}`);
-    }finally {
-         loading = false;
-        loadingIndicator.classList.add('hidden');
-    }
-}
-
-function displaySearchResults() {
-    data = searchResults;
-    renderCards();
-}
-
-function getWatchedList() {
-    return JSON.parse(localStorage.getItem('watchedList')) || [];
-}
-
-function addToWatchedList(id, type) {
-    const watchedList = getWatchedList();
-    if (!watchedList.some(item => item.id === id && item.type === type)) {
-        watchedList.push({ id, type });
-        localStorage.setItem('watchedList', JSON.stringify(watchedList));
-        deduplicateWatchedList();
-        if (watchedTab.classList.contains('tab-active')) {
-            fetchWatchedData();
-        } else {
-            renderCards();
+        function startBackgroundUpdates() {
+            if (backgroundIntervalId) clearInterval(backgroundIntervalId);
+            fetchAndSetRandomBackground();
+            backgroundIntervalId = setInterval(fetchAndSetRandomBackground, 15000);
         }
-    }
-}
 
-function removeFromWatchedList(id, type) {
-    let watchedList = getWatchedList();
-    watchedList = watchedList.filter(item => !(item.id === id && item.type === type));
-    localStorage.setItem('watchedList', JSON.stringify(watchedList));
-    deduplicateWatchedList();
-    if (watchedTab.classList.contains('tab-active')) {
-        fetchWatchedData();
-    } else {
-        renderCards();
-    }
-}
+        function stopBackgroundUpdates() {
+             if (backgroundIntervalId) { clearInterval(backgroundIntervalId); backgroundIntervalId = null; }
+        }
 
-function showError(message) {
-    errorMessage.textContent = message;
-    errorMessage.classList.remove('hidden');
-    setTimeout(() => errorMessage.classList.add('hidden'), 5000);
-}
+        async function fetchData(reset = false) {
+            if (loading) return;
+            if (reset) { currentPage = 1; data = []; swmtscards.innerHTML = ''; }
+            loading = true;
+            loadingIndicator.classList.remove('hidden');
+            activeTabId = 'popular-tab';
 
-sortSelect.addEventListener('change', (e) => {
-    sortMethod = e.target.value;
-    renderCards();
-});
+            try {
+                const [moviesResponse, tvResponse] = await Promise.all([
+                    fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&page=${currentPage}`),
+                    fetch(`${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&page=${currentPage}`)
+                ]);
+                if (!moviesResponse.ok || !tvResponse.ok) throw new Error('Failed fetch popular items');
+                const moviesData = await moviesResponse.json();
+                const tvsData = await tvResponse.json();
+                const newData = [...moviesData.results, ...tvsData.results]
+                    .filter(item => item.poster_path)
+                    .map(item => ({ id: item.id, title: item.title || item.name, desc: item.overview || 'N/A', img: `https://image.tmdb.org/t/p/w500${item.poster_path}`, date: item.release_date || item.first_air_date, type: item.title ? 'movie' : 'tv', popularity: item.popularity }));
+                const currentIds = new Set(data.map(d => `${d.id}-${d.type}`));
+                const uniqueNewData = newData.filter(item => !currentIds.has(`${item.id}-${item.type}`));
+                data = [...data, ...uniqueNewData];
+                applySortingAndRender(uniqueNewData);
+            } catch (error) { showError(`Err popular: ${error.message}`);
+            } finally { loading = false; loadingIndicator.classList.add('hidden'); }
+        }
 
-function renderCards() {
-    if (sortMethod === 'asc') {
-        data.sort((a, b) => a.title.localeCompare(b.title));
-    } else if (sortMethod === 'desc') {
-        data.sort((a, b) => b.title.localeCompare(a.title));
-    }
+        async function fetchWatchedData() {
+            if (loading) return;
+            loading = true;
+            loadingIndicator.classList.remove('hidden');
+            activeTabId = 'watched-tab';
+            swmtscards.innerHTML = '';
+            const watchedList = getWatchedList();
+            data = [];
 
-    swmtscards.innerHTML = '';
-    const renderedIds = new Set();
-    data.forEach(item => {
-        const key = `${item.id}-${item.type}`;
-         if (!renderedIds.has(key)) {
-            renderedIds.add(key);
-            const card = document.createElement('div');
-            card.classList.add('card', 'w-full', 'shadow-lg', 'p-4', 'rounded-lg', 'bg-base-200', 'fade-in');
+            if (watchedList.length === 0) {
+                swmtscards.innerHTML = '<p class="col-span-full text-center text-lg text-[var(--text-secondary)] mt-10">Watched list empty.</p>';
+                loading = false; loadingIndicator.classList.add('hidden'); return;
+            }
 
+            try {
+                const fetchPromises = watchedList.map(item => {
+                    const apiEndpoint = item.type === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`;
+                    return fetch(`${TMDB_BASE_URL}${apiEndpoint}?api_key=${TMDB_API_KEY}`)
+                        .then(res => res.ok ? res.json() : Promise.reject(`Fail ${item.type} ${item.id}`))
+                        .then(itemData => ({ id: itemData.id, title: itemData.title || itemData.name, desc: itemData.overview || 'N/A', img: itemData.poster_path ? `https://image.tmdb.org/t/p/w500${itemData.poster_path}` : null, date: itemData.release_date || itemData.first_air_date, type: item.type, popularity: itemData.popularity }))
+                        .catch(err => { console.error("Err watched:", err); return null; });
+                });
+                const results = await Promise.all(fetchPromises);
+                data = results.filter(item => item && item.img);
+                if (data.length === 0 && watchedList.length > 0) { showError("Couldn't load watched."); }
+                applySortingAndRender();
+            } catch (error) { showError(`Err watched data: ${error.message}`);
+            } finally { loading = false; loadingIndicator.classList.add('hidden'); }
+        }
 
-            const isWatched = getWatchedList().some(watchedItem => watchedItem.id === item.id && watchedItem.type === item.type);
-            const watchButtonIcon = `<i class="fas fa-play"></i>`;
-            const watchedButtonIcon = isWatched ? `<i class="fas fa-times"></i>` : `<i class="fas fa-plus"></i>`;
-            const watchedButtonLabel = isWatched ? "Remove from Watched" : "Add to Watched";
-            const watchButtonAction = isWatched ? `removeFromWatchedList(${item.id}, '${item.type}')` : `addToWatchedList(${item.id}, '${item.type}')`;
-        card.innerHTML = `
-                <img src="${item.img}" alt="${item.title}" class="rounded-t-lg object-cover">
-                <div class="py-2">
-                    <h3 class="font-semibold text-xl">${item.title}</h3>
-                    <p class="text-sm">${item.desc}</p>
-                    <div class="flex justify-between mt-2">
-                        <span class="badge badge-outline">${new Date(item.date).getFullYear()}</span>
-                        <span class="badge badge-outline">${item.type === 'movie' ? 'Movie' : 'TVs'}</span>
+        async function fetchSearchData(query) {
+            if (loading) return;
+            loading = true;
+            loadingIndicator.classList.remove('hidden');
+            swmtscards.innerHTML = '';
+
+            try {
+                const response = await fetch(`${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&include_adult=false`);
+                if (!response.ok) throw new Error('Search failed');
+                const searchData = await response.json();
+                data = searchData.results
+                    .filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path)
+                    .map(item => ({ id: item.id, title: item.title || item.name, desc: item.overview || 'N/A', img: `https://image.tmdb.org/t/p/w500${item.poster_path}`, date: item.release_date || item.first_air_date, type: item.media_type, popularity: item.popularity }));
+
+                if (data.length === 0) { swmtscards.innerHTML = `<p class="col-span-full text-center text-lg text-[var(--text-secondary)] mt-10">No results for "${query}".</p>`; }
+                else { applySortingAndRender(); }
+            } catch (error) {
+                showError(`Err search: ${error.message}`);
+                swmtscards.innerHTML = `<p class="col-span-full text-center text-lg text-[var(--error-text)] mt-10">Search fail.</p>`;
+            } finally { loading = false; loadingIndicator.classList.add('hidden'); }
+        }
+
+         function applySortingAndRender(itemsToAppend = null) {
+            let dataToRender;
+            if (!itemsToAppend) {
+               swmtscards.innerHTML = '';
+                const sortedData = [...data];
+                if (sortMethod === 'asc') sortedData.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+                else if (sortMethod === 'desc') sortedData.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+                else sortedData.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+               dataToRender = sortedData;
+            } else { dataToRender = itemsToAppend; }
+             renderCards(dataToRender);
+        }
+
+        function renderCards(items) {
+            const fragment = document.createDocumentFragment();
+            items.forEach(item => {
+                 if(!item || !item.id || !item.title) return;
+                const card = document.createElement('div');
+                card.classList.add('custom-card', 'fade-in');
+                card.dataset.id = item.id;
+                card.dataset.type = item.type;
+                const isWatched = getWatchedList().some(w => w.id === item.id && w.type === item.type);
+                const watchedIcon = isWatched ? 'fa-solid fa-check' : 'fa-solid fa-plus';
+                const watchedLabel = isWatched ? "Watched" : "Add Watchlist";
+                const watchedAction = isWatched ? `removeFromWatchedList(${item.id}, '${item.type}', this)` : `addToWatchedList(${item.id}, '${item.type}', this)`;
+                const watchedClass = isWatched ? 'is-watched' : '';
+
+                card.innerHTML = `
+                    <div class="card-image-container">
+                        <img src="${item.img}" alt="${item.title}" loading="lazy">
+                        <div class="card-overlay"></div>
                     </div>
-                </div>
-                <div class="flex flex-col mt-2">
-                    <button class="btn btn-outline mb-2" onclick="navigateToWatchPage('${item.type}', ${item.id})">${watchButtonIcon} Watch </button>
-                      <button class="btn btn-outline watched-button" onclick="${watchButtonAction}">
-                            ${watchedButtonIcon}<span>${watchedButtonLabel}</span>
-                      </button>
-                </div>
-            `;
-            swmtscards.appendChild(card);
+                    <div class="card-content">
+                        <h3>${item.title}</h3>
+                        <div class="card-meta">
+                            <span class="badge">${item.date ? new Date(item.date).getFullYear() : 'N/A'}</span>
+                            <span class="badge">${item.type === 'movie' ? 'Movie' : 'TV'}</span>
+                        </div>
+                        <p class="card-desc">${item.desc}</p>
+                        <div class="mt-auto flex flex-col space-y-2 pt-3">
+                            <button class="btn btn-watch" onclick="navigateToWatchPage('${item.type}', ${item.id})">
+                                <i class="fas fa-play"></i> Watch Now
+                             </button>
+                            <button class="btn btn-watched-toggle ${watchedClass}" onclick="${watchedAction}">
+                                <i class="${watchedIcon}"></i><span class="ml-2">${watchedLabel}</span>
+                            </button>
+                        </div>
+                    </div>`;
+                 fragment.appendChild(card);
+            });
+             swmtscards.appendChild(fragment);
         }
-    });
-}
 
+         function navigateToWatchPage(type, id) {
+             if (!type || !id) return;
+             let hash = `#${type}-${id}`;
+             window.location.href = `watch/${hash}`;
+         }
 
-function navigateToWatchPage(type, id) {
-    let hash = `#${type}-${id}`;
-    if(type === 'tv') {
-        const savedSeason = getCookie(`tv_${id}_season`);
-        const savedEpisode = getCookie(`tv_${id}_episode`);
-        if(savedSeason) hash += `-${savedSeason}`;
-        if(savedEpisode) hash += `-${savedEpisode}`;
-    }
-    window.location.href = `watch/${hash}`;
-}
+        function updateWatchedButton(btn, isWatched) {
+            if (!btn) return;
+            const icon = btn.querySelector('i'); const label = btn.querySelector('span');
+            const card = btn.closest('.custom-card'); if (!card) return;
+            const id = parseInt(card.dataset.id); const type = card.dataset.type;
 
-
-function setCookie(name, value, days) {
-    const date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
-}
-
-function getCookie(name) {
-    const cname = name + "=";
-    const decodedCookie = decodeURIComponent(document.cookie);
-    return decodedCookie.split(';').map(c => c.trim()).find(c => c.startsWith(cname))?.substring(cname.length) || "";
-}
-
-function populateThemeSelect() {
-    themes.sort().forEach(theme => {
-        const option = document.createElement('option');
-        option.value = theme;
-        option.textContent = theme.charAt(0).toUpperCase() + theme.slice(1);
-        themeSelect.appendChild(option);
-    });
-
-    let savedTheme = getCookie('theme');
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-
-    if (!savedTheme) {
-        savedTheme = currentTheme || "sunset";
-        setCookie('theme', savedTheme, 7);
-    }
-
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    themeSelect.value = savedTheme;
-
-    themeSelect.addEventListener('change', (e) => {
-        const selectedTheme = e.target.value;
-        document.documentElement.setAttribute('data-theme', selectedTheme);
-        setCookie('theme', selectedTheme, 7);
-    });
-}
-
-function deduplicateWatchedList() {
-    const watchedList = getWatchedList();
-    const uniqueWatchedList = [];
-    const seenIds = new Set();
-    watchedList.forEach(item => {
-        const key = `${item.id}-${item.type}`;
-        if (!seenIds.has(key)) {
-            seenIds.add(key);
-            uniqueWatchedList.push(item);
+            if (isWatched) {
+                if(icon) icon.className = 'fa-solid fa-check'; if(label) label.textContent = 'Watched';
+                btn.classList.add('is-watched'); btn.onclick = () => removeFromWatchedList(id, type, btn);
+            } else {
+                if(icon) icon.className = 'fa-solid fa-plus'; if(label) label.textContent = 'Add Watchlist';
+                btn.classList.remove('is-watched'); btn.onclick = () => addToWatchedList(id, type, btn);
+            }
         }
-    });
-    localStorage.setItem('watchedList', JSON.stringify(uniqueWatchedList));
-}
 
-searchInput.addEventListener('input', async (e) => {
-    const query = e.target.value;
-    if (query) {
-        await fetchSearchData(query);
-        if (searchResults.length > 0) {
-            tabsContainer.classList.add("hidden");
-            displaySearchResults();
-        } else {
-            showError("No search results found.");
+        function getWatchedList() { return JSON.parse(localStorage.getItem('watchedList') || '[]'); }
+
+        function addToWatchedList(id, type, btn) {
+            if (!id || !type) return;
+            const list = getWatchedList();
+            if (!list.some(i => i.id === id && i.type === type)) {
+                list.push({ id, type, added: Date.now() });
+                localStorage.setItem('watchedList', JSON.stringify(list)); updateWatchedButton(btn, true);
+            }
         }
-    } else {
-        tabsContainer.classList.remove("hidden");
-        activeTab.click();
-    }
-});
 
-popularTab.addEventListener('click', () => {
-    activeTab = popularTab;
-    popularTab.classList.add('tab-active');
-    watchedTab.classList.remove('tab-active');
-    page = 1;
-    data = [];
-    fetchData();
-});
+        function removeFromWatchedList(id, type, btn) {
+            if (!id || !type) return;
+            let list = getWatchedList();
+            list = list.filter(i => !(i.id === id && i.type === type));
+            localStorage.setItem('watchedList', JSON.stringify(list));
+            if (activeTabId === 'watched-tab') {
+                const card = swmtscards.querySelector(`.custom-card[data-id='${id}'][data-type='${type}']`);
+                if (card) { card.classList.add('fade-out'); setTimeout(() => card.remove(), 500); }
+                if (list.length === 0) { swmtscards.innerHTML = '<p class="col-span-full text-center text-lg text-[var(--text-secondary)] mt-10">Watched list empty.</p>'; }
+            } else { updateWatchedButton(btn, false); }
+        }
 
-watchedTab.addEventListener('click', () => {
-    activeTab = watchedTab;
-    watchedTab.classList.add('tab-active');
-    popularTab.classList.remove('tab-active');
-    fetchWatchedData();
-});
+        function deduplicateWatchedList() {
+            const list = getWatchedList(); let uniqueList = []; const seen = new Set();
+            list.forEach(i => { if(!i || i.id==null || i.type==null) return; const key=`${i.id}-${i.type}`; if (!seen.has(key)) { seen.add(key); uniqueList.push(i); } });
+            if (uniqueList.length !== list.length) { localStorage.setItem('watchedList', JSON.stringify(uniqueList)); }
+        }
 
-window.addEventListener('scroll', () => {
-    if (loading) return;
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
-      if(activeTab === popularTab){
-         page++;
-         fetchData();
-      }
-    }
-});
+        function showError(msg) {
+            errorMessage.textContent = msg;
+            errorMessage.classList.remove('hidden');
+            clearTimeout(errorMessage.timeoutId);
+            errorMessage.timeoutId = setTimeout(() => { errorMessage.classList.add('hidden'); }, 5000);
+        }
+
+        function setActiveTab(btn) {
+            document.querySelectorAll('.tab-item').forEach(tab => tab.classList.remove('active'));
+            btn.classList.add('active'); activeTabId = btn.id;
+        }
+
+        sortSelect.addEventListener('change', (e) => {
+            sortMethod = e.target.value;
+            if (currentQuery) { fetchSearchData(currentQuery); }
+            else if (activeTabId === 'popular-tab') { fetchData(true); }
+            else if (activeTabId === 'watched-tab') { applySortingAndRender(); }
+        });
+
+        let searchDebounceTimeout;
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            clearTimeout(searchDebounceTimeout);
+            if (query) { currentQuery = query; searchDebounceTimeout = setTimeout(() => { fetchSearchData(query); }, 350); }
+            else { currentQuery = ''; const activeBtn = document.getElementById(activeTabId); if (activeBtn) activeBtn.click(); else popularTabBtn.click(); }
+        });
+
+        window.addEventListener('scroll', () => {
+            if (activeTabId === 'popular-tab' && !loading && !currentQuery) {
+                const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+                if (window.scrollY >= scrollableHeight - 900) { currentPage++; fetchData(); }
+            }
+        });
+
+        document.addEventListener('visibilitychange', () => {
+             if (document.hidden) {
+                 stopBackgroundUpdates();
+             } else {
+                 startBackgroundUpdates();
+             }
+         });
 
 
-deduplicateWatchedList();
-populateThemeSelect();
-fetchData();
+        deduplicateWatchedList();
+        startBackgroundUpdates();
+        setActiveTab(popularTabBtn);
+        fetchData(true);
+
     </script>
 </body>
 </html>
