@@ -1,519 +1,738 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="bw_dark">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="src/img/favicon.png">
-    <title>SWMTS | @BN_LOS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-
-        :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #1f1f1f;
-            --bg-accent: #2a2a2a;
-            --text-primary: #f0f0f0;
-            --text-secondary: #a0a0a0;
-            --text-accent: #ffffff;
-            --accent-primary: #ffffff;
-            --accent-secondary: #e0e0e0;
-            --border-color: rgba(255, 255, 255, 0.15);
-            --border-color-strong: rgba(255, 255, 255, 0.5);
-            --shadow-color-soft: rgba(255, 255, 255, 0.1);
-            --shadow-color-glow: rgba(255, 255, 255, 0.4);
-            --error-bg: #400000;
-            --error-text: #ffaaaa;
-            --scrollbar-thumb: #555555;
-            --scrollbar-track: #1a1a1a;
-            --body-bg-image: linear-gradient(to bottom right, #111, #000);
-            --border-radius-base: 1rem;
-            --border-radius-small: 0.5rem;
-            --border-radius-pill: 9999px;
-            --global-overlay-opacity: 0.6;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            transition: color 0.3s ease;
-            position: relative;
-            z-index: 1;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: -5%; left: -5%;
-            width: 110%; height: 110%;
-            z-index: -1;
-            background-image: var(--body-bg-image);
-            background-size: cover;
-            background-position: center center;
-            filter: blur(15px) brightness(0.5);
-            transition: background-image 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        #global-overlay {
-             position: fixed;
-             top: 0; left: 0; right: 0; bottom: 0;
-             background-color: rgba(0, 0, 0, var(--global-overlay-opacity));
-             z-index: 0;
-             pointer-events: none;
-        }
-
-        #app-content {
-             position: relative;
-             z-index: 1;
-        }
-
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
-        ::-webkit-scrollbar-thumb { background-color: var(--scrollbar-thumb); border-radius: var(--border-radius-pill); border: 3px solid var(--scrollbar-track); }
-        ::-webkit-scrollbar-thumb:hover { background-color: color-mix(in srgb, var(--scrollbar-thumb) 80%, white); }
-
-        .hidden { display: none; }
-
-        .header-controls { position: absolute; top: 1.5rem; right: 1.5rem; z-index: 20; }
-        .header-controls label { color: var(--text-secondary); font-weight: 600; margin-right: 0.5rem; font-size: 0.875rem; }
-        .header-controls select {
-            background-color: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-small);
-            padding: 0.5rem 2rem 0.5rem 0.75rem;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23a0a0a0' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        .header-controls select:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 8px 2px var(--shadow-color-glow); }
-
-        .hero { min-height: 60vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 6rem 1rem 5rem 1rem; }
-        .hero h1 { color: var(--text-accent); text-shadow: 0 0 10px var(--shadow-color-glow), 0 0 20px var(--shadow-color-glow); font-weight: 700; }
-        .hero p { color: var(--text-secondary); font-size: 1.5rem; animation: pulse-arrow 2s infinite; }
-        @keyframes pulse-arrow { 0%, 100% { opacity: 0.5; transform: translateY(0); } 50% { opacity: 1; transform: translateY(5px); } }
-
-        .search-input-container { display: flex; justify-content: center; margin: 2.5rem 1rem; }
-        .search-input {
-            background-color: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-pill);
-            padding: 0.75rem 1.5rem;
-            width: 100%; max-width: 36rem;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0 2px 5px var(--shadow-color-soft);
-        }
-        .search-input::placeholder { color: var(--text-secondary); opacity: 0.7; }
-        .search-input:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 12px 3px var(--shadow-color-glow), 0 4px 8px var(--shadow-color-soft); }
-
-        .tabs-outer-container { position: sticky; top: 0; z-index: 15; }
-        .tabs-container {
-            display: flex; justify-content: center; margin-bottom: 2rem; padding: 0.5rem 1rem; gap: 0.5rem;
-            background-color: color-mix(in srgb, var(--bg-secondary) 90%, transparent);
-            border-bottom: 1px solid var(--border-color);
-             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-        }
-        .tab-item {
-            padding: 0.75rem 1.5rem;
-            border: 1px solid transparent;
-            border-radius: var(--border-radius-base);
-            cursor: pointer; color: var(--text-secondary); font-weight: 600;
-            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
-            background-color: transparent;
-        }
-        .tab-item:hover { color: var(--text-primary); background-color: rgba(255, 255, 255, 0.05); }
-        .tab-item.active {
-            color: var(--text-accent); background-color: var(--bg-accent);
-             border-color: var(--border-color);
-             text-shadow: 0 0 5px var(--shadow-color-glow);
-        }
-
-        .cards-grid { padding: 0rem 1rem 1rem 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
-
-        .custom-card {
-            background-color: var(--bg-accent);
-            border-radius: var(--border-radius-base); overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border-color);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex; flex-direction: column;
-        }
-        .custom-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7), 0 0 15px var(--shadow-color-glow), 0 0 0 1px var(--border-color-strong); }
-        .custom-card .card-image-container { position: relative; overflow: hidden; border-top-left-radius: var(--border-radius-base); border-top-right-radius: var(--border-radius-base); }
-        .custom-card img { display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; transition: transform 0.5s ease, filter 0.5s ease; }
-        .custom-card:hover img { transform: scale(1.08); filter: brightness(0.7); }
-        .custom-card .card-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, rgba(0,0,0,0.7) 10%, transparent 50%); opacity: 0; transition: opacity 0.4s ease; pointer-events: none; }
-        .custom-card:hover .card-overlay { opacity: 1; }
-
-        .custom-card .card-content { padding: 1rem; display: flex; flex-direction: column; flex-grow: 1; }
-        .custom-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; line-height: 1.3; color: var(--text-primary); }
-        .custom-card .card-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; flex-grow: 1; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
-        .custom-card .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .custom-card .badge { padding: 0.3rem 0.8rem; font-size: 0.7rem; font-weight: 600; border-radius: var(--border-radius-pill); border: 1px solid var(--border-color); color: var(--text-secondary); background-color: rgba(255, 255, 255, 0.05); text-transform: uppercase; letter-spacing: 0.5px; transition: background-color 0.3s, color 0.3s; }
-        .custom-card:hover .badge { background-color: rgba(255, 255, 255, 0.1); color: var(--text-primary); }
-
-        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.7rem 1.2rem; border-radius: var(--border-radius-pill); font-weight: 600; text-align: center; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease; border: 1px solid var(--border-color); font-size: 0.875rem; background-color: transparent; color: var(--text-secondary); }
-        .btn i { margin-right: 0.6rem; }
-        .btn:active { transform: scale(0.97); }
-        .btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); background-color: rgba(255, 255, 255, 0.1); box-shadow: 0 0 10px var(--shadow-color-glow); }
-
-        .btn-watch {}
-
-        .btn-watched-toggle.is-watched { background-color: rgba(255, 255, 255, 0.15); border-color: var(--border-color-strong); color: var(--text-accent); box-shadow: 0 0 8px var(--shadow-color-glow); }
-        .btn-watched-toggle.is-watched:hover { background-color: transparent; border-color: var(--border-color); color: var(--text-secondary); box-shadow: 0 0 10px var(--shadow-color-glow); }
-
-        .loading-indicator { color: var(--text-secondary); padding: 2.5rem 0; font-weight: 600; font-size: 1rem; text-align: center;}
-        .loading-indicator i { margin-right: 0.5rem; }
-
-        .error-message { background-color: var(--error-bg); color: var(--error-text); padding: 1rem 1.5rem; border-radius: var(--border-radius-base); margin: 1.5rem auto; text-align: center; font-weight: 600; border: 1px solid color-mix(in srgb, var(--error-text) 50%, transparent); box-shadow: 0 0 10px color-mix(in srgb, var(--error-text) 30%, transparent); animation: fadeIn 0.5s ease-out; }
-        #error-message-container { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); z-index: 100; width: 90%; max-width: 500px; pointer-events: none; }
-        #error-message-container .error-message { pointer-events: auto; }
-
-
-        .fade-in { animation: fadeIn 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeOut { to { opacity: 0; transform: scale(0.95); } }
-        .fade-out { animation: fadeOut 0.5s ease-out forwards; }
-
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>SWMTS | @BN_LOS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+  <style>
+    :root {
+      --body-bg-image: linear-gradient(135deg, #121212, #000);
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #121212;
+      color: #f5f5f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100%;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--body-bg-image);
+      background-size: cover;
+      background-position: center;
+      z-index: -1;
+      filter: blur(12px);
+      opacity: 0.1;
+    }
+    #app-content {
+      margin: 0 auto;
+      padding: 50px;
+    }
+    .hidden {
+      display: none !important;
+    }
+    .hero {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    .hero p {
+      font-size: 2rem;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 0.6;
+        transform: translateY(0);
+      }
+      50% {
+        opacity: 1;
+        transform: translateY(10px);
+      }
+    }
+    .search-input-container {
+      position: relative;
+      margin: 0 auto 40px;
+      max-width: 500px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 10px 15px;
+      padding-right: 40px;
+      border: 1px solid #444;
+      border-radius: 50px;
+      background: #1f1f1f;
+      color: #f5f5f5;
+      outline: none;
+      font-size: 0.95rem;
+    }
+    .search-input::placeholder {
+      color: #aaa;
+    }
+    .search-input-container i {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #aaa;
+      pointer-events: none;
+      font-size: 1.2rem;
+    }
+    .tabs-outer-container {
+      margin-bottom: 10px;
+    }
+    .tabs-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    .tab-item {
+      background: none;
+      border: 1px solid transparent;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 25px;
+      transition: background 0.3s, border 0.3s, color 0.3s;
+      color: #aaa;
+      font-size: 0.95rem;
+    }
+    .tab-item:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .tab-item.active {
+      color: #fff;
+      background: #333;
+      border: 1px solid #666;
+    }
+    .line-with-title {
+      position: relative;
+      text-align: center;
+      margin: 20px 0 30px;
+    }
+    .line-with-title::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: #fff;
+      transform: translateY(-50%);
+      z-index: -1;
+    }
+    .line-with-title span {
+      background: #121212;
+      padding: 0 1rem;
+      color: #f5f5f5;
+      font-weight: 600;
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 25px;
+      border-top: 5px solid white;
+      border-radius: 25px;
+      padding: 50px;
+    }
+    .custom-card {
+      background: #1e1e1e;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+    .custom-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+    }
+    .card-image-container {
+      position: relative;
+      overflow: hidden;
+    }
+    .card-image-container img {
+      width: 100%;
+      height: auto;
+      transition: transform 0.4s;
+      display: block;
+    }
+    .custom-card:hover img {
+      transform: scale(1.1);
+    }
+    .card-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, transparent 50%, rgba(0, 0, 0, 0.7) 100%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .custom-card:hover .card-overlay {
+      opacity: 1;
+    }
+    .card-content {
+      padding: 15px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-content h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .badge {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border: 1px solid #555;
+      border-radius: 12px;
+      background: transparent;
+      color: #ccc;
+      text-transform: uppercase;
+    }
+    .card-desc {
+      flex: 1;
+      font-size: 0.9rem;
+      color: #bbb;
+      margin-bottom: 15px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 8px 15px;
+      border-radius: 30px;
+      font-weight: 500;
+      border: 1px solid #444;
+      background: none;
+      color: #ccc;
+      transition: background 0.3s, border 0.3s, color 0.3s;
+      font-size: 0.9rem;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #888;
+      color: #fff;
+    }
+    .btn:active {
+      transform: scale(0.98);
+    }
+    .btn-watch {
+      margin-bottom: 10px;
+    }
+    .btn-watched-toggle.is-watched {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: #888;
+      color: #fff;
+    }
+    .header-controls {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+    .header-controls label {
+      margin-right: 8px;
+      font-weight: 500;
+    }
+    .header-controls select {
+      background: #1f1f1f;
+      color: #f5f5f5;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 5px 25px 5px 10px;
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 3L5 7L9 3' stroke='%23ccc' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"), linear-gradient(to bottom, #1f1f1f, #1f1f1f);
+      background-repeat: no-repeat, repeat;
+      background-position: right 8px center, 0 0;
+      background-size: 12px auto, 100%;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+    .header-controls select:hover {
+      border-color: #888;
+    }
+    .header-controls select:focus {
+      border-color: #aaa;
+    }
+    .loading-indicator {
+      text-align: center;
+      padding: 40px;
+      font-weight: 500;
+      font-size: 1rem;
+    }
+    .spin {
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    .error-message {
+      background: #d9534f;
+      color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 600;
+    }
+    #error-message-container {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 500px;
+      z-index: 1050;
+    }
+    .fade-in {
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .fade-out {
+      animation: fadeOut 0.5s forwards;
+    }
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+    }
+    .no-results {
+      color: #aaa;
+      font-size: 1rem;
+      margin-top: 30px;
+    }
+  </style>
 </head>
-<body class="min-h-screen">
-
-    <div id="global-overlay"></div>
-
-    <div id="app-content">
-
-        <div class="header-controls">
-            <div>
-                <label for="sortSelect">Sort:</label>
-                <select id="sortSelect">
-                    <option value="default">Popularity</option>
-                    <option value="asc">A-Z</option>
-                    <option value="desc">Z-A</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="hero">
-            <div class="max-w-3xl">
-                <h1 class="text-5xl sm:text-6xl md:text-7xl font-bold mb-8">SWMTS</h1>
-                <p class="py-6 text-3xl font-thin">↓</p>
-            </div>
-        </div>
-
-        <div class="search-input-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="Search movies or TV shows..." />
-        </div>
-
-        <div class="tabs-outer-container">
-            <div class="tabs-container" id="tabsContainer">
-                <button role="tab" id="popular-tab" class="tab-item active" onclick="setActiveTab(this); fetchData(true);">Popular</button>
-                <button role="tab" id="watched-tab" class="tab-item" onclick="setActiveTab(this); fetchWatchedData();">Watched</button>
-            </div>
-        </div>
-
-        <div class="cards-grid" id="swmtscards">
-
-        </div>
-
-        <div id="loading-indicator" class="text-center py-8 hidden loading-indicator">
-            <i class="fas fa-spinner fa-spin text-xl"></i> Loading Content...
-        </div>
-
+<body>
+  <div id="global-overlay"></div>
+  <div id="app-content">
+    <div class="header-controls">
+      <div>
+        <label for="sortSelect">Sort:</label>
+        <select id="sortSelect">
+          <option value="default">Popularity</option>
+          <option value="asc">A-Z</option>
+          <option value="desc">Z-A</option>
+        </select>
+      </div>
     </div>
-
-    <div id="error-message-container">
-         <div id="error-message" class="hidden error-message" role="alert">
-
-         </div>
+    <div class="hero">
+      <h1>SWMTS</h1>
+      <p>↓</p>
     </div>
+    <div class="search-input-container">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search movies or TV shows..." />
+      <i class="bi bi-search"></i>
+    </div>
+    <div class="tabs-outer-container">
+      <div class="tabs-container" id="tabsContainer">
+        <button role="tab" id="popular-tab" class="tab-item active" onclick="setActiveTab(this); fetchData(true);">
+          Popular
+        </button>
+        <button role="tab" id="watched-tab" class="tab-item" onclick="setActiveTab(this); fetchWatchedData();">
+          Watched
+        </button>
+      </div>
+    </div>
+    <div class="line-with-title">
+      <span>SWMTS</span>
+    </div>
+    <div class="cards-grid" id="swmtscards"></div>
+    <div id="loading-indicator" class="loading-indicator hidden">
+      <i class="bi bi-arrow-repeat spin fs-4"></i>
+      Loading Content...
+    </div>
+  </div>
+  <div id="error-message-container">
+    <div id="error-message" class="hidden error-message" role="alert"></div>
+  </div>
+  <script>
+    const TMDB_API_KEY = 'db841157430b89c9ab8833d281d1c060';
+    const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+    let data = [];
+    let sortMethod = 'default';
+    let currentPage = 1;
+    let loading = false;
+    let currentQuery = '';
+    let activeTabId = 'popular-tab';
+    let backgroundIntervalId = null;
+    const swmtscards = document.getElementById('swmtscards');
+    const searchInput = document.getElementById('searchInput');
+    const tabsContainer = document.getElementById('tabsContainer');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const errorMessageContainer = document.getElementById('error-message-container');
+    const errorMessage = document.getElementById('error-message');
+    const sortSelect = document.getElementById('sortSelect');
+    const popularTabBtn = document.getElementById('popular-tab');
+    const watchedTabBtn = document.getElementById('watched-tab');
 
-
-    <script>
-        const TMDB_API_KEY = 'db841157430b89c9ab8833d281d1c060';
-        const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-        let data = [];
-        let sortMethod = 'default';
-        let currentPage = 1;
-        let loading = false;
-        let currentQuery = '';
-        let activeTabId = 'popular-tab';
-        let backgroundIntervalId = null;
-
-        const swmtscards = document.getElementById('swmtscards');
-        const searchInput = document.getElementById('searchInput');
-        const tabsContainer = document.getElementById('tabsContainer');
-        const loadingIndicator = document.getElementById('loading-indicator');
-        const errorMessageContainer = document.getElementById('error-message-container');
-        const errorMessage = document.getElementById('error-message');
-        const sortSelect = document.getElementById('sortSelect');
-        const popularTabBtn = document.getElementById('popular-tab');
-        const watchedTabBtn = document.getElementById('watched-tab');
-
-        async function fetchAndSetRandomBackground() {
-             try {
-                 const mediaType = Math.random() > 0.5 ? 'movie' : 'tv';
-                 const randomPage = Math.floor(Math.random() * 20) + 1;
-                 const response = await fetch(`${TMDB_BASE_URL}/${mediaType}/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${randomPage}`);
-
-                 if (!response.ok) throw new Error(`Failed popular ${mediaType} BG page ${randomPage}`);
-                 const data = await response.json();
-                 const itemsWithBackdrops = data.results.filter(item => item.backdrop_path);
-
-                 if (itemsWithBackdrops.length > 0) {
-                     const randomItem = itemsWithBackdrops[Math.floor(Math.random() * itemsWithBackdrops.length)];
-                     const backdropUrl = `https://image.tmdb.org/t/p/original${randomItem.backdrop_path}`;
-                     document.body.style.setProperty('--body-bg-image', `url(${backdropUrl})`);
-                 } else {
-                 }
-             } catch (error) {
-                 console.error("Error setting BG:", error);
-             }
+    async function fetchAndSetRandomBackground() {
+      try {
+        const mediaType = Math.random() > 0.5 ? 'movie' : 'tv';
+        const randomPage = Math.floor(Math.random() * 20) + 1;
+        const response = await fetch(`${TMDB_BASE_URL}/${mediaType}/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${randomPage}`);
+        if (!response.ok) throw new Error('Failed');
+        const data = await response.json();
+        const itemsWithBackdrops = data.results.filter(item => item.backdrop_path);
+        if (itemsWithBackdrops.length > 0) {
+          const randomItem = itemsWithBackdrops[Math.floor(Math.random() * itemsWithBackdrops.length)];
+          const backdropUrl = `https://image.tmdb.org/t/p/original${randomItem.backdrop_path}`;
+          document.body.style.setProperty('--body-bg-image', `url(${backdropUrl})`);
         }
-
-        function startBackgroundUpdates() {
-            if (backgroundIntervalId) clearInterval(backgroundIntervalId);
-            fetchAndSetRandomBackground();
-            backgroundIntervalId = setInterval(fetchAndSetRandomBackground, 15000);
-        }
-
-        function stopBackgroundUpdates() {
-             if (backgroundIntervalId) { clearInterval(backgroundIntervalId); backgroundIntervalId = null; }
-        }
-
-        async function fetchData(reset = false) {
-            if (loading) return;
-            if (reset) { currentPage = 1; data = []; swmtscards.innerHTML = ''; }
-            loading = true;
-            loadingIndicator.classList.remove('hidden');
-            activeTabId = 'popular-tab';
-
-            try {
-                const [moviesResponse, tvResponse] = await Promise.all([
-                    fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&page=${currentPage}`),
-                    fetch(`${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&page=${currentPage}`)
-                ]);
-                if (!moviesResponse.ok || !tvResponse.ok) throw new Error('Failed fetch popular items');
-                const moviesData = await moviesResponse.json();
-                const tvsData = await tvResponse.json();
-                const newData = [...moviesData.results, ...tvsData.results]
-                    .filter(item => item.poster_path)
-                    .map(item => ({ id: item.id, title: item.title || item.name, desc: item.overview || 'N/A', img: `https://image.tmdb.org/t/p/w500${item.poster_path}`, date: item.release_date || item.first_air_date, type: item.title ? 'movie' : 'tv', popularity: item.popularity }));
-                const currentIds = new Set(data.map(d => `${d.id}-${d.type}`));
-                const uniqueNewData = newData.filter(item => !currentIds.has(`${item.id}-${item.type}`));
-                data = [...data, ...uniqueNewData];
-                applySortingAndRender(uniqueNewData);
-            } catch (error) { showError(`Err popular: ${error.message}`);
-            } finally { loading = false; loadingIndicator.classList.add('hidden'); }
-        }
-
-        async function fetchWatchedData() {
-            if (loading) return;
-            loading = true;
-            loadingIndicator.classList.remove('hidden');
-            activeTabId = 'watched-tab';
-            swmtscards.innerHTML = '';
-            const watchedList = getWatchedList();
-            data = [];
-
-            if (watchedList.length === 0) {
-                swmtscards.innerHTML = '<p class="col-span-full text-center text-lg text-[var(--text-secondary)] mt-10">Watched list empty.</p>';
-                loading = false; loadingIndicator.classList.add('hidden'); return;
-            }
-
-            try {
-                const fetchPromises = watchedList.map(item => {
-                    const apiEndpoint = item.type === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`;
-                    return fetch(`${TMDB_BASE_URL}${apiEndpoint}?api_key=${TMDB_API_KEY}`)
-                        .then(res => res.ok ? res.json() : Promise.reject(`Fail ${item.type} ${item.id}`))
-                        .then(itemData => ({ id: itemData.id, title: itemData.title || itemData.name, desc: itemData.overview || 'N/A', img: itemData.poster_path ? `https://image.tmdb.org/t/p/w500${itemData.poster_path}` : null, date: itemData.release_date || itemData.first_air_date, type: item.type, popularity: itemData.popularity }))
-                        .catch(err => { console.error("Err watched:", err); return null; });
-                });
-                const results = await Promise.all(fetchPromises);
-                data = results.filter(item => item && item.img);
-                if (data.length === 0 && watchedList.length > 0) { showError("Couldn't load watched."); }
-                applySortingAndRender();
-            } catch (error) { showError(`Err watched data: ${error.message}`);
-            } finally { loading = false; loadingIndicator.classList.add('hidden'); }
-        }
-
-        async function fetchSearchData(query) {
-            if (loading) return;
-            loading = true;
-            loadingIndicator.classList.remove('hidden');
-            swmtscards.innerHTML = '';
-
-            try {
-                const response = await fetch(`${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&include_adult=false`);
-                if (!response.ok) throw new Error('Search failed');
-                const searchData = await response.json();
-                data = searchData.results
-                    .filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path)
-                    .map(item => ({ id: item.id, title: item.title || item.name, desc: item.overview || 'N/A', img: `https://image.tmdb.org/t/p/w500${item.poster_path}`, date: item.release_date || item.first_air_date, type: item.media_type, popularity: item.popularity }));
-
-                if (data.length === 0) { swmtscards.innerHTML = `<p class="col-span-full text-center text-lg text-[var(--text-secondary)] mt-10">No results for "${query}".</p>`; }
-                else { applySortingAndRender(); }
-            } catch (error) {
-                showError(`Err search: ${error.message}`);
-                swmtscards.innerHTML = `<p class="col-span-full text-center text-lg text-[var(--error-text)] mt-10">Search fail.</p>`;
-            } finally { loading = false; loadingIndicator.classList.add('hidden'); }
-        }
-
-         function applySortingAndRender(itemsToAppend = null) {
-            let dataToRender;
-            if (!itemsToAppend) {
-               swmtscards.innerHTML = '';
-                const sortedData = [...data];
-                if (sortMethod === 'asc') sortedData.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
-                else if (sortMethod === 'desc') sortedData.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
-                else sortedData.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-               dataToRender = sortedData;
-            } else { dataToRender = itemsToAppend; }
-             renderCards(dataToRender);
-        }
-
-        function renderCards(items) {
-            const fragment = document.createDocumentFragment();
-            items.forEach(item => {
-                 if(!item || !item.id || !item.title) return;
-                const card = document.createElement('div');
-                card.classList.add('custom-card', 'fade-in');
-                card.dataset.id = item.id;
-                card.dataset.type = item.type;
-                const isWatched = getWatchedList().some(w => w.id === item.id && w.type === item.type);
-                const watchedIcon = isWatched ? 'fa-solid fa-check' : 'fa-solid fa-plus';
-                const watchedLabel = isWatched ? "Watched" : "Add Watchlist";
-                const watchedAction = isWatched ? `removeFromWatchedList(${item.id}, '${item.type}', this)` : `addToWatchedList(${item.id}, '${item.type}', this)`;
-                const watchedClass = isWatched ? 'is-watched' : '';
-
-                card.innerHTML = `
-                    <div class="card-image-container">
-                        <img src="${item.img}" alt="${item.title}" loading="lazy">
-                        <div class="card-overlay"></div>
-                    </div>
-                    <div class="card-content">
-                        <h3>${item.title}</h3>
-                        <div class="card-meta">
-                            <span class="badge">${item.date ? new Date(item.date).getFullYear() : 'N/A'}</span>
-                            <span class="badge">${item.type === 'movie' ? 'Movie' : 'TV'}</span>
-                        </div>
-                        <p class="card-desc">${item.desc}</p>
-                        <div class="mt-auto flex flex-col space-y-2 pt-3">
-                            <button class="btn btn-watch" onclick="navigateToWatchPage('${item.type}', ${item.id})">
-                                <i class="fas fa-play"></i> Watch Now
-                             </button>
-                            <button class="btn btn-watched-toggle ${watchedClass}" onclick="${watchedAction}">
-                                <i class="${watchedIcon}"></i><span class="ml-2">${watchedLabel}</span>
-                            </button>
-                        </div>
-                    </div>`;
-                 fragment.appendChild(card);
-            });
-             swmtscards.appendChild(fragment);
-        }
-
-         function navigateToWatchPage(type, id) {
-             if (!type || !id) return;
-             let hash = `#${type}-${id}`;
-             window.location.href = `watch/${hash}`;
-         }
-
-        function updateWatchedButton(btn, isWatched) {
-            if (!btn) return;
-            const icon = btn.querySelector('i'); const label = btn.querySelector('span');
-            const card = btn.closest('.custom-card'); if (!card) return;
-            const id = parseInt(card.dataset.id); const type = card.dataset.type;
-
-            if (isWatched) {
-                if(icon) icon.className = 'fa-solid fa-check'; if(label) label.textContent = 'Watched';
-                btn.classList.add('is-watched'); btn.onclick = () => removeFromWatchedList(id, type, btn);
-            } else {
-                if(icon) icon.className = 'fa-solid fa-plus'; if(label) label.textContent = 'Add Watchlist';
-                btn.classList.remove('is-watched'); btn.onclick = () => addToWatchedList(id, type, btn);
-            }
-        }
-
-        function getWatchedList() { return JSON.parse(localStorage.getItem('watchedList') || '[]'); }
-
-        function addToWatchedList(id, type, btn) {
-            if (!id || !type) return;
-            const list = getWatchedList();
-            if (!list.some(i => i.id === id && i.type === type)) {
-                list.push({ id, type, added: Date.now() });
-                localStorage.setItem('watchedList', JSON.stringify(list)); updateWatchedButton(btn, true);
-            }
-        }
-
-        function removeFromWatchedList(id, type, btn) {
-            if (!id || !type) return;
-            let list = getWatchedList();
-            list = list.filter(i => !(i.id === id && i.type === type));
-            localStorage.setItem('watchedList', JSON.stringify(list));
-            if (activeTabId === 'watched-tab') {
-                const card = swmtscards.querySelector(`.custom-card[data-id='${id}'][data-type='${type}']`);
-                if (card) { card.classList.add('fade-out'); setTimeout(() => card.remove(), 500); }
-                if (list.length === 0) { swmtscards.innerHTML = '<p class="col-span-full text-center text-lg text-[var(--text-secondary)] mt-10">Watched list empty.</p>'; }
-            } else { updateWatchedButton(btn, false); }
-        }
-
-        function deduplicateWatchedList() {
-            const list = getWatchedList(); let uniqueList = []; const seen = new Set();
-            list.forEach(i => { if(!i || i.id==null || i.type==null) return; const key=`${i.id}-${i.type}`; if (!seen.has(key)) { seen.add(key); uniqueList.push(i); } });
-            if (uniqueList.length !== list.length) { localStorage.setItem('watchedList', JSON.stringify(uniqueList)); }
-        }
-
-        function showError(msg) {
-            errorMessage.textContent = msg;
-            errorMessage.classList.remove('hidden');
-            clearTimeout(errorMessage.timeoutId);
-            errorMessage.timeoutId = setTimeout(() => { errorMessage.classList.add('hidden'); }, 5000);
-        }
-
-        function setActiveTab(btn) {
-            document.querySelectorAll('.tab-item').forEach(tab => tab.classList.remove('active'));
-            btn.classList.add('active'); activeTabId = btn.id;
-        }
-
-        sortSelect.addEventListener('change', (e) => {
-            sortMethod = e.target.value;
-            if (currentQuery) { fetchSearchData(currentQuery); }
-            else if (activeTabId === 'popular-tab') { fetchData(true); }
-            else if (activeTabId === 'watched-tab') { applySortingAndRender(); }
+      } catch(e) {
+        console.error(e);
+      }
+    }
+    function startBackgroundUpdates() {
+      if (backgroundIntervalId) clearInterval(backgroundIntervalId);
+      fetchAndSetRandomBackground();
+      backgroundIntervalId = setInterval(fetchAndSetRandomBackground, 15000);
+    }
+    function stopBackgroundUpdates() {
+      if (backgroundIntervalId) {
+        clearInterval(backgroundIntervalId);
+        backgroundIntervalId = null;
+      }
+    }
+    async function fetchData(reset = false) {
+      if (loading) return;
+      if (reset) {
+        currentPage = 1;
+        data = [];
+        swmtscards.innerHTML = '';
+      }
+      loading = true;
+      loadingIndicator.classList.remove('hidden');
+      activeTabId = 'popular-tab';
+      try {
+        const [moviesResponse, tvResponse] = await Promise.all([
+          fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&page=${currentPage}`),
+          fetch(`${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&page=${currentPage}`)
+        ]);
+        if (!moviesResponse.ok || !tvResponse.ok) throw new Error('Failed');
+        const moviesData = await moviesResponse.json();
+        const tvsData = await tvResponse.json();
+        const newData = [...moviesData.results, ...tvsData.results]
+          .filter(item => item.poster_path)
+          .map(item => ({
+            id: item.id,
+            title: item.title || item.name,
+            desc: item.overview || 'N/A',
+            img: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+            date: item.release_date || item.first_air_date,
+            type: item.title ? 'movie' : 'tv',
+            popularity: item.popularity
+          }));
+        const currentIds = new Set(data.map(d => `${d.id}-${d.type}`));
+        const uniqueNewData = newData.filter(item => !currentIds.has(`${item.id}-${item.type}`));
+        data = [...data, ...uniqueNewData];
+        applySortingAndRender(uniqueNewData);
+      } catch(e) {
+        showError(e.message);
+      } finally {
+        loading = false;
+        loadingIndicator.classList.add('hidden');
+      }
+    }
+    async function fetchWatchedData() {
+      if (loading) return;
+      loading = true;
+      loadingIndicator.classList.remove('hidden');
+      activeTabId = 'watched-tab';
+      swmtscards.innerHTML = '';
+      const watchedList = getWatchedList();
+      data = [];
+      if (watchedList.length === 0) {
+        swmtscards.innerHTML = '<p class="no-results text-center">Watched list empty.</p>';
+        loading = false;
+        loadingIndicator.classList.add('hidden');
+        return;
+      }
+      try {
+        const fetchPromises = watchedList.map(item => {
+          const apiEndpoint = item.type === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`;
+          return fetch(`${TMDB_BASE_URL}${apiEndpoint}?api_key=${TMDB_API_KEY}`)
+            .then(r => r.ok ? r.json() : null)
+            .then(d => d ? {
+              id: d.id,
+              title: d.title || d.name,
+              desc: d.overview || 'N/A',
+              img: d.poster_path ? `https://image.tmdb.org/t/p/w500${d.poster_path}` : null,
+              date: d.release_date || d.first_air_date,
+              type: item.type,
+              popularity: d.popularity
+            } : null).catch(() => null);
         });
-
-        let searchDebounceTimeout;
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.trim();
-            clearTimeout(searchDebounceTimeout);
-            if (query) { currentQuery = query; searchDebounceTimeout = setTimeout(() => { fetchSearchData(query); }, 350); }
-            else { currentQuery = ''; const activeBtn = document.getElementById(activeTabId); if (activeBtn) activeBtn.click(); else popularTabBtn.click(); }
-        });
-
-        window.addEventListener('scroll', () => {
-            if (activeTabId === 'popular-tab' && !loading && !currentQuery) {
-                const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
-                if (window.scrollY >= scrollableHeight - 900) { currentPage++; fetchData(); }
-            }
-        });
-
-        document.addEventListener('visibilitychange', () => {
-             if (document.hidden) {
-                 stopBackgroundUpdates();
-             } else {
-                 startBackgroundUpdates();
-             }
-         });
-
-
-        deduplicateWatchedList();
-        startBackgroundUpdates();
-        setActiveTab(popularTabBtn);
+        const results = await Promise.all(fetchPromises);
+        data = results.filter(i => i && i.img);
+        if (data.length === 0 && watchedList.length > 0) {
+          showError("Couldn't load watched.");
+        }
+        applySortingAndRender();
+      } catch(e) {
+        showError(e.message);
+      } finally {
+        loading = false;
+        loadingIndicator.classList.add('hidden');
+      }
+    }
+    async function fetchSearchData(query) {
+      if (loading) return;
+      loading = true;
+      loadingIndicator.classList.remove('hidden');
+      swmtscards.innerHTML = '';
+      try {
+        const response = await fetch(`${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&include_adult=false`);
+        if (!response.ok) throw new Error('Search failed');
+        const searchData = await response.json();
+        data = searchData.results.filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path)
+          .map(item => ({
+            id: item.id,
+            title: item.title || item.name,
+            desc: item.overview || 'N/A',
+            img: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+            date: item.release_date || item.first_air_date,
+            type: item.media_type,
+            popularity: item.popularity
+          }));
+        if (data.length === 0) {
+          swmtscards.innerHTML = `<p class="no-results text-center">No results for "${query}".</p>`;
+        } else {
+          applySortingAndRender();
+        }
+      } catch(e) {
+        showError(e.message);
+        swmtscards.innerHTML = `<p class="no-results text-center" style="color:#d9534f;margin-top:30px;">Search fail.</p>`;
+      } finally {
+        loading = false;
+        loadingIndicator.classList.add('hidden');
+      }
+    }
+    function applySortingAndRender(itemsToAppend = null) {
+      let dataToRender;
+      if (!itemsToAppend) {
+        swmtscards.innerHTML = '';
+        const sortedData = [...data];
+        if (sortMethod === 'asc') {
+          sortedData.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+        } else if (sortMethod === 'desc') {
+          sortedData.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+        } else {
+          sortedData.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+        }
+        dataToRender = sortedData;
+      } else {
+        dataToRender = itemsToAppend;
+      }
+      renderCards(dataToRender);
+    }
+    function renderCards(items) {
+      const fragment = document.createDocumentFragment();
+      items.forEach(item => {
+        if (!item || !item.id || !item.title) return;
+        const card = document.createElement('div');
+        card.classList.add('custom-card', 'fade-in');
+        card.dataset.id = item.id;
+        card.dataset.type = item.type;
+        const isWatched = getWatchedList().some(w => w.id === item.id && w.type === item.type);
+        const watchedIcon = isWatched ? 'bi bi-check-circle-fill' : 'bi bi-plus-circle';
+        const watchedLabel = isWatched ? "Watched" : "Add Watchlist";
+        const watchedAction = isWatched ? `removeFromWatchedList(${item.id}, '${item.type}', this)` : `addToWatchedList(${item.id}, '${item.type}', this)`;
+        const watchedClass = isWatched ? 'is-watched' : '';
+        card.innerHTML = `
+          <div class="card-image-container">
+            <img src="${item.img}" alt="${item.title}" loading="lazy">
+            <div class="card-overlay"></div>
+          </div>
+          <div class="card-content">
+            <h3>${item.title}</h3>
+            <div class="card-meta">
+              <span class="badge">${item.date ? new Date(item.date).getFullYear() : 'N/A'}</span>
+              <span class="badge">${item.type === 'movie' ? 'Movie' : 'TV'}</span>
+            </div>
+            <p class="card-desc">${item.desc}</p>
+            <div class="mt-auto d-flex flex-column gap-2 pt-3">
+              <button class="btn btn-watch" onclick="navigateToWatchPage('${item.type}', ${item.id})">
+                <i class="bi bi-play-fill"></i>
+                Watch Now
+              </button>
+              <button class="btn btn-watched-toggle ${watchedClass}" onclick="${watchedAction}">
+                <i class="${watchedIcon}"></i>
+                <span>${watchedLabel}</span>
+              </button>
+            </div>
+          </div>`;
+        fragment.appendChild(card);
+      });
+      swmtscards.appendChild(fragment);
+    }
+    function navigateToWatchPage(type, id) {
+      if (!type || !id) return;
+      let hash = `#${type}-${id}`;
+      window.location.href = `watch/${hash}`;
+    }
+    function updateWatchedButton(btn, isWatched) {
+      if (!btn) return;
+      const icon = btn.querySelector('i');
+      const label = btn.querySelector('span');
+      const card = btn.closest('.custom-card');
+      if (!card) return;
+      const id = parseInt(card.dataset.id);
+      const type = card.dataset.type;
+      if (isWatched) {
+        if (icon) icon.className = 'bi bi-check-circle-fill';
+        if (label) label.textContent = 'Watched';
+        btn.classList.add('is-watched');
+        btn.onclick = () => removeFromWatchedList(id, type, btn);
+      } else {
+        if (icon) icon.className = 'bi bi-plus-circle';
+        if (label) label.textContent = 'Add Watchlist';
+        btn.classList.remove('is-watched');
+        btn.onclick = () => addToWatchedList(id, type, btn);
+      }
+    }
+    function getWatchedList() {
+      return JSON.parse(localStorage.getItem('watchedList') || '[]');
+    }
+    function addToWatchedList(id, type, btn) {
+      if (!id || !type) return;
+      const list = getWatchedList();
+      if (!list.some(i => i.id === id && i.type === type)) {
+        list.push({ id, type, added: Date.now() });
+        localStorage.setItem('watchedList', JSON.stringify(list));
+        updateWatchedButton(btn, true);
+      }
+    }
+    function removeFromWatchedList(id, type, btn) {
+      if (!id || !type) return;
+      let list = getWatchedList();
+      list = list.filter(i => !(i.id === id && i.type === type));
+      localStorage.setItem('watchedList', JSON.stringify(list));
+      if (activeTabId === 'watched-tab') {
+        const card = swmtscards.querySelector(`.custom-card[data-id='${id}'][data-type='${type}']`);
+        if (card) {
+          card.classList.add('fade-out');
+          setTimeout(() => card.remove(), 500);
+        }
+        if (list.length === 0) {
+          swmtscards.innerHTML = '<p class="no-results text-center">Watched list empty.</p>';
+        }
+      } else {
+        updateWatchedButton(btn, false);
+      }
+    }
+    function deduplicateWatchedList() {
+      const list = getWatchedList();
+      let uniqueList = [];
+      const seen = new Set();
+      list.forEach(i => {
+        if (!i || i.id == null || i.type == null) return;
+        const key = `${i.id}-${i.type}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          uniqueList.push(i);
+        }
+      });
+      if (uniqueList.length !== list.length) {
+        localStorage.setItem('watchedList', JSON.stringify(uniqueList));
+      }
+    }
+    function showError(msg) {
+      errorMessage.textContent = msg;
+      errorMessage.classList.remove('hidden');
+      clearTimeout(errorMessage.timeoutId);
+      errorMessage.timeoutId = setTimeout(() => {
+        errorMessage.classList.add('hidden');
+      }, 5000);
+    }
+    function setActiveTab(btn) {
+      document.querySelectorAll('.tab-item').forEach(tab => tab.classList.remove('active'));
+      btn.classList.add('active');
+      activeTabId = btn.id;
+    }
+    sortSelect.addEventListener('change', e => {
+      sortMethod = e.target.value;
+      if (currentQuery) {
+        fetchSearchData(currentQuery);
+      } else if (activeTabId === 'popular-tab') {
         fetchData(true);
-
-    </script>
+      } else if (activeTabId === 'watched-tab') {
+        applySortingAndRender();
+      }
+    });
+    let searchDebounceTimeout;
+    searchInput.addEventListener('input', e => {
+      const query = e.target.value.trim();
+      clearTimeout(searchDebounceTimeout);
+      if (query) {
+        currentQuery = query;
+        searchDebounceTimeout = setTimeout(() => {
+          fetchSearchData(query);
+        }, 350);
+      } else {
+        currentQuery = '';
+        const activeBtn = document.getElementById(activeTabId);
+        if (activeBtn) activeBtn.click();
+        else popularTabBtn.click();
+      }
+    });
+    window.addEventListener('scroll', () => {
+      if (activeTabId === 'popular-tab' && !loading && !currentQuery) {
+        const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+        if (window.scrollY >= scrollableHeight - 900) {
+          currentPage++;
+          fetchData();
+        }
+      }
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stopBackgroundUpdates();
+      else startBackgroundUpdates();
+    });
+    deduplicateWatchedList();
+    startBackgroundUpdates();
+    setActiveTab(popularTabBtn);
+    fetchData(true);
+  </script>
 </body>
 </html>

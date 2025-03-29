@@ -1,496 +1,625 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="bw_dark">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="../src/img/favicon.png">
-    <title>SWMTS | Cast</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-
-        :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #1f1f1f;
-            --bg-accent: #2a2a2a;
-            --text-primary: #f0f0f0;
-            --text-secondary: #a0a0a0;
-            --text-accent: #ffffff;
-            --accent-primary: #ffffff;
-            --accent-secondary: #e0e0e0;
-            --border-color: rgba(255, 255, 255, 0.15);
-            --border-color-strong: rgba(255, 255, 255, 0.5);
-            --shadow-color-soft: rgba(255, 255, 255, 0.1);
-            --shadow-color-glow: rgba(255, 255, 255, 0.4);
-            --error-bg: #400000;
-            --error-text: #ffaaaa;
-            --scrollbar-thumb: #555555;
-            --scrollbar-track: #1a1a1a;
-            --body-bg-image: linear-gradient(to bottom right, #111, #000);
-            --border-radius-base: 1rem;
-            --border-radius-small: 0.5rem;
-            --border-radius-pill: 9999px;
-            --global-overlay-opacity: 0.65;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            transition: color 0.3s ease;
-            position: relative;
-            z-index: 1;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: -5%; left: -5%;
-            width: 110%; height: 110%;
-            z-index: -1;
-            background-image: var(--body-bg-image);
-            background-size: cover;
-            background-position: center center;
-            filter: blur(18px) brightness(0.4);
-            transition: background-image 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        #global-overlay {
-             position: fixed;
-             top: 0; left: 0; right: 0; bottom: 0;
-             background-color: rgba(0, 0, 0, var(--global-overlay-opacity));
-             z-index: 0;
-             pointer-events: none;
-        }
-
-        #app-content {
-             position: relative;
-             z-index: 1;
-             padding: 1.5rem;
-        }
-
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
-        ::-webkit-scrollbar-thumb { background-color: var(--scrollbar-thumb); border-radius: var(--border-radius-pill); border: 3px solid var(--scrollbar-track); }
-        ::-webkit-scrollbar-thumb:hover { background-color: color-mix(in srgb, var(--scrollbar-thumb) 80%, white); }
-
-        .hidden { display: none; }
-
-        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.7rem 1.2rem; border-radius: var(--border-radius-pill); font-weight: 600; text-align: center; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease; border: 1px solid var(--border-color); font-size: 0.875rem; background-color: transparent; color: var(--text-secondary); }
-        .btn i { margin-right: 0.6rem; }
-        .btn:active { transform: scale(0.97); }
-        .btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); background-color: rgba(255, 255, 255, 0.1); box-shadow: 0 0 10px var(--shadow-color-glow); }
-        .btn-sm { padding: 0.5rem 1rem; font-size: 0.75rem;}
-
-        .btn-watched-toggle { } 
-        .btn-watched-toggle span { margin-left: 5px; }
-        .btn-watched-toggle.is-watched { background-color: rgba(255, 255, 255, 0.15); border-color: var(--border-color-strong); color: var(--text-accent); box-shadow: 0 0 8px var(--shadow-color-glow); }
-        .btn-watched-toggle.is-watched:hover { background-color: transparent; border-color: var(--border-color); color: var(--text-secondary); box-shadow: 0 0 10px var(--shadow-color-glow); }
-
-        label { display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem;}
-        select {
-            background-color: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-pill);
-            padding: 0.7rem 2rem 0.7rem 1rem;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23a0a0a0' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.7rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-            width: auto; min-width: 10rem; 
-        }
-         select:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 8px 2px var(--shadow-color-glow); }
-
-         .badge { display: inline-block; padding: 0.3rem 0.8rem; font-size: 0.75rem; font-weight: 600; border-radius: var(--border-radius-pill); border: 1px solid var(--border-color); color: var(--text-secondary); background-color: rgba(255, 255, 255, 0.05); text-transform: uppercase; letter-spacing: 0.5px; }
-
-        .back-button-container { position: absolute; top: 1.5rem; left: 1.5rem; z-index: 20; }
-        .content-wrapper { display: flex; flex-direction: column; align-items: center; padding-top: 4rem; }
-
-        .metadata-section {
-             display: flex; flex-direction: column;
-             align-items: center;
-             background-color: var(--bg-accent);
-             padding: 1.5rem;
-             border-radius: var(--border-radius-base);
-             border: 1px solid var(--border-color);
-             width: 100%; max-width: 64rem;
-             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-             margin-bottom: 2rem;
-         }
-         @media (min-width: 768px) { .metadata-section { flex-direction: row; align-items: flex-start; } }
-
-         .metadata-poster { width: 12rem; height: 18rem; flex-shrink: 0; margin-bottom: 1.5rem; }
-          @media (min-width: 768px) { .metadata-poster { margin-right: 2rem; margin-bottom: 0; width: 14rem; height: 21rem; }}
-         .metadata-poster img { border-radius: var(--border-radius-base); object-fit: cover; width: 100%; height: 100%; box-shadow: 0 2px 8px rgba(0,0,0,0.5);}
-
-         .metadata-details { flex-grow: 1; text-align: center; }
-         @media (min-width: 768px) { .metadata-details { text-align: left; }}
-         .metadata-details h1 { color: var(--text-accent); font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 700; }
-         @media (min-width: 768px) { .metadata-details h1 { font-size: 2.5rem; }}
-
-         .metadata-bio-container { position: relative; margin-bottom: 1.5rem;}
-         .metadata-details #desc {
-            color: var(--text-secondary); font-size: 0.9rem;
-            line-height: 1.6; max-width: 60ch;
-            overflow: hidden;
-            transition: max-height 0.5s ease-in-out;
-            margin-left: auto; margin-right: auto;
-        }
-        .metadata-details #desc.collapsed { max-height: 10rem; }
-        .metadata-details #desc.expanded { max-height: 1000px; }
-         @media (min-width: 768px) { .metadata-details #desc { margin-left: 0; margin-right: 0; font-size: 1rem;} }
-        #toggleDescBtn {
-             display: block; 
-             background: linear-gradient(to top, var(--bg-accent), transparent);
-             border: none; color: var(--accent-primary); font-weight: 600;
-             cursor: pointer; padding-top: 1rem; margin-top: -1rem;
-             width: 100%; text-align: center;
-        }
-        #desc.expanded + #toggleDescBtn { background: none; padding-top: 0.5rem; margin-top: 0.5rem; }
-
-
-         .metadata-badges { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-top: 1.5rem; }
-         @media (min-width: 768px) { .metadata-badges { justify-content: flex-start; }}
-
-         .known-for-header { width: 100%; max-width: 64rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; margin-top: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;}
-         .known-for-header h2 { color: var(--text-primary); font-size: 1.5rem; font-weight: 600;}
-
-        .grid-container { width: 100%; max-width: 64rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
-
-        .custom-card {
-            background-color: var(--bg-accent);
-            border-radius: var(--border-radius-base);
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border-color);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative; 
-        }
-        .custom-card:hover {
-            transform: translateY(-6px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7), 0 0 15px var(--shadow-color-glow), 0 0 0 1px var(--border-color-strong);
-        }
-        .custom-card .card-image-container { position: relative; overflow: hidden; border-radius: var(--border-radius-base); }
-        .custom-card img { display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; transition: transform 0.5s ease, filter 0.5s ease; }
-        .custom-card:hover img { transform: scale(1.08); filter: brightness(0.6); }
-        .custom-card .card-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, rgba(0,0,0,0.8) 10%, transparent 60%); opacity: 0; transition: opacity 0.4s ease; pointer-events: none; border-radius: var(--border-radius-base); }
-        .custom-card:hover .card-overlay { opacity: 1; }
-        .custom-card .card-content { position: absolute; bottom: 0; left: 0; width: 100%; padding: 1rem; color: white; z-index: 1; transform: translateY(100%); transition: transform 0.4s ease-out, opacity 0.4s ease-out; opacity: 0;}
-        .custom-card:hover .card-content{ transform: translateY(0); opacity: 1;}
-        .custom-card .card-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.2; }
-        .custom-card .card-content p { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.75rem; }
-        .custom-card .card-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-
-
-        .error-message { background-color: var(--error-bg); color: var(--error-text); padding: 1rem 1.5rem; border-radius: var(--border-radius-base); margin: 1rem auto 0 auto; text-align: center; font-weight: 600; border: 1px solid color-mix(in srgb, var(--error-text) 50%, transparent); box-shadow: 0 0 10px color-mix(in srgb, var(--error-text) 30%, transparent); animation: fadeIn 0.5s ease-out; }
-        #error-message-container { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); z-index: 100; width: 90%; max-width: 500px; pointer-events: none; }
-        #error-message-container .error-message { pointer-events: auto; }
-
-        .fade-in { animation: fadeIn 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeOut { to { opacity: 0; transform: scale(0.95); } }
-        .fade-out { animation: fadeOut 0.5s ease-out forwards; }
-
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="../src/img/favicon.png">
+  <title>SWMTS | Cast</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+  <style>
+    :root {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #1f1f1f;
+      --bg-accent: #2a2a2a;
+      --text-primary: #f0f0f0;
+      --text-secondary: #a0a0a0;
+      --text-accent: #ffffff;
+      --accent-primary: #ffffff;
+      --accent-secondary: #e0e0e0;
+      --border-color: rgba(255, 255, 255, 0.15);
+      --border-color-strong: rgba(255, 255, 255, 0.5);
+      --shadow-color-soft: rgba(255, 255, 255, 0.1);
+      --shadow-color-glow: rgba(255, 255, 255, 0.4);
+      --error-bg: #400000;
+      --error-text: #ffaaaa;
+      --scrollbar-thumb: #555555;
+      --scrollbar-track: #1a1a1a;
+      --body-bg-image: linear-gradient(to bottom right, #111, #000);
+      --border-radius-base: 1rem;
+      --border-radius-small: 0.5rem;
+      --border-radius-pill: 9999px;
+      --global-overlay-opacity: 0.65;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      position: relative;
+      z-index: 1;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: -5%;
+      left: -5%;
+      width: 110%;
+      height: 110%;
+      z-index: -1;
+      background-image: var(--body-bg-image);
+      background-size: cover;
+      background-position: center;
+      filter: blur(18px) brightness(0.4);
+      transition: background-image 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #global-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, var(--global-overlay-opacity));
+      z-index: 0;
+      pointer-events: none;
+    }
+    #app-content {
+      position: relative;
+      z-index: 1;
+      padding: 1.5rem;
+      margin: auto;
+    }
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+    ::-webkit-scrollbar-thumb { background-color: var(--scrollbar-thumb); border-radius: var(--border-radius-pill); border: 3px solid var(--scrollbar-track); }
+    ::-webkit-scrollbar-thumb:hover { background-color: #777; }
+    .hidden { display: none; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.7rem 1.2rem;
+      border-radius: var(--border-radius-pill);
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+      border: 1px solid var(--border-color);
+      font-size: 0.875rem;
+      background-color: transparent;
+      color: var(--text-secondary);
+    }
+    .btn i { margin-right: 0.6rem; }
+    .btn:active { transform: scale(0.97); }
+    .btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); background-color: rgba(255, 255, 255, 0.1); box-shadow: 0 0 10px var(--shadow-color-glow); }
+    .btn-sm { padding: 0.5rem 1rem; font-size: 0.75rem; }
+    .btn-watched-toggle.is-watched {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-color: var(--border-color-strong);
+      color: var(--text-accent);
+      box-shadow: 0 0 8px var(--shadow-color-glow);
+    }
+    .btn-watched-toggle.is-watched:hover {
+      background-color: transparent;
+      border-color: var(--border-color);
+      color: var(--text-secondary);
+      box-shadow: 0 0 10px var(--shadow-color-glow);
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+    select {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-pill);
+      padding: 0.7rem 2rem 0.7rem 1rem;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23a0a0a0' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+      background-position: right 0.7rem center;
+      background-repeat: no-repeat;
+      background-size: 1.5em 1.5em;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      width: auto;
+      min-width: 10rem;
+    }
+    select:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 8px 2px var(--shadow-color-glow); }
+    .badge {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: var(--border-radius-pill);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      background-color: rgba(255, 255, 255, 0.05);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .back-button-container {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      z-index: 20;
+    }
+    .content-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px;
+    }
+    .metadata-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: var(--bg-accent);
+      padding: 1.5rem;
+      border-radius: var(--border-radius-base);
+      border: 1px solid var(--border-color);
+      width: 100%;
+      max-width: 64rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      margin-bottom: 2rem;
+    }
+    @media (min-width: 768px) {
+      .metadata-section { flex-direction: row; align-items: flex-start; }
+    }
+    .metadata-poster {
+      width: 12rem;
+      height: 18rem;
+      flex-shrink: 0;
+      margin-bottom: 1.5rem;
+    }
+    @media (min-width: 768px) {
+      .metadata-poster { margin-right: 2rem; margin-bottom: 0; width: 14rem; height: 21rem; }
+    }
+    .metadata-poster img {
+      border-radius: var(--border-radius-base);
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    .metadata-details {
+      flex-grow: 1;
+      text-align: center;
+    }
+    @media (min-width: 768px) {
+      .metadata-details { text-align: left; }
+    }
+    .metadata-details h1 {
+      color: var(--text-accent);
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+    @media (min-width: 768px) {
+      .metadata-details h1 { font-size: 2.5rem; }
+    }
+    .metadata-bio-container {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    .metadata-details #desc {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      max-width: 60ch;
+      overflow: hidden;
+      transition: max-height 0.5s ease-in-out;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .metadata-details #desc.collapsed { max-height: 10rem; }
+    .metadata-details #desc.expanded { max-height: 1000px; }
+    @media (min-width: 768px) {
+      .metadata-details #desc { margin-left: 0; margin-right: 0; font-size: 1rem; }
+    }
+    #toggleDescBtn {
+      display: block;
+      background: linear-gradient(to top, var(--bg-accent), transparent);
+      border: none;
+      color: var(--accent-primary);
+      font-weight: 600;
+      cursor: pointer;
+      padding-top: 1rem;
+      margin-top: -1rem;
+      width: 100%;
+      text-align: center;
+    }
+    #desc.expanded + #toggleDescBtn {
+      background: none;
+      padding-top: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .metadata-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+    @media (min-width: 768px) {
+      .metadata-badges { justify-content: flex-start; }
+    }
+    .known-for-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 2rem auto 1.5rem;
+      padding-bottom: 0.75rem;
+    }
+    .known-for-header h2 {
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 25px;
+      border-top: 5px solid white;
+      border-radius: 25px;
+      padding: 50px;
+    }
+    .custom-card {
+      background-color: var(--bg-accent);
+      border-radius: var(--border-radius-base);
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5), 0 0 0 1px var(--border-color);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+    }
+    .custom-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.7), 0 0 15px var(--shadow-color-glow), 0 0 0 1px var(--border-color-strong);
+    }
+    .custom-card .card-image-container {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--border-radius-base);
+    }
+    .custom-card img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      object-fit: cover;
+      transition: transform 0.5s ease, filter 0.5s ease;
+    }
+    .custom-card:hover img {
+      transform: scale(1.08);
+      filter: brightness(0.6);
+    }
+    .custom-card .card-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 10%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+      border-radius: var(--border-radius-base);
+    }
+    .custom-card:hover .card-overlay {
+      opacity: 1;
+    }
+    .custom-card .card-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 1rem;
+      color: white;
+      z-index: 1;
+      transform: translateY(100%);
+      transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+      opacity: 0;
+    }
+    .custom-card:hover .card-content {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .custom-card .card-content h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      line-height: 1.2;
+    }
+    .custom-card .card-content p {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 0.75rem;
+    }
+    .custom-card .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .error-message {
+      background-color: var(--error-bg);
+      color: var(--error-text);
+      padding: 1rem 1.5rem;
+      border-radius: var(--border-radius-base);
+      margin: 1rem auto 0;
+      text-align: center;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 0 10px rgba(255,255,255,0.3);
+      animation: fadeIn 0.5s ease-out;
+    }
+    #error-message-container {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      width: 90%;
+      max-width: 500px;
+      pointer-events: none;
+    }
+    #error-message-container .error-message { pointer-events: auto; }
+    .fade-in { animation: fadeIn 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeOut { to { opacity: 0; transform: scale(0.95); } }
+    .fade-out { animation: fadeOut 0.5s ease-out forwards; }
+  </style>
 </head>
 <body class="min-h-screen">
-
-    <div id="global-overlay"></div>
-
-    <div id="app-content">
-
-        <div class="back-button-container">
-            <a href="../" class="btn"><i class="fas fa-arrow-left"></i> Back</a>
-        </div>
-
-        <div class="content-wrapper">
-
-            <section id="metadata" class="metadata-section">
-                 <div class="metadata-poster">
-                    <img id="poster" src="" alt="Cast Member Profile">
-                </div>
-                <div class="metadata-details">
-                  <h1 id="title">Loading...</h1>
-                  <div class="metadata-bio-container">
-                    <p id="desc" class="collapsed">Loading biography...</p>
-                    <button id="toggleDescBtn" onclick="toggleDesc('desc', this)" class="hidden">See More</button>
-                  </div>
-                  <div class="metadata-badges">
-                     <span id="birthYearBadge" class="badge">Birth Year</span>
-                     <span id="birthPlaceBadge" class="badge">Birth Place</span>
-                     <span id="departmentBadge" class="badge">Department</span>
-                  </div>
-                </div>
-            </section>
-
-            <div class="known-for-header">
-                <h2>Known For</h2>
-                <select id="sortSelect">
-                    <option value="desc" selected>Newest</option>
-                    <option value="asc">Oldest</option>
-                </select>
-            </div>
-
-            <section id="known-for-credits" class="w-full max-w-6xl">
-                <div id="swmtscards" class="grid-container">
-                </div>
-            </section>
-
-        </div>
+  <div id="global-overlay"></div>
+  <div id="app-content">
+    <div class="back-button-container">
+      <a href="../" class="btn"><i class="bi bi-arrow-left"></i> Back</a>
     </div>
-
-    <div id="error-message-container">
-         <div id="error-message" class="hidden error-message" role="alert">
-
-         </div>
+    <div class="content-wrapper">
+      <section id="metadata" class="metadata-section">
+        <div class="metadata-poster">
+          <img id="poster" src="" alt="Cast Member Profile">
+        </div>
+        <div class="metadata-details">
+          <h1 id="title">Loading...</h1>
+          <div class="metadata-bio-container">
+            <p id="desc" class="collapsed">Loading biography...</p>
+            <button id="toggleDescBtn" onclick="toggleDesc('desc', this)" class="hidden">See More</button>
+          </div>
+          <div class="metadata-badges">
+            <span id="birthYearBadge" class="badge">Birth Year</span>
+            <span id="birthPlaceBadge" class="badge">Birth Place</span>
+            <span id="departmentBadge" class="badge">Department</span>
+          </div>
+        </div>
+      </section>
+      <div class="known-for-header">
+        <h2>Known For</h2>
+        <select id="sortSelect">
+          <option value="desc" selected>Newest</option>
+          <option value="asc">Oldest</option>
+        </select>
+      </div>
+      <section id="known-for-credits">
+        <div id="swmtscards" class="grid-container"></div>
+      </section>
     </div>
-
-    <script>
-        const TMDB_API_KEY = 'db841157430b89c9ab8833d281d1c060';
-        const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-        const posterElement = document.getElementById('poster');
-        const titleElement = document.getElementById('title');
-        const descElement = document.getElementById('desc');
-        const toggleDescBtn = document.getElementById('toggleDescBtn');
-        const birthYearBadge = document.getElementById('birthYearBadge');
-        const birthPlaceBadge = document.getElementById('birthPlaceBadge');
-        const departmentBadge = document.getElementById('departmentBadge');
-        const swmtscards = document.getElementById('swmtscards');
-        const sortSelect = document.getElementById('sortSelect');
-        const errorMessageContainer = document.getElementById('error-message-container');
-        const errorMessage = document.getElementById('error-message');
-        let sortMethod = 'desc';
-        let knownForData = [];
-        let backgroundIntervalId = null;
-
-        function getWatchedList() {
-            return JSON.parse(localStorage.getItem('watchedList') || '[]');
-        }
-
-        function addToWatchedList(id, type) {
-            const watchedList = getWatchedList();
-            if (!watchedList.some(item => item.id === id && item.type === type)) {
-                watchedList.push({ id, type, added: Date.now() });
-                localStorage.setItem('watchedList', JSON.stringify(watchedList));
-                updateCardButtons(id, type, true);
-                deduplicateWatchedList();
-            }
-        }
-
-        function removeFromWatchedList(id, type) {
-           let watchedList = getWatchedList();
-           watchedList = watchedList.filter(item => !(item.id === id && item.type === type));
-           localStorage.setItem('watchedList', JSON.stringify(watchedList));
-           updateCardButtons(id, type, false);
-           deduplicateWatchedList();
-        }
-
-        function updateCardButtons(mediaId, mediaType, isWatched) {
-            const card = swmtscards.querySelector(`.custom-card[data-id='${mediaId}'][data-type='${mediaType}']`);
-            if (card) {
-                const button = card.querySelector('.btn-watched-toggle');
-                if(button) {
-                    const icon = button.querySelector('i');
-                    const label = button.querySelector('span');
-                    if(icon) icon.className = isWatched ? 'fa-solid fa-check' : 'fa-solid fa-plus';
-                    if(label) label.textContent = isWatched ? "Watched" : "Add Watchlist";
-                    button.classList.toggle('is-watched', isWatched);
-                    button.onclick = isWatched
-                        ? () => removeFromWatchedList(mediaId, mediaType)
-                        : () => addToWatchedList(mediaId, mediaType);
-                }
-            }
-        }
-
-        function navigateToWatchPage(type, id) {
-            if(!type || id == null) return;
-            let hash = `#${type}-${id}`;
-            window.location.href = `../watch/${hash}`;
-        }
-
-        function setCookie(name, value, days) {
-            let expires = "";
-            if (days) { const date = new Date(); date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000)); expires = "; expires=" + date.toUTCString(); }
-            document.cookie = `${name}=${value || ""}${expires}; path=/; SameSite=Lax`;
-        }
-
-        function getCookie(name) {
-            const nameEQ = name + "=";
-            const ca = document.cookie.split(';');
-            for(let i=0; i < ca.length; i++) { let c = ca[i]; while (c.charAt(0)==' ') c = c.substring(1,c.length); if (c.indexOf(nameEQ) == 0) return decodeURIComponent(c.substring(nameEQ.length,c.length)); }
-            return null;
-        }
-
-        function deduplicateWatchedList() {
-            const list = getWatchedList(); let uniqueList = []; const seen = new Set();
-            list.forEach(i => { if(!i || i.id==null || i.type==null) return; const key=`${i.id}-${i.type}`; if (!seen.has(key)) { seen.add(key); uniqueList.push(i); } });
-            if (uniqueList.length !== list.length) { localStorage.setItem('watchedList', JSON.stringify(uniqueList)); }
-        }
-
-        sortSelect.addEventListener('change', (e) => {
-            sortMethod = e.target.value;
-            renderKnownFor();
-        });
-
-        async function fetchData() {
-            try {
-                const hash = window.location.hash.substring(1);
-                if (!hash) throw new Error("No cast member ID specified in URL hash.");
-
-                const response = await fetch(`${TMDB_BASE_URL}/person/${hash}?api_key=${TMDB_API_KEY}&append_to_response=combined_credits`);
-                if (!response.ok) throw new Error('Network response was not ok for Cast API');
-
-                const personData = await response.json();
-
-                const birthDate = personData.birthday ? new Date(personData.birthday).getFullYear() : 'N/A';
-                posterElement.src = personData.profile_path ? `https://image.tmdb.org/t/p/w500${personData.profile_path}` : '../src/img/placeholder_person.png';
-                titleElement.textContent = personData.name || 'Unknown Name';
-                document.title = `SWMTS | ${personData.name || 'Cast Member'}`;
-
-                descElement.textContent = personData.biography || 'No biography available.';
-                 if(descElement.scrollHeight > descElement.clientHeight || descElement.textContent.length > 400) {
-                     toggleDescBtn.classList.remove('hidden');
-                 } else {
-                     descElement.classList.remove('collapsed');
-                     toggleDescBtn.classList.add('hidden');
-                 }
-
-                birthYearBadge.textContent = `Born: ${birthDate}`;
-                birthPlaceBadge.textContent = personData.place_of_birth || 'Birthplace Unknown';
-                departmentBadge.textContent = personData.known_for_department || 'N/A';
-
-
-                if(personData.combined_credits && personData.combined_credits.cast) {
-                    knownForData = personData.combined_credits.cast
-                        .filter(item => item.poster_path && (item.media_type === 'movie' || item.media_type === 'tv'));
-                    renderKnownFor();
-                } else {
-                    swmtscards.innerHTML = '<p class="col-span-full text-center text-[var(--text-secondary)]">No credits found.</p>';
-                }
-
-            } catch (error) {
-                console.error("Fetch cast data error:", error);
-                showError(`Error loading cast details: ${error.message}`);
-                 titleElement.textContent = "Error Loading";
-                 descElement.textContent = "Could not load cast member details.";
-            }
-        }
-
-        function renderKnownFor() {
-            knownForData.sort((a, b) => {
-                 const dateA = new Date(a.release_date || a.first_air_date || 0);
-                 const dateB = new Date(b.release_date || b.first_air_date || 0);
-                const validDateA = !isNaN(dateA);
-                 const validDateB = !isNaN(dateB);
-
-                 if (!validDateA && !validDateB) return 0;
-                 if (!validDateA) return 1;
-                 if (!validDateB) return -1;
-
-                 return sortMethod === 'asc' ? dateA - dateB : dateB - dateA;
-            });
-
-            swmtscards.innerHTML = knownForData.map(item => {
-                const mediaType = item.media_type;
-                const title = item.title || item.name;
-                const overview = item.overview || 'No description.';
-                const posterPath = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '../src/img/placeholder.png';
-                const character = item.character || 'N/A';
-
-                 const isWatched = getWatchedList().some(watchedItem => watchedItem.id === item.id && watchedItem.type === mediaType);
-                 const watchedButtonIcon = isWatched ? 'fa-solid fa-check' : 'fa-solid fa-plus';
-                 const watchedButtonLabel = isWatched ? "Watched" : "Add Watchlist";
-                 const watchButtonIcon = 'fa-solid fa-play';
-                const watchedButtonClass = isWatched ? 'is-watched' : '';
-
-                return `
-                    <div class="custom-card fade-in" data-id="${item.id}" data-type="${mediaType}">
-                        <div class="card-image-container">
-                            <img src="${posterPath}" alt="${title}">
-                             <div class="card-overlay"></div>
-                             <div class="card-content">
-                                <h3>${title}</h3>
-                                 <p>Character: ${character}</p>
-                                <div class="card-actions">
-                                    <button class="btn btn-sm" onclick="navigateToWatchPage('${mediaType}', ${item.id})"><i class="${watchButtonIcon}"></i> Watch </button>
-                                    <button class="btn btn-sm btn-watched-toggle ${watchedButtonClass}" onclick="${isWatched ? `removeFromWatchedList(${item.id}, '${mediaType}')` : `addToWatchedList(${item.id}, '${mediaType}')`}">
-                                          <i class="${watchedButtonIcon}"></i><span>${watchedButtonLabel}</span>
-                                    </button>
-                                </div>
-                             </div>
-                        </div>
-                    </div>`;
-            }).join('');
-
-             if(knownForData.length === 0) {
-                swmtscards.innerHTML = '<p class="col-span-full text-center text-[var(--text-secondary)]">No known credits found.</p>';
-             }
-        }
-
-         function toggleDesc(id, button) {
-            const element = document.getElementById(id);
-            const isCollapsed = element.classList.contains('collapsed');
-             if (isCollapsed) {
-                 element.classList.remove('collapsed');
-                 element.classList.add('expanded');
-                 button.textContent = 'See Less';
-            } else {
-                 element.classList.add('collapsed');
-                 element.classList.remove('expanded');
-                button.textContent = 'See More';
-            }
-        }
-
-
-        function showError(msg) {
-           errorMessage.textContent = msg;
-           errorMessage.classList.remove('hidden');
-           errorMessageContainer.style.pointerEvents = 'auto';
-           clearTimeout(errorMessage.timeoutId);
-           errorMessage.timeoutId = setTimeout(() => {
-                errorMessage.classList.add('hidden');
-                errorMessageContainer.style.pointerEvents = 'none';
-            }, 5000);
-        }
-
-
-        async function fetchAndSetRandomBackground() {
-             try {
-                 const mediaType = Math.random() > 0.5 ? 'movie' : 'tv';
-                 const randomPage = Math.floor(Math.random() * 20) + 1;
-                 const response = await fetch(`${TMDB_BASE_URL}/${mediaType}/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${randomPage}`);
-                 if (!response.ok) return;
-                 const data = await response.json();
-                 const itemsWithBackdrops = data.results.filter(item => item.backdrop_path);
-                 if (itemsWithBackdrops.length > 0) {
-                     const randomItem = itemsWithBackdrops[Math.floor(Math.random() * itemsWithBackdrops.length)];
-                     const backdropUrl = `https://image.tmdb.org/t/p/original${randomItem.backdrop_path}`;
-                     document.body.style.setProperty('--body-bg-image', `url(${backdropUrl})`);
-                 }
-             } catch (error) { console.error("Error setting BG:", error); }
-        }
-
-        function startBackgroundUpdates() {
-            if (backgroundIntervalId) clearInterval(backgroundIntervalId);
-            fetchAndSetRandomBackground();
-            backgroundIntervalId = setInterval(fetchAndSetRandomBackground, 15000);
-        }
-
-        function stopBackgroundUpdates() {
-             if (backgroundIntervalId) { clearInterval(backgroundIntervalId); backgroundIntervalId = null; }
-        }
-
-         document.addEventListener('visibilitychange', () => {
-              if (document.hidden) { stopBackgroundUpdates(); }
-              else { startBackgroundUpdates(); }
-          });
-
-        startBackgroundUpdates();
+  </div>
+  <div id="error-message-container">
+    <div id="error-message" class="hidden error-message" role="alert"></div>
+  </div>
+  <script>
+    const TMDB_API_KEY = 'db841157430b89c9ab8833d281d1c060';
+    const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+    const posterElement = document.getElementById('poster');
+    const titleElement = document.getElementById('title');
+    const descElement = document.getElementById('desc');
+    const toggleDescBtn = document.getElementById('toggleDescBtn');
+    const birthYearBadge = document.getElementById('birthYearBadge');
+    const birthPlaceBadge = document.getElementById('birthPlaceBadge');
+    const departmentBadge = document.getElementById('departmentBadge');
+    const swmtscards = document.getElementById('swmtscards');
+    const sortSelect = document.getElementById('sortSelect');
+    const errorMessageContainer = document.getElementById('error-message-container');
+    const errorMessage = document.getElementById('error-message');
+    let sortMethod = 'desc';
+    let knownForData = [];
+    let backgroundIntervalId = null;
+    function getWatchedList() {
+      return JSON.parse(localStorage.getItem('watchedList') || '[]');
+    }
+    function addToWatchedList(id, type) {
+      const watchedList = getWatchedList();
+      if (!watchedList.some(item => item.id === id && item.type === type)) {
+        watchedList.push({ id, type, added: Date.now() });
+        localStorage.setItem('watchedList', JSON.stringify(watchedList));
+        updateCardButtons(id, type, true);
         deduplicateWatchedList();
-        fetchData();
-
-    </script>
+      }
+    }
+    function removeFromWatchedList(id, type) {
+      let watchedList = getWatchedList();
+      watchedList = watchedList.filter(item => !(item.id === id && item.type === type));
+      localStorage.setItem('watchedList', JSON.stringify(watchedList));
+      updateCardButtons(id, type, false);
+      deduplicateWatchedList();
+    }
+    function updateCardButtons(mediaId, mediaType, isWatched) {
+      const card = swmtscards.querySelector(`.custom-card[data-id='${mediaId}'][data-type='${mediaType}']`);
+      if (card) {
+        const button = card.querySelector('.btn-watched-toggle');
+        if (button) {
+          const icon = button.querySelector('i');
+          const label = button.querySelector('span');
+          if (icon) icon.className = isWatched ? 'bi bi-check-circle-fill' : 'bi bi-plus-circle';
+          if (label) label.textContent = isWatched ? "Watched" : "Add Watchlist";
+          button.classList.toggle('is-watched', isWatched);
+          button.onclick = isWatched
+            ? () => removeFromWatchedList(mediaId, mediaType)
+            : () => addToWatchedList(mediaId, mediaType);
+        }
+      }
+    }
+    function navigateToWatchPage(type, id) {
+      if (!type || id == null) return;
+      let hash = `#${type}-${id}`;
+      window.location.href = `../watch/${hash}`;
+    }
+    function setCookie(name, value, days) {
+      let expires = "";
+      if (days) { const date = new Date(); date.setTime(date.getTime() + (days*24*60*60*1000)); expires = "; expires=" + date.toUTCString(); }
+      document.cookie = name + "=" + (value || "")  + expires + "; path=/; SameSite=Lax";
+    }
+    function getCookie(name) {
+      const nameEQ = name + "=";
+      const ca = document.cookie.split(';');
+      for(let i=0; i < ca.length; i++) { let c = ca[i]; while (c.charAt(0)==' ') c = c.substring(1,c.length); if (c.indexOf(nameEQ) == 0) return decodeURIComponent(c.substring(nameEQ.length,c.length)); }
+      return null;
+    }
+    function deduplicateWatchedList() {
+      const list = getWatchedList(); let uniqueList = []; const seen = new Set();
+      list.forEach(i => { if(!i || i.id==null || i.type==null) return; const key=`${i.id}-${i.type}`; if (!seen.has(key)) { seen.add(key); uniqueList.push(i); } });
+      if (uniqueList.length !== list.length) { localStorage.setItem('watchedList', JSON.stringify(uniqueList)); }
+    }
+    sortSelect.addEventListener('change', e => {
+      sortMethod = e.target.value;
+      renderKnownFor();
+    });
+    async function fetchData() {
+      try {
+        const hash = window.location.hash.substring(1);
+        if (!hash) throw new Error("No cast member ID specified in URL hash.");
+        const response = await fetch(`${TMDB_BASE_URL}/person/${hash}?api_key=${TMDB_API_KEY}&append_to_response=combined_credits`);
+        if (!response.ok) throw new Error('Network response was not ok for Cast API');
+        const personData = await response.json();
+        const birthDate = personData.birthday ? new Date(personData.birthday).getFullYear() : 'N/A';
+        posterElement.src = personData.profile_path ? `https://image.tmdb.org/t/p/w500${personData.profile_path}` : '../src/img/placeholder_person.png';
+        titleElement.textContent = personData.name || 'Unknown Name';
+        document.title = `SWMTS | ${personData.name || 'Cast Member'}`;
+        descElement.textContent = personData.biography || 'No biography available.';
+        if (descElement.scrollHeight > descElement.clientHeight || descElement.textContent.length > 400) {
+          toggleDescBtn.classList.remove('hidden');
+        } else {
+          descElement.classList.remove('collapsed');
+          toggleDescBtn.classList.add('hidden');
+        }
+        birthYearBadge.textContent = `Born: ${birthDate}`;
+        birthPlaceBadge.textContent = personData.place_of_birth || 'Birthplace Unknown';
+        departmentBadge.textContent = personData.known_for_department || 'N/A';
+        if (personData.combined_credits && personData.combined_credits.cast) {
+          knownForData = personData.combined_credits.cast.filter(item => item.poster_path && (item.media_type === 'movie' || item.media_type === 'tv'));
+          renderKnownFor();
+        } else {
+          swmtscards.innerHTML = '<p class="text-center" style="color: var(--text-secondary);">No credits found.</p>';
+        }
+      } catch (error) {
+        console.error("Fetch cast data error:", error);
+        showError(`Error loading cast details: ${error.message}`);
+        titleElement.textContent = "Error Loading";
+        descElement.textContent = "Could not load cast member details.";
+      }
+    }
+    function renderKnownFor() {
+      knownForData.sort((a, b) => {
+        const dateA = new Date(a.release_date || a.first_air_date || 0);
+        const dateB = new Date(b.release_date || b.first_air_date || 0);
+        const validDateA = !isNaN(dateA);
+        const validDateB = !isNaN(dateB);
+        if (!validDateA && !validDateB) return 0;
+        if (!validDateA) return 1;
+        if (!validDateB) return -1;
+        return sortMethod === 'asc' ? dateA - dateB : dateB - dateA;
+      });
+      swmtscards.innerHTML = knownForData.map(item => {
+        const mediaType = item.media_type;
+        const title = item.title || item.name;
+        const posterPath = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '../src/img/placeholder.png';
+        const character = item.character || 'N/A';
+        const isWatched = getWatchedList().some(watchedItem => watchedItem.id === item.id && watchedItem.type === mediaType);
+        const watchedButtonIcon = isWatched ? 'bi bi-check-circle-fill' : 'bi bi-plus-circle';
+        const watchedButtonLabel = isWatched ? "Watched" : "Add Watchlist";
+        const watchButtonIcon = 'bi bi-play-fill';
+        const watchedButtonClass = isWatched ? 'is-watched' : '';
+        return `
+          <div class="custom-card fade-in" data-id="${item.id}" data-type="${mediaType}">
+            <div class="card-image-container">
+              <img src="${posterPath}" alt="${title}">
+              <div class="card-overlay"></div>
+              <div class="card-content">
+                <h3>${title}</h3>
+                <p>Character: ${character}</p>
+                <div class="card-actions">
+                  <button class="btn btn-sm" onclick="navigateToWatchPage('${mediaType}', ${item.id})"><i class="${watchButtonIcon}"></i> Watch </button>
+                  <button class="btn btn-sm btn-watched-toggle ${watchedButtonClass}" onclick="${isWatched ? `removeFromWatchedList(${item.id}, '${mediaType}')` : `addToWatchedList(${item.id}, '${mediaType}')`}">
+                    <i class="${watchedButtonIcon}"></i><span>${watchedButtonLabel}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+      if (knownForData.length === 0) {
+        swmtscards.innerHTML = '<p class="text-center" style="color: var(--text-secondary);">No known credits found.</p>';
+      }
+    }
+    function toggleDesc(id, button) {
+      const element = document.getElementById(id);
+      const isCollapsed = element.classList.contains('collapsed');
+      if (isCollapsed) {
+        element.classList.remove('collapsed');
+        element.classList.add('expanded');
+        button.textContent = 'See Less';
+      } else {
+        element.classList.add('collapsed');
+        element.classList.remove('expanded');
+        button.textContent = 'See More';
+      }
+    }
+    function showError(msg) {
+      errorMessage.textContent = msg;
+      errorMessage.classList.remove('hidden');
+      errorMessageContainer.style.pointerEvents = 'auto';
+      clearTimeout(errorMessage.timeoutId);
+      errorMessage.timeoutId = setTimeout(() => {
+        errorMessage.classList.add('hidden');
+        errorMessageContainer.style.pointerEvents = 'none';
+      }, 5000);
+    }
+    async function fetchAndSetRandomBackground() {
+      try {
+        const mediaType = Math.random() > 0.5 ? 'movie' : 'tv';
+        const randomPage = Math.floor(Math.random() * 20) + 1;
+        const response = await fetch(`${TMDB_BASE_URL}/${mediaType}/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${randomPage}`);
+        if (!response.ok) return;
+        const data = await response.json();
+        const itemsWithBackdrops = data.results.filter(item => item.backdrop_path);
+        if (itemsWithBackdrops.length > 0) {
+          const randomItem = itemsWithBackdrops[Math.floor(Math.random() * itemsWithBackdrops.length)];
+          const backdropUrl = `https://image.tmdb.org/t/p/original${randomItem.backdrop_path}`;
+          document.body.style.setProperty('--body-bg-image', `url(${backdropUrl})`);
+        }
+      } catch (error) { console.error("Error setting BG:", error); }
+    }
+    function startBackgroundUpdates() {
+      if (backgroundIntervalId) clearInterval(backgroundIntervalId);
+      fetchAndSetRandomBackground();
+      backgroundIntervalId = setInterval(fetchAndSetRandomBackground, 15000);
+    }
+    function stopBackgroundUpdates() {
+      if (backgroundIntervalId) { clearInterval(backgroundIntervalId); backgroundIntervalId = null; }
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) { stopBackgroundUpdates(); }
+      else { startBackgroundUpdates(); }
+    });
+    startBackgroundUpdates();
+    deduplicateWatchedList();
+    fetchData();
+  </script>
 </body>
 </html>
