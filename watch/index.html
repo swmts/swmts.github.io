@@ -245,7 +245,7 @@
     }
     .cast-container {
       display: grid;
-      grid-template-columns: repeat(8, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 25px;
       border-top: 5px solid white;
       border-bottom: 5px solid white;
@@ -258,23 +258,24 @@
     }
     .cast-item img {
       border-radius: var(--border-radius-pill);
-      width: 80px;
-      height: 80px;
+      width: 50%;
       object-fit: cover;
       margin: 0 auto 0.5rem;
       border: 2px solid var(--border-color);
       transition: border-color 0.3s;
+      padding: 2.5px;
     }
     .cast-item:hover img { border-color: var(--accent-primary); }
     .cast-item a {
       color: var(--text-primary);
-      font-size: 0.8rem;
+      font-size: medium;
       text-decoration: none;
       transition: color 0.3s;
+      padding: 10px;
     }
     .cast-item a:hover { color: var(--accent-primary); }
     .cast-item .role-text {
-      font-size: 0.7rem;
+      font-size: medium;
       color: var(--text-secondary);
       margin-top: 0.1rem;
     }
@@ -400,7 +401,7 @@
           </div>
         </div>
         <div class="iframe-wrapper">
-          <iframe id="iframePlayer" src="about:blank"></iframe>
+          <iframe id="iframePlayer" src="about:blank" allowfullscreen allow="fullscreen" allow="encrypted-media" webkitallowfullscreen mozallowfullscreen msallowfullscreen></iframe>
         </div>
         <div class="iframe-reload-container">
           <button id="reloadIframeButton" class="btn">
@@ -680,6 +681,7 @@
             <a href="../cast/#${actor.id}">
               <img src="${actor.profile_path ? `https://image.tmdb.org/t/p/w185${actor.profile_path}` : '../src/img/placeholder_person.png'}" alt="${actor.name || 'Unknown Actor'}">
             </a>
+            <br>
             <a href="../cast/#${actor.id}">${actor.name || 'Unknown Actor'}</a>
             <p class="role-text">${characterName}</p>
           </div>
