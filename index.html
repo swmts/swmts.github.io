@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <link rel="icon" type="image/x-icon" href="src/img/favicon.png">
+  <link rel="icon" type="image/x-icon" href="src/img/favicon.png" />
   <title>SWMTS | @BN_LOS</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
   <style>
     :root {
       --body-bg-image: linear-gradient(135deg, #121212, #000);
+      --toast-bg: rgba(30, 30, 30, 0.9);
     }
     html, body {
       margin: 0;
@@ -99,6 +100,7 @@
       display: flex;
       justify-content: center;
       gap: 10px;
+      flex-wrap: wrap;
     }
     .tab-item {
       background: none;
@@ -119,6 +121,26 @@
       background: #333;
       border: 1px solid #666;
     }
+    .dropdown-container {
+      display: none;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    .dropdown-container select {
+      background: #1f1f1f;
+      color: #f5f5f5;
+      border: 1px solid #444;
+      border-radius: 25px;
+      padding: 10px 25px 10px 15px;
+      font-size: 1rem;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 3L5 7L9 3' stroke='%23ccc' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"), linear-gradient(to bottom, #1f1f1f, #1f1f1f);
+      background-repeat: no-repeat, repeat;
+      background-position: right 8px center, 0 0;
+      background-size: 12px auto, 100%;
+    }
+
     .line-with-title {
       position: relative;
       text-align: center;
@@ -143,11 +165,38 @@
     }
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(8, 1fr);
+      grid-template-columns: repeat(6, 1fr);
       gap: 25px;
       border-top: 5px solid white;
       border-radius: 25px;
       padding: 50px;
+    }
+    @media (max-width: 1200px) {
+      .cards-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+    @media (max-width: 992px) {
+      .cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    @media (max-width: 768px) {
+      .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        padding: 20px;
+      }
+    }
+    @media (max-width: 576px) {
+      .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 400px) {
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
     }
     .custom-card {
       background: #1e1e1e;
@@ -157,6 +206,7 @@
       transition: transform 0.3s, box-shadow 0.3s;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
     .custom-card:hover {
       transform: translateY(-5px);
@@ -224,7 +274,13 @@
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
     }
-    .btn {
+    .card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 15px;
+    }
+    .card-actions .btn {
       display: inline-flex;
       align-items: center;
       gap: 5px;
@@ -236,17 +292,15 @@
       color: #ccc;
       transition: background 0.3s, border 0.3s, color 0.3s;
       font-size: 0.9rem;
+      cursor: pointer;
     }
-    .btn:hover {
+    .card-actions .btn:hover {
       background: rgba(255, 255, 255, 0.1);
       border-color: #888;
       color: #fff;
     }
-    .btn:active {
+    .card-actions .btn:active {
       transform: scale(0.98);
-    }
-    .btn-watch {
-      margin-bottom: 10px;
     }
     .btn-watched-toggle.is-watched {
       background: rgba(255, 255, 255, 0.2);
@@ -257,17 +311,21 @@
       position: absolute;
       top: 20px;
       right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     .header-controls label {
       margin-right: 8px;
       font-weight: 500;
     }
-    .header-controls select {
+    .header-controls select,
+    .header-controls button {
       background: #1f1f1f;
       color: #f5f5f5;
       border: 1px solid #444;
       border-radius: 8px;
-      padding: 5px 25px 5px 10px;
+      padding: 5px 45px 5px 10px;
       outline: none;
       appearance: none;
       background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 3L5 7L9 3' stroke='%23ccc' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"), linear-gradient(to bottom, #1f1f1f, #1f1f1f);
@@ -278,17 +336,20 @@
       cursor: pointer;
       transition: border-color 0.2s, background-color 0.2s;
     }
-    .header-controls select:hover {
+    .header-controls select:hover,
+    .header-controls button:hover {
       border-color: #888;
     }
-    .header-controls select:focus {
+    .header-controls select:focus,
+    .header-controls button:focus {
       border-color: #aaa;
     }
-    .loading-indicator {
+    #loading-indicator {
       text-align: center;
       padding: 40px;
       font-weight: 500;
       font-size: 1rem;
+      color: #aaa;
     }
     .spin {
       animation: spin 1s linear infinite;
@@ -318,6 +379,9 @@
     .fade-in {
       animation: fadeIn 0.5s ease;
     }
+    .fade-out {
+      animation: fadeOut 0.5s forwards;
+    }
     @keyframes fadeIn {
       from {
         opacity: 0;
@@ -327,9 +391,6 @@
         opacity: 1;
         transform: translateY(0);
       }
-    }
-    .fade-out {
-      animation: fadeOut 0.5s forwards;
     }
     @keyframes fadeOut {
       to {
@@ -342,7 +403,44 @@
       font-size: 1rem;
       margin-top: 30px;
     }
-  
+    /* Toast styling */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: #232323;
+      border-radius: 25px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .app-toast {
+      background: var(--toast-bg);
+      color: #fff;
+      border-radius: 8px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      opacity: 0;
+      transform: translateY(-10px);
+      animation: toastIn 0.4s forwards, toastOut 0.4s 3s forwards;
+    }
+    @keyframes toastIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes toastOut {
+      to {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+    }
     @media (max-width: 768px) {
       #app-content {
         padding: 20px;
@@ -394,233 +492,455 @@
           <option value="desc">Z-A</option>
         </select>
       </div>
+      <button id="exportBtn" class="btn">
+        <i class="bi bi-download"></i> Export Watchlist
+      </button>
+      <button id="importBtn" class="btn">
+        <i class="bi bi-upload"></i> Import Watchlist
+      </button>
+      <input type="file" id="importFile" accept=".json" class="hidden" />
     </div>
+
     <div class="hero">
       <h1>SWMTS</h1>
       <p>↓</p>
     </div>
+
     <div class="search-input-container">
       <input type="text" id="searchInput" class="search-input" placeholder="Search movies or TV shows..." />
       <i class="bi bi-search"></i>
     </div>
+
     <div class="tabs-outer-container">
       <div class="tabs-container" id="tabsContainer">
-        <button role="tab" id="popular-tab" class="tab-item active" onclick="setActiveTab(this); fetchData(true);">
+        <button role="tab" id="trending-tab" class="tab-item" onclick="activateTab(this, 'trending', 'week')">
+          Trending
+        </button>
+        <button role="tab" id="popular-tab" class="tab-item" onclick="activateTab(this, 'popular')">
           Popular
         </button>
-        <button role="tab" id="watched-tab" class="tab-item" onclick="setActiveTab(this); fetchWatchedData();">
+        <button role="tab" id="networks-tab" class="tab-item" onclick="activateTab(this, 'network')">
+          Networks
+        </button>
+        <button role="tab" id="watched-tab" class="tab-item" onclick="activateTab(this, 'watched')">
           Watched
         </button>
       </div>
+      <div class="dropdown-container" id="trendingDropdown">
+        <select id="trendingSelect">
+          <option value="day">Day</option>
+          <option value="week" selected>Week</option>
+          <option value="year">Year</option>
+        </select>
+      </div>
+      <div class="dropdown-container" id="networksDropdown">
+        <select id="networkSelect">
+          <option value="213">Netflix</option>
+          <option value="2739">Disney+</option>
+          <option value="49">HBO</option>
+          <option value="1024">Prime Video</option>
+          <option value="15">Hulu</option>
+          <option value="2552">Apple TV+</option>
+        </select>
+      </div>
     </div>
+
     <div class="line-with-title">
       <span>SWMTS</span>
     </div>
+
     <div class="cards-grid" id="swmtscards"></div>
     <div id="loading-indicator" class="loading-indicator hidden">
-      <i class="bi bi-arrow-repeat spin fs-4"></i>
-      Loading Content...
+      <i class="bi bi-arrow-repeat spin fs-4"></i> Loading Content...
     </div>
   </div>
+
   <div id="error-message-container">
     <div id="error-message" class="hidden error-message" role="alert"></div>
   </div>
+  <div class="toast-container" id="toastContainer"></div>
   <script>
     const TMDB_API_KEY = 'db841157430b89c9ab8833d281d1c060';
     const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+    const swmtscards = document.getElementById('swmtscards');
+    const searchInput = document.getElementById('searchInput');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const errorMessage = document.getElementById('error-message');
+    const sortSelect = document.getElementById('sortSelect');
+    const importBtn = document.getElementById('importBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const importFile = document.getElementById('importFile');
+    const toastContainer = document.getElementById('toastContainer');
+    const trendingDropdown = document.getElementById('trendingDropdown');
+    const networksDropdown = document.getElementById('networksDropdown');
+    const trendingSelect = document.getElementById('trendingSelect');
+    const networkSelect = document.getElementById('networkSelect');
+
     let data = [];
     let sortMethod = 'default';
     let currentPage = 1;
     let loading = false;
     let currentQuery = '';
-    let activeTabId = 'popular-tab';
-    let backgroundIntervalId = null;
-    const swmtscards = document.getElementById('swmtscards');
-    const searchInput = document.getElementById('searchInput');
-    const tabsContainer = document.getElementById('tabsContainer');
-    const loadingIndicator = document.getElementById('loading-indicator');
-    const errorMessageContainer = document.getElementById('error-message-container');
-    const errorMessage = document.getElementById('error-message');
-    const sortSelect = document.getElementById('sortSelect');
-    const popularTabBtn = document.getElementById('popular-tab');
-    const watchedTabBtn = document.getElementById('watched-tab');
+    let activeMode = 'trending';
+    let activeParam = 'week'; // For trending: day/week/year, for network: networkId
 
-    async function fetchAndSetRandomBackground() {
-      try {
-        const mediaType = Math.random() > 0.5 ? 'movie' : 'tv';
-        const randomPage = Math.floor(Math.random() * 20) + 1;
-        const response = await fetch(`${TMDB_BASE_URL}/${mediaType}/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${randomPage}`);
-        if (!response.ok) throw new Error('Failed');
-        const data = await response.json();
-        const itemsWithBackdrops = data.results.filter(item => item.backdrop_path);
-        if (itemsWithBackdrops.length > 0) {
-          const randomItem = itemsWithBackdrops[Math.floor(Math.random() * itemsWithBackdrops.length)];
-          const backdropUrl = `https://image.tmdb.org/t/p/original${randomItem.backdrop_path}`;
-          document.body.style.setProperty('--body-bg-image', `url(${backdropUrl})`);
+    function showError(msg) {
+      errorMessage.textContent = msg;
+      errorMessage.classList.remove('hidden');
+      clearTimeout(errorMessage.timeoutId);
+      errorMessage.timeoutId = setTimeout(() => {
+        errorMessage.classList.add('hidden');
+      }, 5000);
+    }
+
+    function showToast(message, iconClass = 'bi-check-circle-fill') {
+      const toast = document.createElement('div');
+      toast.className = 'app-toast';
+      toast.innerHTML = `<i class="bi ${iconClass}"></i> ${message}`;
+      toastContainer.appendChild(toast);
+      setTimeout(() => {
+        toast.remove();
+      }, 4000);
+    }
+
+    function getWatchedList() {
+      return JSON.parse(localStorage.getItem('watchedList') || '[]');
+    }
+    function setWatchedList(list) {
+      localStorage.setItem('watchedList', JSON.stringify(list));
+      deduplicateWatchedList();
+    }
+    function deduplicateWatchedList() {
+      const list = getWatchedList();
+      const unique = [];
+      const seen = new Set();
+      list.forEach(i => {
+        if (i && i.id != null && i.type != null) {
+          const key = `${i.id}-${i.type}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            unique.push(i);
+          }
         }
-      } catch(e) {
-        console.error(e);
+      });
+      if (unique.length !== list.length) {
+        localStorage.setItem('watchedList', JSON.stringify(unique));
       }
     }
-    function startBackgroundUpdates() {
-      if (backgroundIntervalId) clearInterval(backgroundIntervalId);
-      fetchAndSetRandomBackground();
-      backgroundIntervalId = setInterval(fetchAndSetRandomBackground, 15000);
-    }
-    function stopBackgroundUpdates() {
-      if (backgroundIntervalId) {
-        clearInterval(backgroundIntervalId);
-        backgroundIntervalId = null;
+
+    exportBtn.addEventListener('click', () => {
+      const list = getWatchedList();
+      if (list.length === 0) {
+        showToast('Watchlist is empty!', 'bi-exclamation-circle-fill');
+        return;
+      }
+      const blob = new Blob([JSON.stringify(list, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'swmts_watchlist.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Watchlist exported ✔️');
+    });
+
+    importBtn.addEventListener('click', () => importFile.click());
+    importFile.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          const importedList = JSON.parse(ev.target.result);
+          if (!Array.isArray(importedList)) throw new Error('Invalid format');
+          setWatchedList(importedList);
+          showToast('Watchlist imported ✔️');
+          if (activeMode === 'watched') fetchWatchedData();
+        } catch {
+          showError('Failed to import: Invalid JSON');
+        }
+      };
+      reader.readAsText(file);
+      importFile.value = '';
+    });
+
+    function activateTab(btn, mode, param = null) {
+      document.querySelectorAll('.tab-item').forEach(tab => tab.classList.remove('active'));
+      btn.classList.add('active');
+      currentPage = 1;
+      currentQuery = '';
+      swmtscards.innerHTML = '';
+      activeMode = mode;
+      activeParam = param;
+
+      // Show/hide dropdowns
+      trendingDropdown.style.display = (mode === 'trending') ? 'flex' : 'none';
+      networksDropdown.style.display = (mode === 'network') ? 'flex' : 'none';
+
+      // Reset dropdown values
+      if (mode === 'trending') {
+        trendingSelect.value = param || 'week';
+        fetchTrending(param || 'week', true);
+      } else if (mode === 'popular') {
+        fetchData(true);
+      } else if (mode === 'network') {
+        const networkId = networkSelect.value;
+        activeParam = networkId;
+        fetchNetworkData(networkId, true);
+      } else if (mode === 'watched') {
+        fetchWatchedData();
       }
     }
+
     async function fetchData(reset = false) {
       if (loading) return;
       if (reset) {
-        currentPage = 1;
         data = [];
         swmtscards.innerHTML = '';
       }
       loading = true;
       loadingIndicator.classList.remove('hidden');
-      activeTabId = 'popular-tab';
       try {
-        const [moviesResponse, tvResponse] = await Promise.all([
+        const [moviesRes, tvRes] = await Promise.all([
           fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&page=${currentPage}`),
           fetch(`${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&page=${currentPage}`)
         ]);
-        if (!moviesResponse.ok || !tvResponse.ok) throw new Error('Failed');
-        const moviesData = await moviesResponse.json();
-        const tvsData = await tvResponse.json();
-        const newData = [...moviesData.results, ...tvsData.results]
-          .filter(item => item.poster_path)
-          .map(item => ({
-            id: item.id,
-            title: item.title || item.name,
-            desc: item.overview || 'N/A',
-            img: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-            date: item.release_date || item.first_air_date,
-            type: item.title ? 'movie' : 'tv',
-            popularity: item.popularity
+        if (!moviesRes.ok || !tvRes.ok) throw new Error('Failed to load popular');
+        const movies = await moviesRes.json();
+        const tvs = await tvRes.json();
+        const combined = [...movies.results, ...tvs.results]
+          .filter(i => i.poster_path)
+          .map(i => ({
+            id: i.id,
+            title: i.title || i.name,
+            desc: i.overview || 'N/A',
+            img: `https://image.tmdb.org/t/p/w500${i.poster_path}`,
+            date: i.release_date || i.first_air_date,
+            type: i.title ? 'movie' : 'tv',
+            popularity: i.popularity
           }));
-        const currentIds = new Set(data.map(d => `${d.id}-${d.type}`));
-        const uniqueNewData = newData.filter(item => !currentIds.has(`${item.id}-${item.type}`));
-        data = [...data, ...uniqueNewData];
-        applySortingAndRender(uniqueNewData);
-      } catch(e) {
+        const keys = new Set(data.map(d => `${d.id}-${d.type}`));
+        const unique = combined.filter(i => !keys.has(`${i.id}-${i.type}`));
+        data = [...data, ...unique];
+        applySortingAndRender(unique);
+      } catch (e) {
         showError(e.message);
       } finally {
         loading = false;
         loadingIndicator.classList.add('hidden');
       }
     }
+
     async function fetchWatchedData() {
       if (loading) return;
       loading = true;
       loadingIndicator.classList.remove('hidden');
-      activeTabId = 'watched-tab';
       swmtscards.innerHTML = '';
-      const watchedList = getWatchedList();
+      const list = getWatchedList();
       data = [];
-      if (watchedList.length === 0) {
+      if (list.length === 0) {
         swmtscards.innerHTML = '<p class="no-results text-center">Watched list empty.</p>';
         loading = false;
         loadingIndicator.classList.add('hidden');
         return;
       }
       try {
-        const fetchPromises = watchedList.map(item => {
-          const apiEndpoint = item.type === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`;
-          return fetch(`${TMDB_BASE_URL}${apiEndpoint}?api_key=${TMDB_API_KEY}`)
-            .then(r => r.ok ? r.json() : null)
-            .then(d => d ? {
+        const promises = list.map(item => {
+          const ep = item.type === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`;
+          return fetch(`${TMDB_BASE_URL}${ep}?api_key=${TMDB_API_KEY}`)
+            .then(r => (r.ok ? r.json() : null))
+            .then(d => d && d.poster_path ? {
               id: d.id,
               title: d.title || d.name,
               desc: d.overview || 'N/A',
-              img: d.poster_path ? `https://image.tmdb.org/t/p/w500${d.poster_path}` : null,
+              img: `https://image.tmdb.org/t/p/w500${d.poster_path}`,
               date: d.release_date || d.first_air_date,
               type: item.type,
               popularity: d.popularity
-            } : null).catch(() => null);
+            } : null)
+            .catch(() => null);
         });
-        const results = await Promise.all(fetchPromises);
-        data = results.filter(i => i && i.img);
-        if (data.length === 0 && watchedList.length > 0) {
-          showError("Couldn't load watched.");
-        }
+        const results = await Promise.all(promises);
+        data = results.filter(i => i);
+        if (data.length === 0 && list.length > 0) showError("Couldn't load watched.");
         applySortingAndRender();
-      } catch(e) {
+      } catch (e) {
         showError(e.message);
       } finally {
         loading = false;
         loadingIndicator.classList.add('hidden');
       }
     }
+
+    async function fetchNetworkData(networkId, reset = false) {
+      if (loading) return;
+      if (reset) {
+        data = [];
+        swmtscards.innerHTML = '';
+      }
+      loading = true;
+      loadingIndicator.classList.remove('hidden');
+      try {
+        const url = `${TMDB_BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&with_networks=${networkId}&page=${currentPage}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Failed to load network data');
+        const json = await res.json();
+        const mapped = json.results
+          .filter(i => i.poster_path)
+          .map(i => ({
+            id: i.id,
+            title: i.name,
+            desc: i.overview || 'N/A',
+            img: `https://image.tmdb.org/t/p/w500${i.poster_path}`,
+            date: i.first_air_date,
+            type: 'tv',
+            popularity: i.popularity
+          }));
+        const keys = new Set(data.map(d => `${d.id}-${d.type}`));
+        const unique = mapped.filter(i => !keys.has(`${i.id}-${i.type}`));
+        data = [...data, ...unique];
+        applySortingAndRender(unique);
+      } catch (e) {
+        showError(e.message);
+      } finally {
+        loading = false;
+        loadingIndicator.classList.add('hidden');
+      }
+    }
+
+    async function fetchTrending(timeWindow, reset = false) {
+      if (loading) return;
+      if (reset) {
+        data = [];
+        swmtscards.innerHTML = '';
+      }
+      loading = true;
+      loadingIndicator.classList.remove('hidden');
+      try {
+        let url;
+        if (timeWindow === 'day' || timeWindow === 'week') {
+          url = `${TMDB_BASE_URL}/trending/all/${timeWindow}?api_key=${TMDB_API_KEY}&page=${currentPage}`;
+        } else if (timeWindow === 'year') {
+          const yearAgo = new Date();
+          yearAgo.setFullYear(yearAgo.getFullYear() - 1);
+          const y = yearAgo.getFullYear();
+          const m = String(yearAgo.getMonth() + 1).padStart(2, '0');
+          const d = String(yearAgo.getDate()).padStart(2, '0');
+          const dateStr = `${y}-${m}-${d}`;
+          url = `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&primary_release_date.gte=${dateStr}&sort_by=popularity.desc&page=${currentPage}`;
+        }
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Failed to load trending');
+        const json = await res.json();
+        const results = json.results
+          .filter(i => i.poster_path)
+          .map(i => ({
+            id: i.id,
+            title: i.title || i.name,
+            desc: i.overview || 'N/A',
+            img: `https://image.tmdb.org/t/p/w500${i.poster_path}`,
+            date: i.release_date || i.first_air_date,
+            type: i.title ? 'movie' : 'tv',
+            popularity: i.popularity
+          }));
+        const keys = new Set(data.map(d => `${d.id}-${d.type}`));
+        const unique = results.filter(i => !keys.has(`${i.id}-${i.type}`));
+        data = [...data, ...unique];
+        applySortingAndRender(unique);
+      } catch (e) {
+        showError(e.message);
+      } finally {
+        loading = false;
+        loadingIndicator.classList.add('hidden');
+      }
+    }
+
     async function fetchSearchData(query) {
       if (loading) return;
       loading = true;
       loadingIndicator.classList.remove('hidden');
       swmtscards.innerHTML = '';
       try {
-        const response = await fetch(`${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&include_adult=false`);
-        if (!response.ok) throw new Error('Search failed');
-        const searchData = await response.json();
-        data = searchData.results.filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path)
-          .map(item => ({
-            id: item.id,
-            title: item.title || item.name,
-            desc: item.overview || 'N/A',
-            img: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-            date: item.release_date || item.first_air_date,
-            type: item.media_type,
-            popularity: item.popularity
+        const url = `${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&include_adult=false`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Search failed');
+        const json = await res.json();
+        data = json.results
+          .filter(i => (i.media_type === 'movie' || i.media_type === 'tv') && i.poster_path)
+          .map(i => ({
+            id: i.id,
+            title: i.title || i.name,
+            desc: i.overview || 'N/A',
+            img: `https://image.tmdb.org/t/p/w500${i.poster_path}`,
+            date: i.release_date || i.first_air_date,
+            type: i.media_type,
+            popularity: i.popularity
           }));
         if (data.length === 0) {
           swmtscards.innerHTML = `<p class="no-results text-center">No results for "${query}".</p>`;
         } else {
           applySortingAndRender();
         }
-      } catch(e) {
+      } catch (e) {
         showError(e.message);
-        swmtscards.innerHTML = `<p class="no-results text-center" style="color:#d9534f;margin-top:30px;">Search fail.</p>`;
+        swmtscards.innerHTML = '<p class="no-results text-center" style="color:#d9534f;">Search fail.</p>';
       } finally {
         loading = false;
         loadingIndicator.classList.add('hidden');
       }
     }
+
+    window.addEventListener('scroll', () => {
+      if ((activeMode === 'popular' || activeMode === 'network' || activeMode === 'trending') && !loading && !currentQuery) {
+        const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+        if (window.scrollY >= scrollableHeight - 900) {
+          currentPage++;
+          if (activeMode === 'popular') {
+            fetchData();
+          } else if (activeMode === 'network') {
+            fetchNetworkData(activeParam, false);
+          } else if (activeMode === 'trending') {
+            fetchTrending(activeParam, false);
+          }
+        }
+      }
+    });
+
     function applySortingAndRender(itemsToAppend = null) {
       let dataToRender;
       if (!itemsToAppend) {
         swmtscards.innerHTML = '';
-        const sortedData = [...data];
+        const sorted = [...data];
         if (sortMethod === 'asc') {
-          sortedData.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+          sorted.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
         } else if (sortMethod === 'desc') {
-          sortedData.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+          sorted.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
         } else {
-          sortedData.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+          sorted.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
         }
-        dataToRender = sortedData;
+        dataToRender = sorted;
       } else {
         dataToRender = itemsToAppend;
       }
       renderCards(dataToRender);
     }
+
     function renderCards(items) {
-      const fragment = document.createDocumentFragment();
+      const frag = document.createDocumentFragment();
       items.forEach(item => {
         if (!item || !item.id || !item.title) return;
         const card = document.createElement('div');
         card.classList.add('custom-card', 'fade-in');
         card.dataset.id = item.id;
         card.dataset.type = item.type;
-        const isWatched = getWatchedList().some(w => w.id === item.id && w.type === item.type);
+        const watchedList = getWatchedList();
+        const isWatched = watchedList.some(w => w.id === item.id && w.type === item.type);
         const watchedIcon = isWatched ? 'bi bi-check-circle-fill' : 'bi bi-plus-circle';
-        const watchedLabel = isWatched ? "Watched" : "Add Watchlist";
-        const watchedAction = isWatched ? `removeFromWatchedList(${item.id}, '${item.type}', this)` : `addToWatchedList(${item.id}, '${item.type}', this)`;
+        const watchedLabel = isWatched ? 'Watched' : 'Add Watchlist';
         const watchedClass = isWatched ? 'is-watched' : '';
         card.innerHTML = `
           <div class="card-image-container">
-            <img src="${item.img}" alt="${item.title}" loading="lazy">
+            <img src="${item.img}" alt="${item.title}" loading="lazy" />
             <div class="card-overlay"></div>
           </div>
           <div class="card-content">
@@ -630,26 +950,26 @@
               <span class="badge">${item.type === 'movie' ? 'Movie' : 'TV'}</span>
             </div>
             <p class="card-desc">${item.desc}</p>
-            <div class="mt-auto d-flex flex-column gap-2 pt-3">
+            <div class="card-actions mt-auto">
               <button class="btn btn-watch" onclick="navigateToWatchPage('${item.type}', ${item.id})">
-                <i class="bi bi-play-fill"></i>
-                Watch Now
+                <i class="bi bi-play-fill"></i> Watch Now
               </button>
-              <button class="btn btn-watched-toggle ${watchedClass}" onclick="${watchedAction}">
-                <i class="${watchedIcon}"></i>
-                <span>${watchedLabel}</span>
+              <button class="btn btn-watched-toggle ${watchedClass}" onclick="${isWatched ? `removeFromWatchedList(${item.id}, '${item.type}', this)` : `addToWatchedList(${item.id}, '${item.type}', this)`}">
+                <i class="${watchedIcon}"></i> <span>${watchedLabel}</span>
               </button>
             </div>
           </div>`;
-        fragment.appendChild(card);
+        frag.appendChild(card);
       });
-      swmtscards.appendChild(fragment);
+      swmtscards.appendChild(frag);
     }
+
     function navigateToWatchPage(type, id) {
       if (!type || !id) return;
-      let hash = `#${type}-${id}`;
+      const hash = `#${type}-${id}`;
       window.location.href = `watch/${hash}`;
     }
+
     function updateWatchedButton(btn, isWatched) {
       if (!btn) return;
       const icon = btn.querySelector('i');
@@ -659,35 +979,34 @@
       const id = parseInt(card.dataset.id);
       const type = card.dataset.type;
       if (isWatched) {
-        if (icon) icon.className = 'bi bi-check-circle-fill';
-        if (label) label.textContent = 'Watched';
+        icon.className = 'bi bi-check-circle-fill';
+        label.textContent = 'Watched';
         btn.classList.add('is-watched');
         btn.onclick = () => removeFromWatchedList(id, type, btn);
       } else {
-        if (icon) icon.className = 'bi bi-plus-circle';
-        if (label) label.textContent = 'Add Watchlist';
+        icon.className = 'bi bi-plus-circle';
+        label.textContent = 'Add Watchlist';
         btn.classList.remove('is-watched');
         btn.onclick = () => addToWatchedList(id, type, btn);
       }
     }
-    function getWatchedList() {
-      return JSON.parse(localStorage.getItem('watchedList') || '[]');
-    }
+
     function addToWatchedList(id, type, btn) {
       if (!id || !type) return;
       const list = getWatchedList();
       if (!list.some(i => i.id === id && i.type === type)) {
         list.push({ id, type, added: Date.now() });
-        localStorage.setItem('watchedList', JSON.stringify(list));
+        setWatchedList(list);
         updateWatchedButton(btn, true);
       }
     }
+
     function removeFromWatchedList(id, type, btn) {
       if (!id || !type) return;
       let list = getWatchedList();
       list = list.filter(i => !(i.id === id && i.type === type));
-      localStorage.setItem('watchedList', JSON.stringify(list));
-      if (activeTabId === 'watched-tab') {
+      setWatchedList(list);
+      if (activeMode === 'watched') {
         const card = swmtscards.querySelector(`.custom-card[data-id='${id}'][data-type='${type}']`);
         if (card) {
           card.classList.add('fade-out');
@@ -700,45 +1019,7 @@
         updateWatchedButton(btn, false);
       }
     }
-    function deduplicateWatchedList() {
-      const list = getWatchedList();
-      let uniqueList = [];
-      const seen = new Set();
-      list.forEach(i => {
-        if (!i || i.id == null || i.type == null) return;
-        const key = `${i.id}-${i.type}`;
-        if (!seen.has(key)) {
-          seen.add(key);
-          uniqueList.push(i);
-        }
-      });
-      if (uniqueList.length !== list.length) {
-        localStorage.setItem('watchedList', JSON.stringify(uniqueList));
-      }
-    }
-    function showError(msg) {
-      errorMessage.textContent = msg;
-      errorMessage.classList.remove('hidden');
-      clearTimeout(errorMessage.timeoutId);
-      errorMessage.timeoutId = setTimeout(() => {
-        errorMessage.classList.add('hidden');
-      }, 5000);
-    }
-    function setActiveTab(btn) {
-      document.querySelectorAll('.tab-item').forEach(tab => tab.classList.remove('active'));
-      btn.classList.add('active');
-      activeTabId = btn.id;
-    }
-    sortSelect.addEventListener('change', e => {
-      sortMethod = e.target.value;
-      if (currentQuery) {
-        fetchSearchData(currentQuery);
-      } else if (activeTabId === 'popular-tab') {
-        fetchData(true);
-      } else if (activeTabId === 'watched-tab') {
-        applySortingAndRender();
-      }
-    });
+
     let searchDebounceTimeout;
     searchInput.addEventListener('input', e => {
       const query = e.target.value.trim();
@@ -749,29 +1030,47 @@
           fetchSearchData(query);
         }, 350);
       } else {
-        currentQuery = '';
-        const activeBtn = document.getElementById(activeTabId);
+        const activeBtn = document.getElementById(activeMode + '-tab') || document.getElementById('trending-tab');
         if (activeBtn) activeBtn.click();
-        else popularTabBtn.click();
       }
     });
-    window.addEventListener('scroll', () => {
-      if (activeTabId === 'popular-tab' && !loading && !currentQuery) {
-        const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
-        if (window.scrollY >= scrollableHeight - 900) {
-          currentPage++;
-          fetchData();
-        }
+
+    sortSelect.addEventListener('change', e => {
+      sortMethod = e.target.value;
+      if (currentQuery) {
+        fetchSearchData(currentQuery);
+      } else if (activeMode === 'popular') {
+        fetchData(true);
+      } else if (activeMode === 'watched') {
+        applySortingAndRender();
+      } else if (activeMode === 'network') {
+        applySortingAndRender();
+      } else if (activeMode === 'trending') {
+        applySortingAndRender();
       }
     });
+
+    trendingSelect.addEventListener('change', () => {
+      const val = trendingSelect.value;
+      activeParam = val;
+      currentPage = 1;
+      fetchTrending(val, true);
+    });
+
+    networkSelect.addEventListener('change', () => {
+      const val = networkSelect.value;
+      activeParam = val;
+      currentPage = 1;
+      fetchNetworkData(val, true);
+    });
+
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) stopBackgroundUpdates();
-      else startBackgroundUpdates();
+      // no dynamic background update
     });
+
     deduplicateWatchedList();
-    startBackgroundUpdates();
-    setActiveTab(popularTabBtn);
-    fetchData(true);
+    // Default load: Trending, week
+    document.getElementById('trending-tab').click();
   </script>
 </body>
 </html>

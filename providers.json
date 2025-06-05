@@ -1,84 +1,60 @@
 {
-    "VidSrc (XYZ)": {
-        "tv.provider": "https://vidsrc.xyz/embed/tv/{id}/{ss}-{ee}",
-        "movie.provider": "https://vidsrc.xyz/embed/movie/{id}",
-        "recom": "y"
-    },
-    "RGShows v1": {
-        "tv.provider": "https://embed.rgshows.me/api/1/tv/?id={id}&s={ss}&e={ee}",
-        "movie.provider": "https://embed.rgshows.me/api/1/movie/?id={id}"
-    },
-    "RGShows v2": {
-        "tv.provider": "https://embed.rgshows.me/api/2/tv/?id={id}&s={ss}&e={ee}",
-        "movie.provider": "https://embed.rgshows.me/api/2/movie/?id={id}"
-    },
-    "RGShows v3": {
-        "tv.provider": "https://embed.rgshows.me/api/3/tv/?id={id}&s={ss}&e={ee}",
-        "movie.provider": "https://embed.rgshows.me/api/3/movie/?id={id}",
-        "recom": "y"
-    },
     "111Movies": {
         "tv.provider": "https://111movies.com/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://111movies.com/movie/{id}"
+        "movie.provider": "https://111movies.com/movie/{id}",
+        "recom": "y"
     },
-    "Embed SU": {
-        "tv.provider": "https://embed.su/embed/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://embed.su/embed/movie/{id}"
+    "2Embed CC": {
+        "tv.provider": "https://www.2embed.cc/embedtv/{id}&s={ss}&e={ee}",
+        "movie.provider": "https://www.2embed.cc/embed/{id}",
+        "recom": "y"
+    },
+    "AutoEmbed": {
+        "tv.provider": "https://player.autoembed.cc/embed/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://player.autoembed.cc/embed/movie/{id}",
+        "recom": "y"
+    },
+    "MappleTV": {
+        "tv.provider": "https://mappletv.uk/watch/tv/{id}-{ss}-{ee}",
+        "movie.provider": "https://mappletv.uk/watch/movie/{id}",
+        "recom": "y"
+    },
+    "MoviesAPI": {
+        "tv.provider": "https://moviesapi.club/tv/{id}-{ss}-{ee}",
+        "movie.provider": "https://moviesapi.club/movie/{id}"
+    },
+    "P-Stream": {
+        "tv.provider": "https://iframe.pstream.org/embed/tmdb-tv-{id}/{ss}/{ee}",
+        "movie.provider": "https://iframe.pstream.org/embed/tmdb-movie-{id}",
+        "recom": "y"
+    },
+    "VidOra": {
+        "tv.provider": "https://vidora.su/tv/{id}/{ss}/{ee}?autoplay=true&colour=6966ff",
+        "movie.provider": "https://vidora.su/movie/{id}?autoplay=true&colour=6966ff",
+        "recom": "y"
+    },
+    "VidJoy": {
+        "tv.provider": "https://vidjoy.pro/embed/tv/{id}/{ss}/{ee}?adFree=true&DefaultIcons=true&primary=ff0004&secondary=ff0000&icon=ffffff&autoplay=true&next=true&title=true&poster=true",
+        "movie.provider": "https://vidjoy.pro/embed/movie/{id}?adFree=true&DefaultIcons=true&primary=ff0004&secondary=ff0000&icon=ffffff&autoplay=true&next=true&title=true&poster=true",
+        "recom": "y"
+    },
+    "VidLink": {
+        "tv.provider": "https://vidlink.pro/tv/{id}/{ss}/{ee}?primaryColor=ff0000&secondaryColor=ff0000&iconColor=ffffff&icons=default&player=default&title=true&poster=true&autoplay=true&nextbutton=true",
+        "movie.provider": "https://vidlink.pro/movie/{id}?primaryColor=ff0000&secondaryColor=ff0000&iconColor=ffffff&icons=default&player=default&title=true&poster=true&autoplay=true&nextbutton=true",
+        "recom": "y"
+    },
+    "VidSrc (CO)": {
+        "tv.provider": "https://player.vidsrc.co/embed/tv/{id}/{ss}/{ee}?autoplay=true&autonext=true&nextbutton=true&poster=true&primarycolor=FF0000&secondarycolor=FF0000&iconcolor=FFFFFF&fontcolor=FFFFFF&fontsize=16px&opacity=0.5&font=Poppins",
+        "movie.provider": "https://player.vidsrc.co/embed/movie/{id}?autoplay=true&autonext=true&nextbutton=true&poster=true&primarycolor=FF0000&secondarycolor=FF0000&iconcolor=FFFFFF&fontcolor=FFFFFF&fontsize=16px&opacity=0.5&font=Poppins",
+        "recom": "y"
     },
     "SuperEmbed (VIP)": {
         "tv.provider": "https://multiembed.mov/directstream.php?video_id={id}&tmdb=1&s={ss}&e={ee}",
         "movie.provider": "https://multiembed.mov/directstream.php?video_id={id}&tmdb=1",
         "recom": "y"
     },
-    "SuperEmbed": {
-        "tv.provider": "https://multiembed.mov/?video_id={id}&tmdb=1&s={ss}&e={ee}",
-        "movie.provider": "https://multiembed.mov/?video_id={id}&tmdb=1",
-        "recom": "y"
-    },
-    "2Embed": {
-        "tv.provider": "https://www.2embed.cc/embedtv/{id}&s={ss}&e={ee}",
-        "movie.provider": "https://www.2embed.cc/embed/{id}",
-        "recom": "y"
-    },
-    "Vidlink": {
-        "tv.provider": "https://vidlink.pro/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://vidlink.pro/movie/{id}"
-    },
-    "SmashyStream": {
-        "tv.provider": "https://player.smashy.stream/tv/{id}?s={ss}&e={ee}",
-        "movie.provider": "https://player.smashy.stream/movie/{id}"
-    },
-    "MoviesAPI": {
-        "tv.provider": "https://moviesapi.club/tv/{id}-{ss}-{ee}",
-        "movie.provider": "https://moviesapi.club/movie/{id}",
-        "recom": "y"
-    },
-    "GoDrivePlayer": {
-        "tv.provider": "https://godriveplayer.com/player.php?type=series&tmdb={id}&season={ss}&episode={ee}",
-        "movie.provider": "https://godriveplayer.com/player.php?tmdb={id}"
-    },
-    "VidOra": {
-        "tv.provider": "https://vidora.su/tv/{id}/{ss}/{ee}?colour=ff0000&autoplay=true&autonextepisode=true&backbutton=%2F&pausescreen=true&logo=%2Fsrc%2Fimg%2Ffavicon.png",
-        "movie.provider": "https://vidora.su/movie/{id}?colour=ff0000&autoplay=true&autonextepisode=true&backbutton=%2F&pausescreen=true&logo=%2Fsrc%2Fimg%2Ffavicon.png",
-        "recom": "y"
-    },
     "VidEasy": {
         "tv.provider": "https://player.videasy.net/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://player.videasy.net/movie/{id}",
-        "recom": "y"
-    },
-    "VidFast": {
-        "tv.provider": "https://vidfast.pro/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://vidfast.pro/movie/{id}"
-    },
-    "VidJoy": {
-        "tv.provider": "https://vidjoy.pro/embed/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://vidjoy.pro/embed/movie/{id}",
-        "recom": "y"
-    },
-    "VidSrc (VIP)": {
-        "tv.provider": "https://vidsrc.vip/embed/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://vidsrc.vip/embed/movie/{id}",
-        "recom": "y"
+        "movie.provider": "https://player.videasy.net/movie/{id}"
     }
 }
