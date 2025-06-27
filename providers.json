@@ -53,6 +53,21 @@
         "movie.provider": "https://multiembed.mov/directstream.php?video_id={id}&tmdb=1",
         "recom": "y"
     },
+    "VidSrc (WTF) v1": {
+        "tv.provider": "https://vidsrc.wtf/api/1/tv/?id={id}&s={ss}&e={ee}",
+        "movie.provider": "https://www.vidsrc.wtf/api/1/movie/?id={id}",
+        "recom": "y"
+    },
+    "VidSrc (WTF) v3 - Multi Providers": {
+        "tv.provider": "https://vidsrc.wtf/api/3/tv/?id={id}&s={ss}&e={ee}",
+        "movie.provider": "https://www.vidsrc.wtf/api/3/movie/?id={id}",
+        "recom": "y"
+    },
+    "VidSrc (WTF) v4 - Premium Providers": {
+        "tv.provider": "https://vidsrc.wtf/api/4/tv/?id={id}&s={ss}&e={ee}",
+        "movie.provider": "https://www.vidsrc.wtf/api/4/movie/?id={id}",
+        "recom": "y"
+    },
     "VidEasy": {
         "tv.provider": "https://player.videasy.net/tv/{id}/{ss}/{ee}",
         "movie.provider": "https://player.videasy.net/movie/{id}"
