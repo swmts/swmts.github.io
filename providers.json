@@ -68,8 +68,27 @@
         "movie.provider": "https://www.vidsrc.wtf/api/4/movie/?id={id}",
         "recom": "y"
     },
+    "VidSrc (CC)": {
+        "tv.provider": "https://vidsrc.cc/v2/embed/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://vidsrc.cc/v2/embed/movie/{id}",
+        "recom": "y"
+    },
+    "Vidify": {
+        "tv.provider": "https://vidify.top/embed/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://vidify.top/embed/movie/{id}",
+        "recom": "y"
+    },
+    "NontonGo": {
+        "tv.provider": "https://www.NontonGo.win/embed/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://www.NontonGo.win/embed/movie/{id}",
+        "recom": "y"
+    },
     "VidEasy": {
         "tv.provider": "https://player.videasy.net/tv/{id}/{ss}/{ee}",
         "movie.provider": "https://player.videasy.net/movie/{id}"
+    },
+    "VidFast": {
+        "tv.provider": "https://vidfast.pro/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://vidfast.pro/movie/{id}"
     }
 }
