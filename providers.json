@@ -9,9 +9,9 @@
         "movie.provider": "https://www.2embed.cc/embed/{id}",
         "recom": "y"
     },
-    "AutoEmbed": {
-        "tv.provider": "https://player.autoembed.cc/embed/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://player.autoembed.cc/embed/movie/{id}",
+    "2Embed Stream": {
+        "tv.provider": "https://www.2embed.stream/embed/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://www.2embed.stream/embed/movie/{id}",
         "recom": "y"
     },
     "MappleTV": {
@@ -90,5 +90,9 @@
     "VidFast": {
         "tv.provider": "https://vidfast.pro/tv/{id}/{ss}/{ee}",
         "movie.provider": "https://vidfast.pro/movie/{id}"
+    },
+    "VidAPI": {
+        "tv.provider": "https://vidapi.xyz/embed/tv/{id}&s={ss}&e={ee}",
+        "movie.provider": "https://vidapi.xyz/embed/movie/{id}"
     }
 }
