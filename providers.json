@@ -94,5 +94,9 @@
     "VidAPI": {
         "tv.provider": "https://vidapi.xyz/embed/tv/{id}&s={ss}&e={ee}",
         "movie.provider": "https://vidapi.xyz/embed/movie/{id}"
+    },
+    "VID+": {
+        "tv.provider": "https://player.vidplus.to/embed/tv/{id}/{ss}/{ee}?autoplay=true&poster=true&title=true&watchparty=true&chromecast=true&servericon=true&setting=true&pip=true&primarycolor=FF0000&secondarycolor=00FFBF&iconcolor=FFFFFF&logourl=https%3A%2F%2Fi.ibb.co%2F67wTJd9R%2Fpngimg-com-netflix-PNG11.png&font=Roboto&fontcolor=FFFFFF&fontsize=20&opacity=0.5",
+        "movie.provider": "https://player.vidplus.to/embed/movie/{id}?autoplay=true&poster=true&title=true&watchparty=true&chromecast=true&servericon=true&setting=true&pip=true&primarycolor=FF0000&secondarycolor=00FFBF&iconcolor=FFFFFF&logourl=https%3A%2F%2Fi.ibb.co%2F67wTJd9R%2Fpngimg-com-netflix-PNG11.png&font=Roboto&fontcolor=FFFFFF&fontsize=20&opacity=0.5"
     }
 }
