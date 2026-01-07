@@ -1,31 +1,25 @@
 {
-    "111Movies": {
-        "tv.provider": "https://111movies.com/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://111movies.com/movie/{id}",
-        "recom": "y"
-    },
     "2Embed CC": {
         "tv.provider": "https://www.2embed.cc/embedtv/{id}&s={ss}&e={ee}",
-        "movie.provider": "https://www.2embed.cc/embed/{id}",
-        "recom": "y"
+        "movie.provider": "https://www.2embed.cc/embed/{id}"
     },
     "2Embed Stream": {
         "tv.provider": "https://www.2embed.stream/embed/tv/{id}/{ss}/{ee}",
         "movie.provider": "https://www.2embed.stream/embed/movie/{id}",
         "recom": "y"
     },
-    "MappleTV": {
-        "tv.provider": "https://mappletv.uk/watch/tv/{id}-{ss}-{ee}",
-        "movie.provider": "https://mappletv.uk/watch/movie/{id}",
+    "BidSRC (PRO)": {
+        "tv.provider": "https://bidsrc.pro/tv/{id}/{ss}/{ee}?color=770000&autoplay=1",
+        "movie.provider": "https://bidsrc.pro/movie/{id}/?color=770000&autoplay=1",
         "recom": "y"
     },
     "MoviesAPI": {
         "tv.provider": "https://moviesapi.club/tv/{id}-{ss}-{ee}",
         "movie.provider": "https://moviesapi.club/movie/{id}"
     },
-    "P-Stream": {
-        "tv.provider": "https://iframe.pstream.org/embed/tmdb-tv-{id}/{ss}/{ee}",
-        "movie.provider": "https://iframe.pstream.org/embed/tmdb-movie-{id}",
+    "VidRock": {
+        "tv.provider": "https://vidrock.net/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://vidrock.net/movie/{id}",
         "recom": "y"
     },
     "VidOra": {
@@ -33,9 +27,9 @@
         "movie.provider": "https://vidora.su/movie/{id}?autoplay=true&colour=6966ff",
         "recom": "y"
     },
-    "VidJoy": {
-        "tv.provider": "https://vidjoy.pro/embed/tv/{id}/{ss}/{ee}?adFree=true&DefaultIcons=true&primary=ff0004&secondary=ff0000&icon=ffffff&autoplay=true&next=true&title=true&poster=true",
-        "movie.provider": "https://vidjoy.pro/embed/movie/{id}?adFree=true&DefaultIcons=true&primary=ff0004&secondary=ff0000&icon=ffffff&autoplay=true&next=true&title=true&poster=true",
+    "VidSync": {
+        "tv.provider": "https://vidsync.xyz/embed/tv/{id}/{ss}/{ee}?autoPlay=true&autoNext=true",
+        "movie.provider": "https://vidsync.xyz/embed/movie/{id}?autoPlay=true&autoNext=true",
         "recom": "y"
     },
     "VidLink": {
@@ -68,14 +62,14 @@
         "movie.provider": "https://www.vidsrc.wtf/api/4/movie/?id={id}",
         "recom": "y"
     },
-    "VidSrc (CC)": {
-        "tv.provider": "https://vidsrc.cc/v2/embed/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://vidsrc.cc/v2/embed/movie/{id}",
+    "VidNest": {
+        "tv.provider": "https://vidnest.fun/tv/{id}/{ss}/{ee}",
+        "movie.provider": "https://vidnest.fun/movie/{id}",
         "recom": "y"
     },
     "Vidify": {
-        "tv.provider": "https://vidify.top/embed/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://vidify.top/embed/movie/{id}",
+        "tv.provider": "https://player.vidify.top/embed/tv/{id}/{ss}/{ee}?autoplay=false&poster=true&chromecast=true&servericon=true&setting=true&pip=true&logourl=https%3A%2F%2Fi.ibb.co%2F67wTJd9R%2Fpngimg-com-netflix-PNG11.png&font=Roboto&fontcolor=6f63ff&fontsize=20&opacity=0.5&primarycolor=ffffff&secondarycolor=1f2937&iconcolor=ffffff",
+        "movie.provider": "https://player.vidify.top/embed/movie/{id}?autoplay=false&poster=true&chromecast=true&servericon=true&setting=true&pip=true&logourl=https%3A%2F%2Fi.ibb.co%2F67wTJd9R%2Fpngimg-com-netflix-PNG11.png&font=Roboto&fontcolor=6f63ff&fontsize=20&opacity=0.5&primarycolor=ffffff&secondarycolor=1f2937&iconcolor=ffffff",
         "recom": "y"
     },
     "NontonGo": {
@@ -95,8 +89,9 @@
         "tv.provider": "https://vidapi.xyz/embed/tv/{id}&s={ss}&e={ee}",
         "movie.provider": "https://vidapi.xyz/embed/movie/{id}"
     },
-    "VID+": {
-        "tv.provider": "https://player.vidplus.to/embed/tv/{id}/{ss}/{ee}?autoplay=true&poster=true&title=true&watchparty=true&chromecast=true&servericon=true&setting=true&pip=true&primarycolor=FF0000&secondarycolor=00FFBF&iconcolor=FFFFFF&logourl=https%3A%2F%2Fi.ibb.co%2F67wTJd9R%2Fpngimg-com-netflix-PNG11.png&font=Roboto&fontcolor=FFFFFF&fontsize=20&opacity=0.5",
-        "movie.provider": "https://player.vidplus.to/embed/movie/{id}?autoplay=true&poster=true&title=true&watchparty=true&chromecast=true&servericon=true&setting=true&pip=true&primarycolor=FF0000&secondarycolor=00FFBF&iconcolor=FFFFFF&logourl=https%3A%2F%2Fi.ibb.co%2F67wTJd9R%2Fpngimg-com-netflix-PNG11.png&font=Roboto&fontcolor=FFFFFF&fontsize=20&opacity=0.5"
+    "Cinetaro": {
+        "tv.provider": "https://api.cinetaro.buzz/tv/{id}/{ss}/{ee}/english",
+        "movie.provider": "https://api.cinetaro.buzz/movie/{id}/english",
+        "recom": "y"
     }
 }
