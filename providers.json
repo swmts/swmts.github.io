@@ -95,7 +95,7 @@
         "recom": "y"
     },
     "VidKing": {
-        "tv.provider": "https://www.vidking.net/embed/movie/{id}/{ss}/{ee}?color=e50914&autoPlay=true",
+        "tv.provider": "https://www.vidking.net/embed/tv/{id}/{ss}/{ee}?color=e50914&autoPlay=true",
         "movie.provider": "https://www.vidking.net/embed/movie/{id}?color=e50914&autoPlay=true",
         "recom": "y"
     }
