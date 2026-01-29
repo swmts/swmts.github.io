@@ -72,11 +72,6 @@
         "movie.provider": "https://player.vidify.top/embed/movie/{id}?autoplay=false&poster=true&chromecast=true&servericon=true&setting=true&pip=true&logourl=https%3A%2F%2Fi.ibb.co%2F67wTJd9R%2Fpngimg-com-netflix-PNG11.png&font=Roboto&fontcolor=6f63ff&fontsize=20&opacity=0.5&primarycolor=ffffff&secondarycolor=1f2937&iconcolor=ffffff",
         "recom": "y"
     },
-    "NontonGo": {
-        "tv.provider": "https://www.NontonGo.win/embed/tv/{id}/{ss}/{ee}",
-        "movie.provider": "https://www.NontonGo.win/embed/movie/{id}",
-        "recom": "y"
-    },
     "VidEasy": {
         "tv.provider": "https://player.videasy.net/tv/{id}/{ss}/{ee}",
         "movie.provider": "https://player.videasy.net/movie/{id}"
@@ -92,6 +87,16 @@
     "Cinetaro": {
         "tv.provider": "https://api.cinetaro.buzz/tv/{id}/{ss}/{ee}/english",
         "movie.provider": "https://api.cinetaro.buzz/movie/{id}/english",
+        "recom": "y"
+    },
+    "VidZee": {
+        "tv.provider": "https://player.vidzee.wtf/v2/embed/tv/{id}/{ss}/{ee}/",
+        "movie.provider": "https://player.vidzee.wtf/v2/embed/movie/{id}/",
+        "recom": "y"
+    },
+    "VidKing": {
+        "tv.provider": "https://www.vidking.net/embed/movie/{id}/{ss}/{ee}?color=e50914&autoPlay=true",
+        "movie.provider": "https://www.vidking.net/embed/movie/{id}?color=e50914&autoPlay=true",
         "recom": "y"
     }
 }
