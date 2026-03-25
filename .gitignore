@@ -4,3 +4,10 @@ old.data.json
 old.index.html
 providers.html
 /.vscode
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
